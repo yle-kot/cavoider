@@ -33,7 +33,7 @@ public class OnboardingActivity extends FragmentActivity{
                     sharedPreferencesEditor.putBoolean(preferences, true);
                     sharedPreferencesEditor.apply();
                     //fragment.onFinishFragment();
-                    startActivity(new Intent(OnboardingActivity.this, DashboardActivity.class));
+                    startActivity(new Intent(OnboardingActivity.this, LoadingActivity.class));
                 }
                 else{
                     page++;
