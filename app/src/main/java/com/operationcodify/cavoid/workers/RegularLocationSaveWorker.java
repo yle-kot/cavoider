@@ -47,15 +47,13 @@ public class RegularLocationSaveWorker extends Worker {
         locDao = locDb.getLocationDao();
         repo = new Repository(getApplicationContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-
+        ;
     }
 
     @SuppressLint("MissingPermission")
     @NonNull
     @Override
     public Result doWork() {
-        String TAG = RegularLocationSaveWorker.class.getName();
-
         if (isMissingPermissions())
             return Result.failure();
 

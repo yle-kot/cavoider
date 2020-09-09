@@ -76,5 +76,6 @@ public interface LocationDao {
     )
     void cleanRecordsOlderThan(LocalDate date);
 
-
+    @Query( "SELECT EXISTS(SELECT 1 FROM notified_location[nl] WHERE nl.fips == :fips LIMIT 1)")
+    int hasFipsBeenNotified(String fips);
 }

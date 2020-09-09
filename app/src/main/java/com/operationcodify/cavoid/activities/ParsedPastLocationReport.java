@@ -7,6 +7,8 @@ import com.operationcodify.cavoid.database.LocationDao;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+
 public class ParsedPastLocationReport implements Comparable<ParsedPastLocationReport>{
     public String activeCasesEst;
     public String caseFatality;
@@ -46,16 +48,26 @@ public class ParsedPastLocationReport implements Comparable<ParsedPastLocationRe
     }
 
     private void getLastReportTime(LocationDao locDao){
+        boolean hasBeenNotified;
         if (this.fips == null){
+            hasBeenNotified = false;
+        }
+        else{
+            hasBeenNotified = locDao.hasFipsBeenNotified(this.fips) == 1;
+        }
+
+        if (hasBeenNotified){
+            lastReportTimestamp = locDao.getTimeOfLastNotificationFor(this.fips).toString();
+        }
+        else{
             lastReportTimestamp = null;
         }
-        lastReportTimestamp = locDao.getTimeOfLastNotificationFor(this.fips).toString();
     }
 
     private String getStringFromResponse(JSONObject response, String key){
         String v = null;
         try{
-            response.getString(key);
+            v = String.valueOf(response.get(key));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -69,7 +81,7 @@ public class ParsedPastLocationReport implements Comparable<ParsedPastLocationRe
 
     @Override
     public int hashCode() {
-        return fips.hashCode();
+        return (fips + totalDeaths + totalCases).hashCode();
     }
 
     @Override

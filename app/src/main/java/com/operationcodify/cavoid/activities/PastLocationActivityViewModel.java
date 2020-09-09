@@ -1,6 +1,7 @@
 package com.operationcodify.cavoid.activities;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -25,20 +26,20 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     private Repository repo;
     private MutableLiveData<Integer> counter;
     private ArrayList<String> pastLocations;
-    private TreeSet<ParsedPastLocationReport> reports;
+    private ArrayList<ParsedPastLocationReport> reports;
 
     public PastLocationActivityViewModel(@NonNull Application application){
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
-        reports = new TreeSet<>();
+        reports = new ArrayList<>();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
         updatePastLocationMessages();
     }
 
-    public TreeSet<ParsedPastLocationReport> getReports(){
+    public ArrayList<ParsedPastLocationReport> getReports(){
         return this.reports;
     }
 
@@ -56,6 +57,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
                 @Override
                 public void onResponse(JSONObject response) {
                     ParsedPastLocationReport newReport = new ParsedPastLocationReport(response, locDao);
+                    Log.d(TAG, "Adding a new report to pastLocationsReport: " + newReport.fips + "--" + newReport.reportGenerationDate);
                     reports.add(newReport);
                     counter.setValue(counter.getValue() + 1);
                 }
