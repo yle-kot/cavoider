@@ -1,5 +1,6 @@
 package com.example.cavoid;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
@@ -49,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
         KmlLayer layer = null;
         try {
             layer = new KmlLayer(mMap, cb_2018_us_county_500k, getApplicationContext());
@@ -58,6 +60,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
         layer.addLayerToMap();
+
+        Polygon polygon = googleMap.addPolygon(new PolygonOptions()
+                .add(new LatLng(41, -109), new LatLng(41, -102), new LatLng(37, -103), new LatLng(37, -109))
+                .strokeColor(Color.BLACK)
+                .fillColor(Color.BLUE)
+                .clickable(true));
+
+        googleMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+            @Override
+            public void onPolygonClick(Polygon polygon){
+                polygon.setFillColor(Color.RED);
+                polygon.setVisible(false);
+            }
+        });
 
         // Add a marker in Sydney and move the camera
         LatLng ashland = new LatLng(37.75, -77.85);
