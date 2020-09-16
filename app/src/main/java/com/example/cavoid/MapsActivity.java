@@ -53,17 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        KmlLayer layer = null;
-        try {
-            layer = new KmlLayer(mMap, cb_2018_us_county_500k, getApplicationContext());
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (layer != null) {
-            layer.addLayerToMap();
-        }
+
         Polygon polygon = mMap.addPolygon(new PolygonOptions()
                 .add(new LatLng(41, -109), new LatLng(41, -102), new LatLng(37, -102), new LatLng(37, -109))
                 .strokeColor(Color.BLACK)
