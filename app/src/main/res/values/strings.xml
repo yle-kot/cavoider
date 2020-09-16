@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Cavoid</string>
     <string name="title_activity_maps">Map</string>
+    <string name="channel_name">Cavoider</string>
+    <string name="channel_description">Cavoider notifications</string>
 
 </resources>

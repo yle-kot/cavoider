@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -12,9 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.data.kml.*;
+import com.google.maps.android.data.kml.KmlLayer;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -35,7 +34,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+
+
     }
 
     /**
@@ -50,7 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         KmlLayer layer = null;
         try {
             layer = new KmlLayer(mMap, cb_2018_us_county_500k, getApplicationContext());
@@ -59,19 +61,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (IOException e) {
             e.printStackTrace();
         }
-        layer.addLayerToMap();
-
-        Polygon polygon = googleMap.addPolygon(new PolygonOptions()
-                .add(new LatLng(41, -109), new LatLng(41, -102), new LatLng(37, -103), new LatLng(37, -109))
+        if (layer != null) {
+            layer.addLayerToMap();
+        }
+        Polygon polygon = mMap.addPolygon(new PolygonOptions()
+                .add(new LatLng(41, -109), new LatLng(41, -102), new LatLng(37, -102), new LatLng(37, -109))
                 .strokeColor(Color.BLACK)
-                .fillColor(Color.BLUE)
-                .clickable(true));
+                .fillColor(Color.BLUE));
 
-        googleMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+        polygon.setClickable(true);
+        if(polygon.isClickable()){
+            polygon.setFillColor(Color.GREEN);
+        }
+        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon){
+                System.out.println("click");
                 polygon.setFillColor(Color.RED);
-                polygon.setVisible(false);
             }
         });
 
@@ -79,5 +85,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng ashland = new LatLng(37.75, -77.85);
         mMap.addMarker(new MarkerOptions().position(ashland).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ashland));
+
+
     }
+
+    public Polygon createCountyPolygon(){
+        Polygon polygon = null;
+        return polygon;
+    }
+
+    public int [] getCountyLines(int fips){
+        int [] coordinates = null;
+        return coordinates;
+    }
+
+
 }
