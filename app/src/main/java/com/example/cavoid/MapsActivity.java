@@ -24,8 +24,6 @@ import static com.example.cavoid.R.raw.cb_2018_us_county_500k;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private static final String APIKEY = BuildConfig.ApiKey;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
