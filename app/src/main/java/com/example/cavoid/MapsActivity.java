@@ -10,11 +10,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import org.json.*;
+import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import com.google.maps.android.data.kml.KmlLayer;
 
+import org.jetbrains.annotations.NotNull;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -52,15 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Polygon polygon = mMap.addPolygon(new PolygonOptions()
-                .add(new LatLng(41, -109), new LatLng(41, -102), new LatLng(37, -102), new LatLng(37, -109))
-                .strokeColor(Color.BLACK)
-                .fillColor(Color.BLUE));
-
+        Polygon polygon = createCountyPolygon();
         polygon.setClickable(true);
-        if(polygon.isClickable()){
-            polygon.setFillColor(Color.GREEN);
-        }
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon){
@@ -77,13 +76,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public Polygon createCountyPolygon(){
+    /*
+      Gets the county line coordinates then creates a polygon object to return them
+     */
+    private Polygon createCountyPolygon(){
         Polygon polygon = null;
+        polygon = mMap.addPolygon(new PolygonOptions()
+                .addAll(getCountyLines("51760")));
         return polygon;
     }
 
-    public int [] getCountyLines(int fips){
-        int [] coordinates = null;
+    private ArrayList<LatLng> getCountyLines(String fips){
+        ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
+        coordinates.add(new LatLng(41, -109));
+        coordinates.add(new LatLng(41, -102));
+        coordinates.add(new LatLng(37, -102));
+        coordinates.add(new LatLng(37, -109));
         return coordinates;
     }
 
