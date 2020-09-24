@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,7 +31,7 @@ import java.io.IOException;
 
 import static com.example.cavoid.R.raw.cb_2018_us_county_500k;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
