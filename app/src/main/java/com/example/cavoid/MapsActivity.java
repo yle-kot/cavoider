@@ -10,22 +10,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import org.json.*;
+
 import java.util.ArrayList;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import com.google.maps.android.data.kml.KmlLayer;
-
-import org.jetbrains.annotations.NotNull;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
-import static com.example.cavoid.R.raw.cb_2018_us_county_500k;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
