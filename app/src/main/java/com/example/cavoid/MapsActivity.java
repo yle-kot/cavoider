@@ -1,35 +1,39 @@
 package com.example.cavoid;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import org.json.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import com.google.maps.android.data.kml.KmlLayer;
-
-import org.jetbrains.annotations.NotNull;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-
-import static com.example.cavoid.R.raw.cb_2018_us_county_500k;
+import java.util.Calendar;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -49,10 +53,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapFragment.getMapAsync(this);
 
         }
+        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
+
+        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent,
+                PendingIntent.FLAG_NO_CREATE) != null);
+
+        alarmToggle.setChecked(alarmUp);
+
+        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
+        alarmToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                String toastMessage;
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                Calendar calendar = Calendar.getInstance();
+                if (isChecked) {
+
+                    long thirtySecondsFromNow = System.currentTimeMillis() + 10 * 1000;
+                    long repeatInterval_1 = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+                    long repeatInterval_2 =  System.currentTimeMillis() + 10 * 1000;
+                    long triggerTime = SystemClock.elapsedRealtime()
+                            + repeatInterval_2;
+
+                    if (alarmManager != null) {
+                        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                                SystemClock.elapsedRealtime() +
+                                        5 * 1000, notifyPendingIntent);
+                    }
+                    toastMessage = "Covid alarm on";
+                } else {
+                    if (alarmManager != null) {
+                        alarmManager.cancel(notifyPendingIntent);
+                    }
+                    mNotificationManager.cancelAll();
+                    toastMessage = "Covid alarm off";
+                }
+                Toast.makeText(MapsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        createNotificationChannel();
 
     }
+
+
+
+
+
     public void createNotificationChannel() {
 
         // Create a notification manager object.

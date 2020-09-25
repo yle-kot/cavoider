@@ -25,7 +25,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent contentPendingIntent = PendingIntent.getActivity(context,NOTIFICATION_ID, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PRIMARY_CHANNEL_ID)
-                //.setSmallIcon(R.drawable.ic_trend_up_foreground)
+                .setSmallIcon(R.drawable.ic_trend_up)
                 .setContentTitle("covid alert")
                 .setContentText("hello")
                 .setContentIntent(contentPendingIntent)
