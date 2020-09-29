@@ -14,6 +14,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.io.*;
+import java.net.*;
+
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -84,5 +87,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return coordinates;
     }
 
+    private String getCurrentLocationFipsCode(String lat, String lon) throws IOException, MalformedURLException {
+        String baseUrl = "https://geo.fcc.gov/api/census/area?";
+        String latitude = "lat="+lat+"&";
+        String longitude = "lon="+lon;
+        baseUrl += latitude+longitude;
+        String fips = "";
+        URL url = new URL(baseUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        for(int i = 0;i<response.length();i++){
+            if(response.substring(i,i+11).equals("county_fips")){
+                fips = response.substring(i+14,i+19);
+                break;
+            }
+        }
+        return fips;
+    }
 
 }
