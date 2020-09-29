@@ -72,8 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       Gets the county line coordinates then creates a polygon object to return them
      */
     private Polygon createCountyPolygon(){
-        Polygon polygon = null;
-        polygon = mMap.addPolygon(new PolygonOptions()
+        Polygon polygon = mMap.addPolygon(new PolygonOptions()
                 .addAll(getCountyLines("51760")));
         return polygon;
     }
