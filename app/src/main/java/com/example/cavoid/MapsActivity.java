@@ -14,6 +14,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -76,11 +82,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ArrayList<LatLng> getCountyLines(String fips){
         ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
-        coordinates.add(new LatLng(41, -109));
-        coordinates.add(new LatLng(41, -102));
-        coordinates.add(new LatLng(37, -102));
-        coordinates.add(new LatLng(37, -109));
+        try {
+            JSONObject county = new JSONObject(loadJSONFromAsset());
+            JSONArray countyLines = new JSONArray(fips);
+            for(int i = 0; i < countyLines.length(); i++) {
+
+            }
+            return coordinates;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //coordinates.add(new LatLng(41, -109));
+        //coordinates.add(new LatLng(41, -102));
+        //coordinates.add(new LatLng(37, -102));
+        //coordinates.add(new LatLng(37, -109));
         return coordinates;
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("users_list.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 
 
