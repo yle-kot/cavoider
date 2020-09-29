@@ -46,13 +46,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-
-        }
         ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
 
         Intent notifyIntent = new Intent(this, AlarmReceiver.class);
@@ -69,19 +62,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 String toastMessage;
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                Calendar calendar = Calendar.getInstance();
+
                 if (isChecked) {
 
-                    long thirtySecondsFromNow = System.currentTimeMillis() + 10 * 1000;
+                    long tenSecondsFromNow = System.currentTimeMillis() + 10 * 1000;
                     long repeatInterval_1 = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
                     long repeatInterval_2 =  System.currentTimeMillis() + 10 * 1000;
                     long triggerTime = SystemClock.elapsedRealtime()
                             + repeatInterval_2;
 
                     if (alarmManager != null) {
-                        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                                SystemClock.elapsedRealtime() +
-                                        5 * 1000, notifyPendingIntent);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                                tenSecondsFromNow, notifyPendingIntent);
                     }
                     toastMessage = "Covid alarm on";
                 } else {
@@ -94,8 +86,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MapsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
             }
         });
+
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         createNotificationChannel();
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+
+        }
 
     }
 
