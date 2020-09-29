@@ -83,7 +83,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<LatLng> getCountyLines(String fips){
         ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
         try {
-            JSONObject county = new JSONObject(loadJSONFromAsset());
+            JSONObject county = new JSONObject(loadJSONFromAsset());\
+            // return county.get(fips)
             JSONArray countyLines = new JSONArray(fips);
             for(int i = 0; i < countyLines.length(); i++) {
 
