@@ -1,10 +1,25 @@
 package com.example.cavoid;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,26 +33,110 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Scanner;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private NotificationManager mNotificationManager;
+    private static final int NOTIFICATION_ID = 0;
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
+
+        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
+        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent,
+                PendingIntent.FLAG_NO_CREATE) != null);
+
+        alarmToggle.setChecked(alarmUp);
+
+        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        alarmToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                String toastMessage;
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+                if (isChecked) {
+
+                    long tenSecondsFromNow = System.currentTimeMillis() + 10 * 1000;
+                    long repeatInterval_1 = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+                    long repeatInterval_2 =  System.currentTimeMillis() + 10 * 1000;
+                    long triggerTime = SystemClock.elapsedRealtime()
+                            + repeatInterval_2;
+
+                    if (alarmManager != null) {
+                        alarmManager.set(AlarmManager.RTC_WAKEUP,
+                                tenSecondsFromNow, notifyPendingIntent);
+                    }
+                    toastMessage = "Covid alarm on";
+                } else {
+                    if (alarmManager != null) {
+                        alarmManager.cancel(notifyPendingIntent);
+                    }
+                    mNotificationManager.cancelAll();
+                    toastMessage = "Covid alarm off";
+                }
+                Toast.makeText(MapsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        createNotificationChannel();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+
         }
 
+    }
 
+
+
+
+
+    public void createNotificationChannel() {
+
+        // Create a notification manager object.
+        mNotificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Notification channels are only available in OREO and higher.
+        // So, add a check on SDK version.
+        if (android.os.Build.VERSION.SDK_INT >=
+                android.os.Build.VERSION_CODES.O) {
+
+            // Create the NotificationChannel with all the parameters.
+            NotificationChannel notificationChannel = new NotificationChannel
+                    (PRIMARY_CHANNEL_ID,
+                            "Stand up notification",
+                            NotificationManager.IMPORTANCE_HIGH);
+
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setDescription
+                    ("Notifies every 15 minutes to stand up and walk");
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     /**
@@ -75,36 +174,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
       Gets the county line coordinates then creates a polygon object to return them
      */
     private Polygon createCountyPolygon(){
-        Polygon polygon = mMap.addPolygon(new PolygonOptions()
-                .addAll(getCountyLines("51760")));
+        Polygon polygon = null;
+        polygon = mMap.addPolygon(new PolygonOptions()
+                .addAll(getCountyLines("01001")));
         return polygon;
     }
 
     private ArrayList<LatLng> getCountyLines(String fips){
         ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
+        //create a json object and parse it
         try {
-            JSONObject county = new JSONObject(loadJSONFromAsset());\
-            // return county.get(fips)
-            JSONArray countyLines = new JSONArray(fips);
-            for(int i = 0; i < countyLines.length(); i++) {
-
+            JSONObject county = new JSONObject(loadJSONFromAsset());
+            String coordinatesString = county.getString(fips);
+            System.out.println(coordinatesString);
+            String Lat;
+            String Lng;
+            Scanner in = new Scanner(coordinatesString);
+            in.useDelimiter(",");
+            //return county.get(fips);
+            for(int i = 0; i+1 < coordinatesString.length();i++){
+                Lat = in.next();
+                Lng = in.next();
+                coordinates.add(new LatLng(Double.parseDouble(Lat),Double.parseDouble(Lng)));
             }
             return coordinates;
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-
-        //coordinates.add(new LatLng(41, -109));
-        //coordinates.add(new LatLng(41, -102));
-        //coordinates.add(new LatLng(37, -102));
-        //coordinates.add(new LatLng(37, -109));
-        return coordinates;
+        catch (JSONException e) {
+            e.printStackTrace();
+            coordinates.add(new LatLng(41, -109));
+            coordinates.add(new LatLng(41, -102));
+            coordinates.add(new LatLng(37, -102));
+            coordinates.add(new LatLng(37, -109));
+            return coordinates;
+        }
+        catch(NullPointerException n){
+            coordinates.add(new LatLng(41, -109));
+            coordinates.add(new LatLng(41, -102));
+            coordinates.add(new LatLng(37, -102));
+            coordinates.add(new LatLng(37, -109));
+            return coordinates;
+        }
     }
 
     public String loadJSONFromAsset() {
         String json = null;
         try {
-            InputStream is = getAssets().open("users_list.json");
+            InputStream is = getAssets().open("fips.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -116,6 +231,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return json;
     }
+
+    private String getCurrentLocationFipsCode(String lat, String lon) throws IOException, MalformedURLException {
+        String baseUrl = "https://geo.fcc.gov/api/census/area?";
+        String latitude = "lat="+lat+"&";
+        String longitude = "lon="+lon;
+        baseUrl += latitude+longitude;
+        String fips = "";
+        URL url = new URL(baseUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        for(int i = 0;i<response.length();i++){
+            if(response.substring(i,i+11).equals("county_fips")){
+                fips = response.substring(i+14,i+19);
+                break;
+            }
+        }
+        return fips;
+    }
+
 
 
 }

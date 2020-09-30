@@ -14,6 +14,10 @@ android {
     }
 
     buildTypes {
+        customDebugType {
+                    debuggable true
+        }
+
         debug{
             buildConfigField 'String', "ApiKey", GOOGLE_API_KEY
             resValue 'string', "ApiKey", GOOGLE_API_KEY
@@ -36,6 +40,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.maps.android:android-maps-utils:2.0.3'
     implementation 'org.jetbrains:annotations-java5:15.0'
+    implementation 'com.sun.mail:android-mail:1.6.2'
+    implementation 'com.sun.mail:android-activation:1.6.2'
 
 
     testImplementation 'junit:junit:4.12'
