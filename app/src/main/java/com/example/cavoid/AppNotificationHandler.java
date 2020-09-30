@@ -1,10 +1,7 @@
 package com.example.cavoid;
 
-import android.app.Activity;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
