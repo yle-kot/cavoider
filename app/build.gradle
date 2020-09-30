@@ -14,10 +14,6 @@ android {
     }
 
     buildTypes {
-        customDebugType {
-                    debuggable true
-        }
-
         debug{
             buildConfigField 'String', "ApiKey", GOOGLE_API_KEY
             resValue 'string', "ApiKey", GOOGLE_API_KEY
