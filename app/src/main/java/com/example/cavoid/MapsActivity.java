@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -46,44 +48,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
+        Button notificationTrigger = findViewById(R.id.notificationTrigger);
 
-        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent,
-                PendingIntent.FLAG_NO_CREATE) != null);
-
-        alarmToggle.setChecked(alarmUp);
-
-        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        alarmToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                String toastMessage;
-                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-                if (isChecked) {
-
-                    long tenSecondsFromNow = System.currentTimeMillis() + 10 * 1000;
-                    long repeatInterval_1 = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-                    long repeatInterval_2 =  System.currentTimeMillis() + 10 * 1000;
-                    long triggerTime = SystemClock.elapsedRealtime()
-                            + repeatInterval_2;
-
-                    if (alarmManager != null) {
-                        alarmManager.set(AlarmManager.RTC_WAKEUP,
-                                tenSecondsFromNow, notifyPendingIntent);
-                    }
-                    toastMessage = "Covid alarm on";
-                } else {
-                    if (alarmManager != null) {
-                        alarmManager.cancel(notifyPendingIntent);
-                    }
-                    mNotificationManager.cancelAll();
-                    toastMessage = "Covid alarm off";
-                }
-                Toast.makeText(MapsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+            public void onClick(View view) {
+                Repository repository = new Repository();
+                String title = "Positive Test Alert";
+                 String message= repository.getPosTests(MapsActivity.this);
+                AppNotificationHandler.deliverNotification(MapsActivity.this,title,message);
             }
         });
 
@@ -99,9 +72,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
-
-
-
 
 
     public void createNotificationChannel() {
