@@ -1,5 +1,8 @@
 package com.example.cavoid;
 
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,6 +10,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+import com.android.volley.Response;
 import android.os.SystemClock;
 import android.widget.CompoundButton;
 import android.widget.Toast;
@@ -25,9 +32,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,8 +55,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
@@ -55,44 +66,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        ToggleButton alarmToggle = findViewById(R.id.alarmToggle);
+        Button notificationTrigger = findViewById(R.id.notificationTrigger);
 
-        Intent notifyIntent = new Intent(this, AlarmReceiver.class);
-        boolean alarmUp = (PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent,
-                PendingIntent.FLAG_NO_CREATE) != null);
-
-        alarmToggle.setChecked(alarmUp);
-
-        final PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        alarmToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                String toastMessage;
-                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            public void onClick(View view) {
+                Repository repository = new Repository();
+                repository.getPosTests(MapsActivity.this, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                JSONObject data = response;
+                                String posTests;
+                                //Saves the positive case number from JSON file to string in application
+                                try{
+                                    posTests = data.getString("positive");
+                                }catch (JSONException e){
+                                    posTests = "ERR";
+                                }
 
-                if (isChecked) {
+                                String title = "Positive Test Alert";
+                                String message = posTests;
+                                AppNotificationHandler.deliverNotification(MapsActivity.this,title,message);
+                            }
+                        });
 
-                    long tenSecondsFromNow = System.currentTimeMillis() + 10 * 1000;
-                    long repeatInterval_1 = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-                    long repeatInterval_2 =  System.currentTimeMillis() + 10 * 1000;
-                    long triggerTime = SystemClock.elapsedRealtime()
-                            + repeatInterval_2;
-
-                    if (alarmManager != null) {
-                        alarmManager.set(AlarmManager.RTC_WAKEUP,
-                                tenSecondsFromNow, notifyPendingIntent);
-                    }
-                    toastMessage = "Covid alarm on";
-                } else {
-                    if (alarmManager != null) {
-                        alarmManager.cancel(notifyPendingIntent);
-                    }
-                    mNotificationManager.cancelAll();
-                    toastMessage = "Covid alarm off";
-                }
-                Toast.makeText(MapsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -104,13 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-
         }
-
-    }
-
-
-
 
 
     public void createNotificationChannel() {
