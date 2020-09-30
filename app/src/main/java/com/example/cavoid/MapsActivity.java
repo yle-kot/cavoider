@@ -3,14 +3,10 @@ package com.example.cavoid;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-
 import android.graphics.Color;
 import android.os.Bundle;
-
 import android.view.View;
 import android.widget.Button;
-
-
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 public class Repository {
     String posTests = "";
     public void getPosTests(Context context, Response.Listener<JSONObject> callback){
-            RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
         String url = "https://api.covidtracking.com/v1/states/va/20200918.json";
