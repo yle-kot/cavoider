@@ -3,5 +3,14 @@
     <string name="title_activity_maps">Map</string>
     <string name="channel_name">Cavoider</string>
     <string name="channel_description">Cavoider notifications</string>
+    <string name="search_term">search_term</string>
+    <string name="btn_search">btn_search</string>
+    <string name="alarm_off">alarm off</string>
+    <string name="alarm_on">alarm on</string>
+    <string name="turn_on_notification_for_rise_in_cases">Turn on notification for rise in cases</string>
+    <string name="off">off</string>
+    <string name="Off">Off</string>
+    <string name="On">On</string>
+
 
 </resources>
