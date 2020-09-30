@@ -44,11 +44,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onResponse(JSONObject response) {
                                 JSONObject data = response;
                                 String posTests;
-                                //Saves the positive case number from JSON file to string in application
-                                try{
+                                //Saves the positive case number from JSON file to string in application                                
                                     posTests = data.getString("positive");
                                 }catch (JSONException e){
-                                    posTests = "ERR";
+                                    posTests = "PeePee";
                                 }
 
                                 String title = "Positive Test Alert";
