@@ -16,8 +16,7 @@ public class AppNotificationHandler {
 
     public static void deliverNotification(Context context, String title, String message){
         Toast.makeText(context,"hello",Toast.LENGTH_SHORT).show();
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,PRIMARY_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_trend_up)
                 .setContentTitle(title)
