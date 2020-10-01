@@ -3,6 +3,7 @@ package com.example.cavoid;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,10 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.android.volley.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,12 +37,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     //Declare local variables
     private GoogleMap mMap;
     private ArrayList<LatLng> coordinates;
+    private WorkManager mWorkManager;
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
@@ -47,10 +54,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
-
+        mWorkManager = WorkManager.getInstance(MapsActivity.this);
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Repository repository = new Repository();
                 repository.getPosTests(MapsActivity.this, new Response.Listener<JSONObject>() {
                     @Override
@@ -59,6 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         String posTests;
                         //Saves the positive case number from JSON file to string in application
                         try {
+
                             posTests = data.getString("positive");
                         } catch (JSONException e) {
                             posTests = "ERR";
@@ -66,7 +75,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         String title = "Positive Test Alert";
                         String message = posTests;
-                        AppNotificationHandler.deliverNotification(MapsActivity.this, title, message);
+                        Data.Builder builder = new Data.Builder();
+                        builder.putString("title",title);
+                        builder.putString("message",message);
+                        Data gas = builder.build();
+                        OneTimeWorkRequest test = new OneTimeWorkRequest.Builder(APIWorker.class)
+                                .setInputData(gas)
+                                .build();
+
+                        mWorkManager.enqueue(test);
                     }
                 });
 
@@ -123,31 +140,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Polygon polygon = createCountyPolygon();
+        Polygon polygon = createCountyPolygon("01001");
         polygon.setClickable(true);
-        polygon.setVisible(true);
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
            @Override
             public void onPolygonClick(Polygon polygon){
                 polygon.setFillColor(Color.RED);
-
             }
         });
-
-        // Add a marker in Sydney and move the camera
-        LatLng ashland = new LatLng(37.75, -77.85);
-        mMap.addMarker(new MarkerOptions().position(ashland).title("Marker in Ashland sort of"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ashland));
     }
 
 
     //Gets the county line coordinates then creates a polygon object to return them
-    private Polygon createCountyPolygon(){
+    private Polygon createCountyPolygon(String fips){
         Polygon polygon = mMap.addPolygon(new PolygonOptions()
                 .strokeWidth((float) 5.0)
                 .strokeColor(Color.BLACK)
                 //01001 is the tester fips code
-                .addAll(getCountyLines("01001")));
+                .addAll(getCountyLines(fips)));
         return polygon;
     }
 

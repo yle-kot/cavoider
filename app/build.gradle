@@ -15,11 +15,13 @@ android {
 
     buildTypes {
         debug{
+
             buildConfigField 'String', "ApiKey", GOOGLE_API_KEY
             resValue 'string', "ApiKey", GOOGLE_API_KEY
         }
         release {
             minifyEnabled false
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField 'String', "ApiKey", GOOGLE_API_KEY
             resValue 'string', "ApiKey", GOOGLE_API_KEY
@@ -39,6 +41,7 @@ dependencies {
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'com.sun.mail:android-mail:1.6.2'
     implementation 'com.sun.mail:android-activation:1.6.2'
+    implementation "androidx.work:work-runtime:2.3.3"
 
     implementation 'androidx.room:room-runtime:2.2.5'
     annotationProcessor 'androidx.room:room-compiler:2.2.5'
