@@ -36,6 +36,8 @@ dependencies {
     implementation 'com.google.maps.android:android-maps-utils:2.0.3'
     implementation 'org.jetbrains:annotations-java5:15.0'
 
+    implementation 'androidx.room:room-runtime:2.2.5'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
