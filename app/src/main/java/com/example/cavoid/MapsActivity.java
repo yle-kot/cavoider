@@ -1,6 +1,5 @@
 package com.example.cavoid;
 
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.graphics.Color;
@@ -21,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
-
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -34,6 +32,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
+
 
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +55,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 AppNotificationHandler.deliverNotification(MapsActivity.this,title,message);
                             }
                         });
-
             }
         });
 
