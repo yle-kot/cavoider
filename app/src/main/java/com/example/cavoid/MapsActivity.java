@@ -2,11 +2,19 @@ package com.example.cavoid;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.android.volley.Response;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,13 +24,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-
+    //Declare local variables
     private GoogleMap mMap;
+    private ArrayList<LatLng> coordinates;
+    private WorkManager mWorkManager;
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
@@ -32,13 +52,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
+<<<<<<< HEAD
 
 
+=======
+        mWorkManager = WorkManager.getInstance(MapsActivity.this);
+>>>>>>> 9313cdf7caf75935802c3e8259212236815669fb
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Repository repository = new Repository();
                 repository.getPosTests(MapsActivity.this, new Response.Listener<JSONObject>() {
+<<<<<<< HEAD
                             @Override
                             public void onResponse(JSONObject response) {
                                 JSONObject data = response;
@@ -55,6 +81,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 AppNotificationHandler.deliverNotification(MapsActivity.this,title,message);
                             }
                         });
+=======
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        JSONObject data = response;
+                        String posTests;
+                        //Saves the positive case number from JSON file to string in application
+                        try {
+
+                            posTests = data.getString("positive");
+                        } catch (JSONException e) {
+                            posTests = "ERR";
+                        }
+
+                        String title = "Positive Test Alert";
+                        String message = posTests;
+                        Data.Builder builder = new Data.Builder();
+                        builder.putString("title",title);
+                        builder.putString("message",message);
+                        Data gas = builder.build();
+                        OneTimeWorkRequest test = new OneTimeWorkRequest.Builder(APIWorker.class)
+                                .setInputData(gas)
+                                .build();
+
+                        mWorkManager.enqueue(test);
+                    }
+                });
+
+>>>>>>> 9313cdf7caf75935802c3e8259212236815669fb
             }
         });
 
@@ -66,9 +120,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-
         }
-
     }
 
 
@@ -110,43 +162,101 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        Polygon polygon = createCountyPolygon();
+        Polygon polygon = createCountyPolygon("01001");
         polygon.setClickable(true);
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-            @Override
+           @Override
             public void onPolygonClick(Polygon polygon){
-                System.out.println("click");
                 polygon.setFillColor(Color.RED);
             }
         });
-
-        // Add a marker in Sydney and move the camera
-        LatLng ashland = new LatLng(37.75, -77.85);
-        mMap.addMarker(new MarkerOptions().position(ashland).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ashland));
-
-
     }
 
-    /*
-      Gets the county line coordinates then creates a polygon object to return them
-     */
-    private Polygon createCountyPolygon(){
-        Polygon polygon = null;
-        polygon = mMap.addPolygon(new PolygonOptions()
-                .addAll(getCountyLines("51760")));
+
+    //Gets the county line coordinates then creates a polygon object to return them
+    private Polygon createCountyPolygon(String fips){
+        Polygon polygon = mMap.addPolygon(new PolygonOptions()
+                .strokeWidth((float) 5.0)
+                .strokeColor(Color.BLACK)
+                //01001 is the tester fips code
+                .addAll(getCountyLines(fips)));
         return polygon;
     }
 
+    //Returns an arraylist of county lines from a passed in fips code
     private ArrayList<LatLng> getCountyLines(String fips){
-        ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
-        coordinates.add(new LatLng(41, -109));
-        coordinates.add(new LatLng(41, -102));
-        coordinates.add(new LatLng(37, -102));
-        coordinates.add(new LatLng(37, -109));
-        return coordinates;
+        coordinates = new ArrayList<LatLng>();
+        //create a json object and parse it
+        try {
+            JSONObject countyJson = new JSONObject(loadJSONFromAsset());
+            String coordinatesString = countyJson.getString(fips);
+            //Enhanced for Loop to split coordinate string by spaces then take that string and split it by commas
+            for (String coord: coordinatesString.split(" ")){
+                //after spliting the string by commas put the first two indexes of the new array into lat and lng strings
+                //then parse them for doubles and add them to coordinates
+                String [] coordinateparts = coord.split(",");
+                //the latitude and longitude are reversed in the fips.json file
+                String Lng = coordinateparts[0];
+                String Lat = coordinateparts[1];
+                coordinates.add(new LatLng(Double.parseDouble(Lat),Double.parseDouble(Lng)));
+            }
+            return coordinates;
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        catch(NullPointerException n){
+            return null;
+        }
     }
+
+    //Opens and reads the fips.json file returns a string to create the JSONObject
+    private String loadJSONFromAsset() {
+        String json = null;
+        try {
+            //goes into the assets folder opens the file
+            InputStream in = getAssets().open("fips.json");
+            //is.available returns the number of bytes that can be read
+            //then create a byte array of that size to rea then read it close the file and pass back the json string
+            int size = in.available();
+            byte[] buffer = new byte[size];
+            in.read(buffer);
+            in.close();
+            json = new String(buffer, "UTF-8");
+            return json;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private String getCurrentLocationFipsCode(String lat, String lon) throws IOException, MalformedURLException {
+        String baseUrl = "https://geo.fcc.gov/api/census/area?";
+        String latitude = "lat="+lat+"&";
+        String longitude = "lon="+lon;
+        baseUrl += latitude+longitude;
+        String fips = "";
+        URL url = new URL(baseUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        for(int i = 0;i<response.length();i++){
+            if(response.substring(i,i+11).equals("county_fips")){
+                fips = response.substring(i+14,i+19);
+                break;
+            }
+        }
+        return fips;
+    }
+
 
 
 }

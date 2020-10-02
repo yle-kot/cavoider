@@ -15,7 +15,6 @@ public class AppNotificationHandler {
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
 
     public static void deliverNotification(Context context, String title, String message){
-        Toast.makeText(context,"hello",Toast.LENGTH_SHORT).show();
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,PRIMARY_CHANNEL_ID)
