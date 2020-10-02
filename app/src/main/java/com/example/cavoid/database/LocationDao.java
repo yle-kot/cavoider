@@ -1,4 +1,4 @@
-package com.example.cavoid;
+package com.example.cavoid.database;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
