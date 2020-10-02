@@ -38,7 +38,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
-
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,15 +116,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Polygon polygon = PolygonUtils.createCountyPolygon(MapsActivity.this, mMap);
-        polygon.setClickable(true);
-        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-            @Override
-            public void onPolygonClick(Polygon polygon){
-                System.out.println("click");
-                polygon.setFillColor(Color.RED);
-            }
-        });
+//        Polygon polygon = PolygonUtils.createCountyPolygon(MapsActivity.this, mMap);
+//        polygon.setClickable(true);
+//        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+//            @Override
+//            public void onPolygonClick(Polygon polygon){
+//                System.out.println("click");
+//                polygon.setFillColor(Color.RED);
+//            }
+//        });
 
     }
 
