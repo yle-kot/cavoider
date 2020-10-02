@@ -1,5 +1,5 @@
-package com.example.cavoid;
-
+package com.example.cavoid.activities;
+import com.example.cavoid.utilities.PolygonUtils;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Response;
+import com.example.cavoid.utilities.AppNotificationHandler;
+import com.example.cavoid.R;
+import com.example.cavoid.api.Repository;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,6 +23,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -113,7 +117,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Polygon polygon = createCountyPolygon();
+        Polygon polygon = PolygonUtils.createCountyPolygon(MapsActivity.this, mMap);
         polygon.setClickable(true);
         mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
@@ -123,32 +127,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        // Add a marker in Sydney and move the camera
-        LatLng ashland = new LatLng(37.75, -77.85);
-        mMap.addMarker(new MarkerOptions().position(ashland).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ashland));
-
-
     }
 
-    /*
-      Gets the county line coordinates then creates a polygon object to return them
-     */
-    private Polygon createCountyPolygon(){
-        Polygon polygon = null;
-        polygon = mMap.addPolygon(new PolygonOptions()
-                .addAll(getCountyLines("51760")));
-        return polygon;
-    }
-
-    private ArrayList<LatLng> getCountyLines(String fips){
-        ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
-        coordinates.add(new LatLng(41, -109));
-        coordinates.add(new LatLng(41, -102));
-        coordinates.add(new LatLng(37, -102));
-        coordinates.add(new LatLng(37, -109));
-        return coordinates;
-    }
 
 
 }
