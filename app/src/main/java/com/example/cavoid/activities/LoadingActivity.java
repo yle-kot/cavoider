@@ -1,5 +1,8 @@
 package com.example.cavoid.activities;
+
 import com.example.cavoid.workers.DailyCovidTrendWorker;
+import com.example.cavoid.workers.DatabaseWorker;
+import com.example.cavoid.workers.GetWorker;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,14 +30,15 @@ public class LoadingActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         WorkManager mWorkManager = WorkManager.getInstance(this);
-
+        PeriodicWorkRequest GetRequest = new PeriodicWorkRequest.Builder(GetWorker.class,12, TimeUnit.HOURS ).build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
         // TODO How can we schedule this to run *every morning at 7am?*
-        PeriodicWorkRequest test = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
+        PeriodicWorkRequest CovidRequest = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
                 .build();
-
-        mWorkManager.enqueue(test);
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
+        mWorkManager.enqueue(CovidRequest);
 
         createNotificationChannel();
 
