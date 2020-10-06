@@ -25,12 +25,6 @@ public class LoadingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Load notification stuff and Work Manager
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         /*
         This creates a one-time worker. The one time worker is set with an initial delay that is the number
@@ -57,8 +51,12 @@ public class LoadingActivity extends AppCompatActivity {
 
 
         createNotificationChannel();
+
+
+
         Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
         startActivity(changeScreenIntent);
+
     }
 
 

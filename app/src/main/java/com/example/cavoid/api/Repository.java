@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 public class Repository {
     String posTests = "";
-    public void getPosTests(Context context, Response.Listener<JSONObject> callback){
+    public void getPosTests(Context context, String fips, Response.Listener<JSONObject> callback){
         RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
