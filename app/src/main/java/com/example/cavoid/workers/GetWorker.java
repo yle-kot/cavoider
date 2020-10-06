@@ -8,7 +8,7 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.cavoid.utilities.Utilities;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,10 +23,10 @@ public class GetWorker extends Worker {
         // TODO implement worker!
 
         /* Create next instance of the worker, ~12 hours from now! */
-        long delay = Utilities.getMilliSecondsUntilHour(8);
+        long delay = GeneralUtilities.getSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         mWorkManager.enqueue(GetRequest);
         return Result.success();

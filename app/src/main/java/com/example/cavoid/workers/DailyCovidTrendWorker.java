@@ -1,10 +1,12 @@
 package com.example.cavoid.workers;
 import com.example.cavoid.api.Utilities;
 
+
+
 import android.content.Context;
-import android.location.Location;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -13,8 +15,7 @@ import androidx.work.WorkerParameters;
 import com.android.volley.Response;
 import com.example.cavoid.api.Repository;
 import com.example.cavoid.utilities.AppNotificationHandler;
-import com.example.cavoid.utilities.Utilities;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,13 +42,12 @@ public class DailyCovidTrendWorker extends Worker {
             fips = "-1";
         }
         notifyOfCurrentCovidTrend(getApplicationContext(), fips);
-        notifyOfCurrentCovidTrend(getApplicationContext());
 
         /* Create next instance of the worker, ~12 hours from now! */
-        long delay = Utilities.getMilliSecondsUntilHour(8);
+        long delay = GeneralUtilities.getSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         mWorkManager.enqueue(CovidRequest);
 

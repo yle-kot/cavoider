@@ -2,7 +2,7 @@ package com.example.cavoid.activities;
 import com.example.cavoid.workers.DailyCovidTrendWorker;
 import com.example.cavoid.workers.DatabaseWorker;
 import com.example.cavoid.workers.GetWorker;
-import com.example.cavoid.utilities.Utilities;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.OneTimeWorkRequest;
@@ -33,13 +33,13 @@ public class LoadingActivity extends AppCompatActivity {
 
         Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
          */
-        long delay = Utilities.getMilliSecondsUntilHour(8);
+        long delay = GeneralUtilities.getSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(this);
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
-                .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                .setInitialDelay(delay,TimeUnit.SECONDS)
                 .build();
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
-                .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                .setInitialDelay(delay,TimeUnit.SECONDS)
                 .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
         // TODO How can we schedule this to run *every morning at 7am?*
