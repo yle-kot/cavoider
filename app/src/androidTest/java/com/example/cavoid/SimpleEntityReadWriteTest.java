@@ -47,9 +47,9 @@ public class SimpleEntityReadWriteTest {
     @Test
     public void writeAndReadData() {
         PastLocation pastLocation = new PastLocation();
-        pastLocation.date = 44;
-        pastLocation.latitude = "37.5";
-        pastLocation.longitude = "-77";
+        pastLocation.date = "May";
+        pastLocation.fips = "51087";
+        pastLocation.wasNotified = false;
         locationDao.insertAll(pastLocation);
         List<PastLocation> things = locationDao.getAll();
         assertEquals(pastLocation.date,things.get(0).date);
