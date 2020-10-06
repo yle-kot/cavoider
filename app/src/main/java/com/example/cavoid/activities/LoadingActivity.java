@@ -1,8 +1,11 @@
 package com.example.cavoid.activities;
 import com.example.cavoid.workers.DailyCovidTrendWorker;
-
+import com.example.cavoid.workers.DatabaseWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -17,24 +20,35 @@ import java.util.concurrent.TimeUnit;
 public class LoadingActivity extends AppCompatActivity {
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
+    private long delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Load notification stuff and Work Manager
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
+        /*
+        This creates a one-time worker. The one time worker is set with an initial delay that is the number
+        of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
+        to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
+
+        Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
+         */
+        long delay = GeneralUtilities.getSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(this);
-
-        // TODO How can we schedule this to run *every morning at 7am?*
-        PeriodicWorkRequest test = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay,TimeUnit.SECONDS)
                 .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
+                .setInitialDelay(delay,TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
+        // TODO How can we schedule this to run *every morning at 7am?*
 
-        mWorkManager.enqueue(test);
+
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
+
 
         createNotificationChannel();
 
