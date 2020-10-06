@@ -15,8 +15,8 @@ public interface LocationDao {
     @Query("SELECT * FROM pastLocation WHERE date IN (:dates)")
     List<PastLocation> loadAllByDates(int[] dates);
 
-    @Query("SELECT * FROM pastLocation WHERE latitude LIKE :lat AND " + "longitude LIKE :lon LIMIT 1")
-    PastLocation findByLocation(String lat, String lon);
+    @Query("SELECT * FROM pastLocation WHERE fips LIKE :code LIMIT 1")
+    PastLocation findByLocation(String code);
 
     @Insert
     void insertAll(PastLocation... pastLocations);
