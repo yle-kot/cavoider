@@ -42,6 +42,7 @@ dependencies {
     implementation 'com.sun.mail:android-mail:1.6.2'
     implementation 'com.sun.mail:android-activation:1.6.2'
     implementation "androidx.work:work-runtime:2.4.0"
+    implementation 'net.danlew:android.joda:2.10.6.1'
 
     implementation 'androidx.room:room-runtime:2.2.5'
     annotationProcessor 'androidx.room:room-compiler:2.2.5'

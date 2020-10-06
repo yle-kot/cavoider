@@ -1,11 +1,11 @@
 package com.example.cavoid.activities;
-
 import com.example.cavoid.workers.DailyCovidTrendWorker;
 import com.example.cavoid.workers.DatabaseWorker;
 import com.example.cavoid.workers.GetWorker;
-
+import com.example.cavoid.utilities.Utilities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class LoadingActivity extends AppCompatActivity {
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
+    private long delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,23 +31,34 @@ public class LoadingActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        /*
+        This creates a one-time worker. The one time worker is set with an initial delay that is the number
+        of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
+        to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
+
+        Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
+         */
+        long delay = Utilities.getMilliSecondsUntilTime(8);
         WorkManager mWorkManager = WorkManager.getInstance(this);
-        PeriodicWorkRequest GetRequest = new PeriodicWorkRequest.Builder(GetWorker.class,12, TimeUnit.HOURS ).build();
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
+                .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
         // TODO How can we schedule this to run *every morning at 7am?*
-        PeriodicWorkRequest CovidRequest = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
-                .build();
+
+
         mWorkManager.enqueue(GetRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
         mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
+
 
         createNotificationChannel();
-
-
-
         Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
         startActivity(changeScreenIntent);
-
     }
 
 
