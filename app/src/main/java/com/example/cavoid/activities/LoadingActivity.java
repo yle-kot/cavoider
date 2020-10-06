@@ -21,20 +21,16 @@ public class LoadingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Load notification stuff and Work Manager
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         WorkManager mWorkManager = WorkManager.getInstance(this);
 
-        // TODO How can we schedule this to run *every morning at 7am?*
-        PeriodicWorkRequest test = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
+        // TODO How can we schedule this to run *every morning at 7am?
+        PeriodicWorkRequest DailyCovidTrendWorker = new PeriodicWorkRequest.Builder(DailyCovidTrendWorker.class, 1, TimeUnit.DAYS)
+                // Set initial delay to now + (desired time - now) hours
+                // Or schedule chained daily requests that each run schedules the next
                 .build();
 
-        mWorkManager.enqueue(test);
+        mWorkManager.enqueue(DailyCovidTrendWorker);
 
         createNotificationChannel();
 

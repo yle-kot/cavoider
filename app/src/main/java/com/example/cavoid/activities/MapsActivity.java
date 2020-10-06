@@ -42,7 +42,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 Repository repository = new Repository();
-                repository.getPosTests(MapsActivity.this, new Response.Listener<JSONObject>() {
+                repository.getPosTests(MapsActivity.this, "01001", new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 JSONObject data = response;
