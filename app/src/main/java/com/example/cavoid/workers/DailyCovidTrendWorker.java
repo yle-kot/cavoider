@@ -3,7 +3,6 @@ package com.example.cavoid.workers;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -29,8 +28,8 @@ public class DailyCovidTrendWorker extends Worker {
     public Result doWork() {
         notifyOfCurrentCovidTrend(getApplicationContext());
 
-
-        long delay = Utilities.getMilliSecondsUntilTime(8);
+        /* Create next instance of the worker, ~12 hours from now! */
+        long delay = Utilities.getMilliSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)

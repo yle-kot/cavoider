@@ -39,7 +39,7 @@ public class LoadingActivity extends AppCompatActivity {
 
         Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
          */
-        long delay = Utilities.getMilliSecondsUntilTime(8);
+        long delay = Utilities.getMilliSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(this);
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
                 .setInitialDelay(delay,TimeUnit.MILLISECONDS)

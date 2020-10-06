@@ -20,8 +20,10 @@ public class GetWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        // TODO implement worker!
 
-        long delay = Utilities.getMilliSecondsUntilTime(8);
+        /* Create next instance of the worker, ~12 hours from now! */
+        long delay = Utilities.getMilliSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
