@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey;
 @Entity
 public class PastLocation {
     @PrimaryKey
-    public int date;
+    public String date;
 
-    @ColumnInfo(name = "latitude")
-    public String latitude;
+    @ColumnInfo(name = "fips")
+    public String fips;
 
-    @ColumnInfo(name = "longitude")
-    public String longitude;
+    @ColumnInfo(name = "wasNotified")
+    public Boolean wasNotified;
 }
