@@ -41,6 +41,7 @@ public class LoadingActivity extends AppCompatActivity {
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
                 .setInitialDelay(delay,TimeUnit.SECONDS)
                 .build();
+//        OneTimeWorkRequest SaveLocationRequest = new OneTimeWorkRequest.Builder(DatabaseWorker.class).build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
         // TODO How can we schedule this to run *every morning at 7am?*
 

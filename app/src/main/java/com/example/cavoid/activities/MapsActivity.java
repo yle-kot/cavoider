@@ -1,17 +1,27 @@
 package com.example.cavoid.activities;
+
+import com.example.cavoid.api.Utilities;
 import com.example.cavoid.utilities.PolygonUtils;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.android.volley.Response;
 import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -20,10 +30,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -41,24 +55,52 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Repository repository = new Repository();
-                repository.getPosTests(MapsActivity.this, "01001", new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                JSONObject data = response;
-                                String posTests;
-                                //Saves the positive case number from JSON file to string in application
-                                try{
-                                    posTests = data.getString("positive");
-                                }catch (JSONException e){
-                                    posTests = "ERR";
-                                }
+                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            String fips = null;
+                            try {
+                                Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>(){
 
-                                String title = "Positive Test Alert";
-                                String message = posTests;
-                                AppNotificationHandler.deliverNotification(MapsActivity.this,title,message);
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        String fips = "";
+
+                                        try {
+                                            fips = response.getString("county_fips");
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        Repository.getPosTests(getApplicationContext(), fips, new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                AppNotificationHandler.deliverNotification(getApplicationContext(), "Test Title", response.toString());
+                                            }
+                                        });
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        });
+
+                        }
+                    }
+                });
 
             }
         });
