@@ -1,10 +1,4 @@
 package com.example.cavoid.activities;
-import com.example.cavoid.workers.DailyCovidTrendWorker;
-
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,15 +6,23 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import com.example.cavoid.workers.DailyCovidTrendWorker;
+
 import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity {
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //Load notification stuff and Work Manager
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -39,14 +41,10 @@ public class LoadingActivity extends AppCompatActivity {
         createNotificationChannel();
 
 
-
         Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
         startActivity(changeScreenIntent);
 
     }
-
-
-
 
 
     public void createNotificationChannel() {
