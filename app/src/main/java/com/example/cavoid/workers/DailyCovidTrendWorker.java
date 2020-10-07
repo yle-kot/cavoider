@@ -33,15 +33,26 @@ public class DailyCovidTrendWorker extends Worker {
     @Override
     public Result doWork() {
         Data data = getInputData();
-        String lat = data.getString("latitude");
-        String lon = data.getString("longitude");
+        double lat = data.getDouble("latitude",-1);
+        double lon = data.getDouble("longitude",-1);
         String fips;
         try {
-            fips = Utilities.getCurrentLocationFromFipsCode(lat, lon);
+            Repository.getCurrentLocationFromFipsCode(getApplicationContext(), lat, lon, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    String fips = "";
+                    try {
+                        fips = response.getString("county_fips");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    notifyOfCurrentCovidTrend(getApplicationContext(), fips);
+                }
+            });
         } catch (IOException e) {
             fips = "-1";
         }
-        notifyOfCurrentCovidTrend(getApplicationContext(), fips);
+
 
         /* Create next instance of the worker, ~12 hours from now! */
         long delay = GeneralUtilities.getSecondsUntilHour(8);
