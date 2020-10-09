@@ -21,7 +21,7 @@ public class LoadingActivity extends AppCompatActivity {
 
     //This is my first change
 
-    //This is my second change
+    //This another change
 
     //This is my third change
 
