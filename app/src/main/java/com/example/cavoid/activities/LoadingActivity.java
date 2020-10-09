@@ -1,23 +1,25 @@
 package com.example.cavoid.activities;
-import com.example.cavoid.workers.DailyCovidTrendWorker;
-import com.example.cavoid.workers.DatabaseWorker;
-import com.example.cavoid.workers.GetWorker;
-import com.example.cavoid.utilities.GeneralUtilities;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import com.example.cavoid.utilities.GeneralUtilities;
+import com.example.cavoid.workers.DailyCovidTrendWorker;
+import com.example.cavoid.workers.DatabaseWorker;
+import com.example.cavoid.workers.GetWorker;
+
 import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity {
+
+    //This is my first change
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
     private long delay;
