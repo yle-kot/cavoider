@@ -21,6 +21,10 @@ public class LoadingActivity extends AppCompatActivity {
 
     //This is my first change
 
+    //This is my second change
+
+    //This is my third change
+
     private static final String PRIMARY_CHANNEL_ID = "Priority";
     private long delay;
 
