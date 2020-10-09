@@ -4,6 +4,7 @@ import com.example.cavoid.api.Utilities;
 import com.example.cavoid.utilities.PolygonUtils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.pm.PackageManager;
@@ -11,7 +12,9 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -20,6 +23,7 @@ import com.android.volley.Response;
 import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
+import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,76 +36,96 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    protected FusedLocationProviderClient fusedLocationClient;
+
+    @SuppressLint("MissingPermission")
+    public OnSuccessListener<Location> onLatestLocationSuccessListener = new OnSuccessListener<Location>() {
+        @Override
+        public void onSuccess(Location location) {
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                String fips = null;
+                try {
+                    Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            String fips = "";
+
+                            try {
+                                fips = response.getString("county_fips");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            Repository.getPosTests(getApplicationContext(), fips, new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    AppNotificationHandler.deliverNotification(getApplicationContext(), "Test Title", response.toString());
+                                }
+                            });
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            double latitude = location.getLatitude();
-                            double longitude = location.getLongitude();
-                            String fips = null;
-                            try {
-                                Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>(){
-
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        String fips = "";
-
-                                        try {
-                                            fips = response.getString("county_fips");
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        Repository.getPosTests(getApplicationContext(), fips, new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                AppNotificationHandler.deliverNotification(getApplicationContext(), "Test Title", response.toString());
-                                            }
-                                        });
-                                    }
-                                });
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
+                if (
+                        ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_DENIED
+                        && ActivityCompat.checkSelfPermission(
+                                MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            == PackageManager.PERMISSION_DENIED
+                ) {
+                    String[] requiredPermissions = {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    };
+                    ArrayList<String> missingPermissions = new ArrayList<String>();
+                    for (int i = 0; i < requiredPermissions.length; i++){
+                        if (ActivityCompat.checkSelfPermission(MapsActivity.this, requiredPermissions[i]) != PackageManager.PERMISSION_GRANTED){
+                            missingPermissions.add(requiredPermissions[i]);
                         }
                     }
-                });
 
+                    if (missingPermissions.size() > 0){
+                            ActivityCompat.requestPermissions(MapsActivity.this, (String []) missingPermissions.toArray(), 1);
+                    }
+                }
+                else{
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, onLatestLocationSuccessListener);
+                }
             }
         });
 
@@ -117,6 +141,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults){
+        boolean anyGranted = false;
+        if (requestCode != 1)
+            return;
+
+        if (permissions.length == 0 || permissions[0] == null){
+            Toast.makeText(MapsActivity.this,"Cannot perform action without location permissions!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        for (int i = 0; i < permissions.length; i++) {
+            anyGranted |= grantResults[i] == PackageManager.PERMISSION_GRANTED;
+        }
+
+        if (anyGranted){
+            fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, onLatestLocationSuccessListener);
+        }
+        else{
+            Toast.makeText(MapsActivity.this,"Cannot perform action without location permissions!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
 
     public void createNotificationChannel() {

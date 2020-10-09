@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class PastLocation {
-
     @NonNull
     @PrimaryKey
     public String date;
