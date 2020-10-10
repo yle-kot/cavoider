@@ -27,6 +27,10 @@ android {
             resValue 'string', "ApiKey", GOOGLE_API_KEY
         }
     }
+    compileOptions {
+        sourceCompatibility "1.8"
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {

@@ -11,11 +11,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -25,6 +27,9 @@ import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
 import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,7 +39,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
+import com.google.android.gms.tasks.Task;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -43,26 +52,68 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.function.ToIntFunction;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
+    private LocationCallback locationCallback;
     private static final int NOTIFICATION_ID = 0;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    private static final int LOCATION_UPDATE_FREQ_MS = 15 * 60 * 1000;
+
+    private Location lastLocation;
+
     protected FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
+
+
+
+        setContentView(R.layout.activity_maps);
+        Button notificationTrigger = findViewById(R.id.notificationTrigger);
+        notificationTrigger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fusedLocationClient.getLastLocation().addOnSuccessListener(onLatestLocationSuccessListener);
+
+            }
+        });
+
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+
+        }
+
+    }
+
 
     @SuppressLint("MissingPermission")
     public OnSuccessListener<Location> onLatestLocationSuccessListener = new OnSuccessListener<Location>() {
         @Override
         public void onSuccess(Location location) {
-            if (location != null) {
+            if (location == null) {
+                AppNotificationHandler.deliverNotification(MapsActivity.this, "Location Update", "Location is null!");
+            }else{
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
-                String fips = null;
                 try {
                     Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>() {
 
@@ -76,10 +127,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 e.printStackTrace();
                             }
 
-                            Repository.getPosTests(getApplicationContext(), fips, new Response.Listener<JSONObject>() {
+                            Repository.getPosTests(MapsActivity.this, fips, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
-                                    AppNotificationHandler.deliverNotification(getApplicationContext(), "Test Title", response.toString());
+                                    AppNotificationHandler.deliverNotification(MapsActivity.this, "Test Title", response.toString());
                                 }
                             });
                         }
@@ -92,67 +143,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        setContentView(R.layout.activity_maps);
-        Button notificationTrigger = findViewById(R.id.notificationTrigger);
-        notificationTrigger.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (
-                        ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_DENIED
-                        && ActivityCompat.checkSelfPermission(
-                                MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_DENIED
-                ) {
-                    String[] requiredPermissions = {
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    };
-                    ArrayList<String> missingPermissions = new ArrayList<String>();
-                    for (int i = 0; i < requiredPermissions.length; i++){
-                        if (ActivityCompat.checkSelfPermission(MapsActivity.this, requiredPermissions[i]) != PackageManager.PERMISSION_GRANTED){
-                            missingPermissions.add(requiredPermissions[i]);
-                        }
-                    }
-
-                    if (missingPermissions.size() > 0){
-                            ActivityCompat.requestPermissions(MapsActivity.this, (String []) missingPermissions.toArray(), 1);
-                    }
-                }
-                else{
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, onLatestLocationSuccessListener);
-                }
-            }
-        });
-
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotificationChannel();
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-
-        }
-
-    }
-
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults){
         boolean anyGranted = false;
-        if (requestCode != 1)
-            return;
-
-        if (permissions.length == 0 || permissions[0] == null){
-            Toast.makeText(MapsActivity.this,"Cannot perform action without location permissions!", Toast.LENGTH_LONG).show();
-            return;
-        }
 
         for (int i = 0; i < permissions.length; i++) {
             anyGranted |= grantResults[i] == PackageManager.PERMISSION_GRANTED;
@@ -167,33 +161,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
-
-    public void createNotificationChannel() {
-
-        // Create a notification manager object.
-        mNotificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        // Notification channels are only available in OREO and higher.
-        // So, add a check on SDK version.
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.O) {
-
-            // Create the NotificationChannel with all the parameters.
-            NotificationChannel notificationChannel = new NotificationChannel
-                    (PRIMARY_CHANNEL_ID,
-                            "Stand up notification",
-                            NotificationManager.IMPORTANCE_HIGH);
-
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setDescription
-                    ("Notifies every 15 minutes to stand up and walk");
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
-    }
 
     /**
      * Manipulates the map once available.

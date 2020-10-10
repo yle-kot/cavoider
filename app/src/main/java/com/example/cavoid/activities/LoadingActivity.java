@@ -1,4 +1,8 @@
 package com.example.cavoid.activities;
+import com.example.cavoid.database.DatabaseClient;
+import com.example.cavoid.database.LocationDao;
+import com.example.cavoid.database.LocationDatabase;
+import com.example.cavoid.database.PastLocation;
 import com.example.cavoid.workers.DailyCovidTrendWorker;
 import com.example.cavoid.workers.DatabaseWorker;
 import com.example.cavoid.workers.GetWorker;
@@ -14,44 +18,71 @@ import androidx.work.WorkManager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback{
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
-    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION};
-    private static final int[] PERMISSION_CODES = {26, 10};
-
+    private Intent changeScreenIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* Request Permissions!!! */
-        for (int i = 0; i < REQUIRED_PERMISSIONS.length; i++){
-            String permission = REQUIRED_PERMISSIONS[i];
-            int permissionCode = PERMISSION_CODES[i];
-            final Activity context = LoadingActivity.this;
-            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(context, new String[]{permission}, permissionCode);
-            }
+        createNotificationChannel();
+
+        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
+
+        changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+
+        AlertDialog permAlert;
+        if (
+                ActivityCompat.checkSelfPermission(LoadingActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_DENIED
+                        && ActivityCompat.checkSelfPermission(LoadingActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_DENIED
+        ) {
+            AlertDialog.Builder permAlertBuilder = new AlertDialog.Builder(LoadingActivity.this);
+            permAlertBuilder.setTitle("Why we need your location");
+            permAlertBuilder.setMessage("CAVOIDER requires user permissions in order to function");
+            permAlertBuilder.setPositiveButton("No problem", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ActivityCompat.requestPermissions(LoadingActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                }
+            });
+            permAlertBuilder.setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            permAlert = permAlertBuilder.create();
+            permAlert.show();
+        } else {
+            startActivity(changeScreenIntent);
         }
+    }
 
-        /*
-        This creates a one-time worker. The one time worker is set with an initial delay that is the number
-        of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
-        to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
 
-        Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
-         */
-        long delay = GeneralUtilities.getSecondsUntilHour(8);
+    /*
+    This creates a one-time worker. The one time worker is set with an initial delay that is the number
+    of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
+    to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
+
+    Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
+     */
+    protected void createWorkers(long delay){
         WorkManager mWorkManager = WorkManager.getInstance(this);
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
                 .setInitialDelay(delay,TimeUnit.SECONDS)
@@ -60,33 +91,24 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 .setInitialDelay(delay,TimeUnit.SECONDS)
                 .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
-        // TODO How can we schedule this to run *every morning at 7am?*
 
 
         mWorkManager.enqueue(GetRequest);
         mWorkManager.enqueue(CovidRequest);
         mWorkManager.enqueue(SaveLocationRequest);
-
-
-        createNotificationChannel();
-
-
-
-        Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
-        startActivity(changeScreenIntent);
-
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(LoadingActivity.this, String.format("%s is required for app to function"), Toast.LENGTH_LONG).show();
-                this.finishAffinity();
+                Toast.makeText(LoadingActivity.this, String.format("%s is required for app to function", permissions[i]), Toast.LENGTH_LONG).show();
+                finishAffinity();
+                return;
             }
         }
+        startActivity(changeScreenIntent);
     }
 
     public void createNotificationChannel() {
