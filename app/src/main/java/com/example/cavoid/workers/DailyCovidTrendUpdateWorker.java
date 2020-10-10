@@ -1,12 +1,9 @@
 package com.example.cavoid.workers;
-import com.example.cavoid.api.Utilities;
-
 
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -14,50 +11,59 @@ import androidx.work.WorkerParameters;
 
 import com.android.volley.Response;
 import com.example.cavoid.api.Repository;
+import com.example.cavoid.database.ActiveCases;
+import com.example.cavoid.database.LocationDao;
+import com.example.cavoid.database.LocationDatabase;
+import com.example.cavoid.database.PastLocation;
 import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.utilities.GeneralUtilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import java.io.IOException;
-
-public class DailyCovidTrendWorker extends Worker {
-    public DailyCovidTrendWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+public class DailyCovidTrendUpdateWorker extends Worker {
+    public DailyCovidTrendUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        Data data = getInputData();
-        double lat = data.getDouble("latitude",-1);
-        double lon = data.getDouble("longitude",-1);
-        String fips;
-        try {
-            Repository.getCurrentLocationFromFipsCode(getApplicationContext(), lat, lon, new Response.Listener<JSONObject>() {
+        LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
+        LocationDao dao = locDb.getLocationDao();
+        LocalDate twoWeeksAgoDate = LocalDate.from(Instant.now().minus(Period.ofDays(14)));
+
+        LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(twoWeeksAgoDate));
+
+        /* Updates the reports for a location every day */
+        List<PastLocation> locations = dao.getAll();
+        for (PastLocation location : locations){
+            Repository.getPosTests(getApplicationContext(), location.fips, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    String fips = "";
+                    ActiveCases activeCases = new ActiveCases();
+                    activeCases.fips=location.fips;
                     try {
-                        fips = response.getString("county_fips");
+                        activeCases.activeCases = response.getInt("Active_Cases");
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        activeCases.activeCases = 0;
                     }
-                    notifyOfCurrentCovidTrend(getApplicationContext(), fips);
+                    activeCases.reportDate = LocalDate.now();
+                    dao.insertReports(activeCases);
                 }
             });
-        } catch (IOException e) {
-            fips = "-1";
         }
-
 
         /* Create next instance of the worker, ~12 hours from now! */
         long delay = GeneralUtilities.getSecondsUntilHour(8);
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
-        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         mWorkManager.enqueue(CovidRequest);
@@ -66,8 +72,7 @@ public class DailyCovidTrendWorker extends Worker {
     }
 
     private void notifyOfCurrentCovidTrend(final Context context, final String fips){
-        Repository repository = new Repository();
-        repository.getPosTests(context, fips, new Response.Listener<JSONObject>() {
+        Repository.getPosTests(context, fips, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 JSONObject data = response;

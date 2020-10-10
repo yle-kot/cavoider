@@ -1,94 +1,48 @@
 package com.example.cavoid.activities;
 
-import com.example.cavoid.api.Utilities;
-import com.example.cavoid.utilities.PolygonUtils;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
-import com.android.volley.Response;
-import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.R;
-import com.example.cavoid.api.Repository;
-import com.google.android.gms.common.util.ArrayUtils;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.cavoid.utilities.GeneralUtilities;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
-import com.google.android.gms.tasks.Task;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.function.ToIntFunction;
+import java.util.concurrent.TimeUnit;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
-    private LocationCallback locationCallback;
-    private static final int NOTIFICATION_ID = 0;
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
-    private static final int LOCATION_UPDATE_FREQ_MS = 15 * 60 * 1000;
-
-    private Location lastLocation;
-
-    protected FusedLocationProviderClient fusedLocationClient;
-    private LocationRequest locationRequest;
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
+
         super.onCreate(savedInstanceState);
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
-
-
 
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fusedLocationClient.getLastLocation().addOnSuccessListener(onLatestLocationSuccessListener);
-
+                // TODO Implement settings screen
+                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -105,62 +59,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    @SuppressLint("MissingPermission")
-    public OnSuccessListener<Location> onLatestLocationSuccessListener = new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-            if (location == null) {
-                AppNotificationHandler.deliverNotification(MapsActivity.this, "Location Update", "Location is null!");
-            }else{
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                try {
-                    Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>() {
+    protected void createWorkers(long delay) {
+        WorkManager mWorkManager = WorkManager.getInstance(this);
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 20, TimeUnit.MINUTES).build();
 
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            String fips = "";
 
-                            try {
-                                fips = response.getString("county_fips");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                            Repository.getPosTests(MapsActivity.this, fips, new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    AppNotificationHandler.deliverNotification(MapsActivity.this, "Test Title", response.toString());
-                                }
-                            });
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-    };
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults){
-        boolean anyGranted = false;
-
-        for (int i = 0; i < permissions.length; i++) {
-            anyGranted |= grantResults[i] == PackageManager.PERMISSION_GRANTED;
-        }
-
-        if (anyGranted){
-            fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, onLatestLocationSuccessListener);
-        }
-        else{
-            Toast.makeText(MapsActivity.this,"Cannot perform action without location permissions!", Toast.LENGTH_LONG).show();
-        }
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
     }
-
-
 
     /**
      * Manipulates the map once available.

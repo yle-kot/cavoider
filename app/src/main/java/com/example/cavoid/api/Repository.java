@@ -1,6 +1,7 @@
 package com.example.cavoid.api;
 
 import android.content.Context;
+import android.location.Location;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,12 +26,11 @@ public class Repository {
         RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
-        String url = "https://api.covidtracking.com/v1/states/va/20200918.json";
+        String url = "https://powerful-anchorage-13412.herokuapp.com/latest/"+fips;
 
         //Object request gets the JSON object from the internet
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, callback, new Response.ErrorListener() {
-
                     @Override
                     public void onErrorResponse(VolleyError error) {
 
@@ -40,10 +40,10 @@ public class Repository {
         queue.add(jsonObjectRequest);
     }
 
-    public static void getCurrentLocationFromFipsCode(Context context, double lat, double lon, Response.Listener<JSONObject> callback) throws IOException {
+    public static void getFipsCodeFromCurrentLocation(Context context, Location location, Response.Listener<JSONObject> callback) throws IOException {
         String baseUrl = "https://geo.fcc.gov/api/census/area?";
-        String latitude = "lat="+lat+"&";
-        String longitude = "lon="+lon;
+        String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
+        String longitude = "lon="+location.getLongitude();
         baseUrl += latitude+longitude;
         String fips = "";
         RequestQueue queue = Volley.newRequestQueue(context);

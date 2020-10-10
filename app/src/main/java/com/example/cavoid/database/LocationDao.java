@@ -3,24 +3,41 @@ package com.example.cavoid.database;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Dao
 public interface LocationDao {
-    @Query("SELECT * FROM pastLocation")
+    @Query( "SELECT * FROM past_location [pl]  " +
+            "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips")
     List<PastLocation> getAll();
 
-    @Query("SELECT * FROM pastLocation WHERE date IN (:dates)")
-    List<PastLocation> loadAllByDates(int[] dates);
+    @Query( "SELECT * FROM past_location [pl]" +
+            "LEFT JOIN active_cases as ac ON pl.fips == ac.fips" +
+            " WHERE date IN (:dates)")
+    List<PastLocation> loadAllByDates(LocalDate[] dates);
 
-    @Query("SELECT * FROM pastLocation WHERE fips LIKE :code LIMIT 1")
-    PastLocation findByLocation(String code);
+    @Query( "SELECT * FROM past_location [pl] " +
+            "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips " +
+            "WHERE pl.fips LIKE :fips LIMIT 1")
+    PastLocation findByLocation(String fips);
 
-    @Insert
-    void insertAll(PastLocation... pastLocations);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertLocations(PastLocation... pastLocations);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertReports(ActiveCases... activeCases);
 
     @Delete
     void delete(PastLocation pastLocation);
+
+    @Query( "DELETE FROM past_location WHERE date < :date; "
+//            "DELETE FROM active_cases as ac " +
+//            "OUTER JOIN past_locations as pl on ac.fips = pl.fips " +
+//            "WHERE ac.fips != pl.fips"
+    )
+    void cleanRecordsOlderThan(LocalDate date);
 }
