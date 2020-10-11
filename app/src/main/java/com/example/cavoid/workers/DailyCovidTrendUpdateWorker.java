@@ -36,7 +36,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     public Result doWork() {
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
-        LocalDate twoWeeksAgoDate = DateTime.now().minusDays(7).toLocalDate();
+        LocalDate twoWeeksAgoDate = DateTime.now().minusDays(14).toLocalDate();
 
         LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(twoWeeksAgoDate));
 
