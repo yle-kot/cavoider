@@ -1,17 +1,13 @@
 package com.example.cavoid.utilities;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.graphics.Color;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.cavoid.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
 
 public class AppNotificationHandler {
 

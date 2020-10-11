@@ -1,112 +1,52 @@
 package com.example.cavoid.activities;
 
-import com.example.cavoid.api.Utilities;
-import com.example.cavoid.utilities.PolygonUtils;
-
-import android.Manifest;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
-import com.android.volley.Response;
-import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.R;
-import com.example.cavoid.api.Repository;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.cavoid.utilities.GeneralUtilities;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private GoogleMap mMap;
     private NotificationManager mNotificationManager;
-    private static final int NOTIFICATION_ID = 0;
-    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_maps);
         Button notificationTrigger = findViewById(R.id.notificationTrigger);
         notificationTrigger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-                if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                fusedLocationClient.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            double latitude = location.getLatitude();
-                            double longitude = location.getLongitude();
-                            String fips = null;
-                            try {
-                                Repository.getCurrentLocationFromFipsCode(MapsActivity.this, latitude, longitude, new Response.Listener<JSONObject>(){
-
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        String fips = "";
-
-                                        try {
-                                            fips = response.getString("county_fips");
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        Repository.getPosTests(getApplicationContext(), fips, new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                AppNotificationHandler.deliverNotification(getApplicationContext(), "Test Title", response.toString());
-                                            }
-                                        });
-                                    }
-                                });
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-
+                // TODO Implement settings screen
+                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
             }
         });
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        createNotificationChannel();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -119,30 +59,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void createNotificationChannel() {
+    protected void createWorkers(long delay) {
+        WorkManager mWorkManager = WorkManager.getInstance(this);
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 20, TimeUnit.MINUTES).build();
 
-        // Create a notification manager object.
-        mNotificationManager =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        // Notification channels are only available in OREO and higher.
-        // So, add a check on SDK version.
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.O) {
-
-            // Create the NotificationChannel with all the parameters.
-            NotificationChannel notificationChannel = new NotificationChannel
-                    (PRIMARY_CHANNEL_ID,
-                            "Stand up notification",
-                            NotificationManager.IMPORTANCE_HIGH);
-
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.RED);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setDescription
-                    ("Notifies every 15 minutes to stand up and walk");
-            mNotificationManager.createNotificationChannel(notificationChannel);
-        }
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
     }
 
     /**
