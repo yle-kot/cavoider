@@ -4,16 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-import java.time.LocalDate;
+import org.joda.time.LocalDate;
 
 @Entity(tableName = "active_cases",
         primaryKeys = {"fips"}
-//        foreignKeys = {
-//                @ForeignKey(entity = ActiveCases.class,
-//                        parentColumns = "fips",
-//                        childColumns = "fips")
-//        }
-
 )
 public class ActiveCases {
 

@@ -6,8 +6,13 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import java.time.LocalDate;
+import org.joda.time.LocalDate;
 import java.util.List;
+
+/**
+ * The locationDao contains all of the access tools to perform IO on the database. See LocationDatabase
+ * for information on how to get an instance of it.
+ */
 
 @Dao
 public interface LocationDao {

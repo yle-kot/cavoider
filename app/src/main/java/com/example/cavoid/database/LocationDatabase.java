@@ -11,7 +11,18 @@ import androidx.room.TypeConverters;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {PastLocation.class, ActiveCases.class}, version = 3, exportSchema = false)
+/**
+ * The location database is the core of our database object. It creates a single, static instance of
+ * of the database using the application's context. The Database is defined as containing the entities
+ * in the @ symbol. The locationDao is linked in the body of the class. In order to get an instance
+ * of the dao, you will need to call LocationDatabase.getLocationDao()
+ *
+ * In order to perform write operations on the database:
+ *      LocationDao locDao = LocationDatabase.getLocationDao();
+ *      LocationDao.databaseWriteExecutor.execute( () -> locDao.readOrWriteMethodHere() );
+ *
+ */
+@Database(entities = {PastLocation.class, ActiveCases.class}, version = 4, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class LocationDatabase extends RoomDatabase {
     public abstract LocationDao locationDao();

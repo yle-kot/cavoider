@@ -19,11 +19,11 @@ import com.example.cavoid.database.PastLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 public class RegularLocationSaveWorker extends Worker {
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {

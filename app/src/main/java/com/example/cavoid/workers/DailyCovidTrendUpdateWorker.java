@@ -18,12 +18,11 @@ import com.example.cavoid.database.PastLocation;
 import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.utilities.GeneralUtilities;
 
+import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +36,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     public Result doWork() {
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
-        LocalDate twoWeeksAgoDate = LocalDate.from(Instant.now().minus(Period.ofDays(14)));
+        LocalDate twoWeeksAgoDate = DateTime.now().minusDays(7).toLocalDate();
 
         LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(twoWeeksAgoDate));
 
