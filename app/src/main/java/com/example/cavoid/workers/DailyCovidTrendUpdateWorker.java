@@ -49,9 +49,9 @@ public class DailyCovidTrendUpdateWorker extends Worker {
                     ActiveCases activeCases = new ActiveCases();
                     activeCases.fips=location.fips;
                     try {
-                        activeCases.activeCases = response.getInt("Active_Cases");
+                        activeCases.activeCases = response.getInt("active_cases_est");
                     } catch (JSONException e) {
-                        activeCases.activeCases = 0;
+                        activeCases.activeCases = -1;
                     }
                     activeCases.reportDate = LocalDate.now();
                     dao.insertReports(activeCases);
