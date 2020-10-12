@@ -55,7 +55,7 @@ public class LoadingActivity extends AppCompatActivity {
 
 
 
-        Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+        Intent changeScreenIntent = new Intent(LoadingActivity.this, DashboardActivity.class);
         startActivity(changeScreenIntent);
 
     }
