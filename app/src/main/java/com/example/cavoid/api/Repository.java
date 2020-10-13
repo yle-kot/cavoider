@@ -21,7 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Repository {
-    String posTests = "";
+
     public static void getPosTests(Context context, String fips, Response.Listener<JSONObject> callback){
         RequestQueue queue = Volley.newRequestQueue(context);
 
@@ -46,6 +46,8 @@ public class Repository {
         String longitude = "lon="+location.getLongitude();
         baseUrl += latitude+longitude;
         String fips = "";
+        //Might need countyName string for dashboard
+        String countyName = "";
         RequestQueue queue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {

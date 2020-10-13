@@ -9,10 +9,10 @@
     <TextView
         android:id="@+id/greetingTextView"
         android:layout_width="407dp"
-        android:layout_height="60dp"
+        android:layout_height="68dp"
         android:text="@string/dashboardGreeting"
-        android:textSize="22sp"
         android:textAlignment="center"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,14 +21,14 @@
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
-        android:layout_width="411dp"
-        android:layout_height="162dp"
+        android:layout_width="409dp"
+        android:layout_height="147dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.093">
+        app:layout_constraintVertical_bias="0.118">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -142,8 +142,8 @@
 
     <HorizontalScrollView
         android:id="@+id/casesScrollView"
-        android:layout_width="413dp"
-        android:layout_height="150dp"
+        android:layout_width="415dp"
+        android:layout_height="145dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -168,15 +168,14 @@
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:text="@string/total_casesTitle"
-
                     android:textAlignment="center" />
+
                 <TextView
                     android:id="@+id/totalCaseNumberTextView"
                     android:layout_width="85dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:text="all cases"
-
                     android:textAlignment="center" />
 
             </LinearLayout>
@@ -195,6 +194,7 @@
                     android:text="@string/total_deathsTitle"
 
                     android:textAlignment="center" />
+
                 <TextView
                     android:id="@+id/totalDeathsNumberTextView"
                     android:layout_width="85dp"
@@ -249,7 +249,7 @@
         android:id="@+id/creditTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This data was recieved from the New York Times"
+        android:text="Data from The New York Times, based on reports from state and local health agencies."
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"

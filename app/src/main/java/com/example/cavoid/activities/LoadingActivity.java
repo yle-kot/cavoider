@@ -1,6 +1,6 @@
 package com.example.cavoid.activities;
-import com.example.cavoid.workers.DailyCovidTrendWorker;
-import com.example.cavoid.workers.DatabaseWorker;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
 import com.example.cavoid.workers.GetWorker;
 import com.example.cavoid.utilities.GeneralUtilities;
 
@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -47,6 +48,22 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 "The application works by reading your location throughout the day." +
                         " This allows us to notify you even if the app is in the background!",
                 REQUEST_ACCESS_BACKGROUND_LOCATION_STATE);
+            /*
+    This creates a one-time worker. The one time worker is set with an initial delay that is the number
+    of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
+    to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
+
+        Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
+         */
+        long delay = GeneralUtilities.getSecondsUntilHour(8);
+
+        createNotificationChannel();
+
+
+
+        Intent changeScreenIntent = new Intent(LoadingActivity.this, DashboardActivity.class);
+        startActivity(changeScreenIntent);
+
     }
 
     private void showPermission(String permission, String explanationTitle, String explanationMessage, int permissionState) {
@@ -67,37 +84,6 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     }
 
 
-    /*
-    This creates a one-time worker. The one time worker is set with an initial delay that is the number
-    of milliseconds until the trigger time (currently 8am). The trigger time `delay` will be set
-    to 8am today, if the scheduler runs before 7am, or it will run at 8am tomorrow.
-
-        Each WorkRequest will reschedule the next call to 8am(ish) using the same technique
-         */
-        long delay = GeneralUtilities.getSecondsUntilHour(8);
-        WorkManager mWorkManager = WorkManager.getInstance(this);
-        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
-                .setInitialDelay(delay,TimeUnit.SECONDS)
-                .build();
-        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendWorker.class)
-                .setInitialDelay(delay,TimeUnit.SECONDS)
-                .build();
-//        OneTimeWorkRequest SaveLocationRequest = new OneTimeWorkRequest.Builder(DatabaseWorker.class).build();
-        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(DatabaseWorker.class, 15, TimeUnit.MINUTES).build();
-        // TODO How can we schedule this to run *every morning at 7am?*
-
-
-        mWorkManager.enqueue(GetRequest);
-        mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
-
-
-        createNotificationChannel();
-
-
-
-        Intent changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
-        startActivity(changeScreenIntent);
 
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
