@@ -53,6 +53,7 @@ public class RegularLocationSaveWorker extends Worker {
                 Log.i(TAG, "Saving location: " + location.toString());
                 LocalDate date = LocalDate.now();
                 try {
+
                     Repository.getFipsCodeFromCurrentLocation(getApplicationContext(), location, new Response.Listener<JSONObject>(){
 
                         @Override

@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/greetingTextView"
-        android:layout_width="407dp"
-        android:layout_height="68dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/dashboardGreeting"
         android:textAlignment="center"
         android:textSize="22sp"
@@ -21,20 +21,19 @@
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
-        android:layout_width="409dp"
-        android:layout_height="147dp"
+        android:layout_width="match_parent"
+        android:layout_height="151dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.118">
+        app:layout_constraintVertical_bias="0.112">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="20dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -44,47 +43,12 @@
 
                 <TextView
                     android:id="@+id/casesTextView"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:text="@string/casesTitle"
-
                     android:textAlignment="center" />
 
-
-                <TextView
-                    android:id="@+id/dateTextView"
-                    android:layout_width="62dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/date"
-                    android:textAlignment="center" />
-
-                <TextView
-                    android:id="@+id/caseNumberView"
-                    android:layout_width="95dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/case_number"
-                    android:textAlignment="center" />
-
-                <TextView
-                    android:id="@+id/trendLineTitleView"
-                    android:layout_width="100dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/_14DayTrendTitle"
-                    android:textAlignment="center" />
-
-
-                <TextView
-                    android:id="@id/casesTextView"
-                    android:layout_width="100dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/trendlineTitle"
-
-                    android:textAlignment="center" />
 
             </LinearLayout>
 
@@ -96,43 +60,12 @@
 
                 <TextView
                     android:id="@+id/deathsTextView"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:text="@string/deathsTitle"
 
                     android:textAlignment="center" />
-
-
-                <TextView
-                    android:id="@id/dateTextView"
-                    android:layout_width="62dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/date"
-                    android:textAlignment="center" />
-
-                <TextView
-                    android:id="@+id/deathNumberView"
-                    android:layout_width="95dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/death_number"
-                    android:textAlignment="center" />
-
-                <TextView
-                    android:id="@+id/trendLineView"
-                    android:layout_width="98dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="@string/_14_day_trend"
-                    android:textAlignment="center" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/trendlineTitle"
-                    android:src="@drawable/ic_trend_up" />
 
 
             </LinearLayout>
@@ -142,7 +75,7 @@
 
     <HorizontalScrollView
         android:id="@+id/casesScrollView"
-        android:layout_width="415dp"
+        android:layout_width="wrap_content"
         android:layout_height="145dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -211,7 +144,7 @@
 
     <HorizontalScrollView
         android:id="@+id/notificationsScrollView"
-        android:layout_width="413dp"
+        android:layout_width="wrap_content"
         android:layout_height="150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
