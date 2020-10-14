@@ -21,8 +21,8 @@
     <string name="_14DayTrendTitle">14 Day Trend</string>
     <string name="trendlineTitle">Trendline</string>
     <string name="subscription_message">subscription message</string>
-    <string name="total_casesTitle">Total Cases:</string>
-    <string name="total_deathsTitle">Total Deaths:</string>
+    <string name="total_casesTitle"></string>
+    <string name="total_deathsTitle"></string>
 
 
 </resources>

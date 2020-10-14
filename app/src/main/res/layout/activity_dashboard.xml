@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/greetingTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/dashboardGreeting"
         android:textAlignment="center"
@@ -73,16 +73,30 @@
 
     </HorizontalScrollView>
 
+    <TextView
+        android:id="@+id/pastLocationsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Here are the statistics for your past locations"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.32" />
+
     <HorizontalScrollView
         android:id="@+id/casesScrollView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="145dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.368">
+        app:layout_constraintVertical_bias="0.464">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -96,20 +110,13 @@
                 android:paddingTop="20dp">
 
                 <TextView
-                    android:id="@+id/totalCasesTextView"
+                    android:id="@+id/pastCasesTextView"
                     android:layout_width="85dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:text="@string/total_casesTitle"
                     android:textAlignment="center" />
 
-                <TextView
-                    android:id="@+id/totalCaseNumberTextView"
-                    android:layout_width="85dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="all cases"
-                    android:textAlignment="center" />
 
             </LinearLayout>
 
@@ -120,7 +127,7 @@
                 android:paddingTop="20dp">
 
                 <TextView
-                    android:id="@+id/totalDeathsTextView"
+                    android:id="@+id/pastDeathsTextView"
                     android:layout_width="85dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
@@ -128,30 +135,22 @@
 
                     android:textAlignment="center" />
 
-                <TextView
-                    android:id="@+id/totalDeathsNumberTextView"
-                    android:layout_width="85dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:text="all deaths"
 
-                    android:textAlignment="center" />
             </LinearLayout>
 
         </LinearLayout>
     </HorizontalScrollView>
 
-
     <HorizontalScrollView
         android:id="@+id/notificationsScrollView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="150dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.626">
+        app:layout_constraintVertical_bias="0.867">
 
         <LinearLayout
             android:layout_width="wrap_content"
