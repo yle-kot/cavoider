@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ExposureCheck {
 
-    public ArrayList<String> getPastFips(Context context) {
+    public static ArrayList<String> getPastFips(Context context) {
         LocationDatabase locDb = LocationDatabase.getDatabase(context.getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
         LocalDate startDate = DateTime.now().toLocalDate();

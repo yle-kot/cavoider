@@ -1,6 +1,7 @@
 package com.example.cavoid.activities;
 
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -37,12 +38,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps);
-        Button notificationTrigger = findViewById(R.id.notificationTrigger);
-        notificationTrigger.setOnClickListener(new View.OnClickListener() {
+        Button notificationButton = (Button)findViewById(R.id.notificationButton);
+        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
+        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
+//        notificationButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // TODO Implement settings screen
+//                  Intent notificationIntent = new Intent(MapsActivity.this,NotificationActivity.class);
+                    //startActivity(notificationIntent);
+//                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+        dashboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Implement settings screen
-                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
+                Intent dashboardIntent = new Intent(MapsActivity.this, DashboardActivity.class);
+                startActivity(dashboardIntent);
+            }
+        });
+        pastLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
+                startActivity(pastLocationIntent);
             }
         });
 

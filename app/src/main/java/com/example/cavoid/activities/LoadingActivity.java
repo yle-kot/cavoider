@@ -33,9 +33,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         super.onCreate(savedInstanceState);
 
         createNotificationChannel();
-
-
-        changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+       changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
 
         AlertDialog permAlert;
 
