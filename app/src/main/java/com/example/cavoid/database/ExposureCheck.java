@@ -35,7 +35,7 @@ public class ExposureCheck {
         return pastFips;
     }
 
-    public ArrayList<String> fipsToNotify(Context context, ArrayList<String> pastLocations) {
+    public static ArrayList<String> fipsToNotify(Context context, ArrayList<String> pastLocations) {
         ArrayList<String> fipsToNotify = new ArrayList<String>();
         for (String location : pastLocations) {
             Repository.getPosTests(context, location, new Response.Listener<JSONObject>() {
@@ -62,5 +62,4 @@ public class ExposureCheck {
         }
         return fipsToNotify;
     }
-
 }

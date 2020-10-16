@@ -12,6 +12,9 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -84,6 +87,30 @@ public class DashboardActivity extends AppCompatActivity {
         updateDashBoard();
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                break;
+            case R.id.action_settings:
+                Intent notificationIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                Log.d(DashboardActivity.class.getName(), "Intent didn't start" + notificationIntent);
+                this.startActivity(notificationIntent);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
     public Date yesterday() {
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
