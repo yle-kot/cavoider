@@ -21,7 +21,7 @@ public interface LocationDao {
     List<PastLocation> getAll();
 
     @Query( "SELECT * FROM past_location [pl]" +
-            "LEFT JOIN active_cases as ac ON pl.fips == ac.fips" +
+ //           "LEFT JOIN active_cases as ac ON pl.fips == ac.fips" +
             " WHERE date IN (:dates)")
     List<PastLocation> loadAllByDates(LocalDate[] dates);
 

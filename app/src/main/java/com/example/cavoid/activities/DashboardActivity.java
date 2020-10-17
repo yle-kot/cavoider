@@ -157,30 +157,7 @@ public class DashboardActivity extends AppCompatActivity {
 
                                 //Go through the database of past locations then for each fips get statistics for that county
                                 //update pastLocationCases and pastLocationDeaths with the current text + next past location stats
-//                                pastLocationList = ExposureCheck.getPastFips(getApplicationContext());
-//                                for(String p:pastLocationList){
-//                                    Repository.getPosTests(getApplicationContext(), p, new Response.Listener<JSONObject>() {
-//                                        @Override
-//                                        public void onResponse(JSONObject response) {
-//                                            try {
-//                                                //String reportDate = response.getString("report_date");
-//                                                newCaseNumber = response.getString("new_daily_cases");
-//                                                newDeathNumber = response.getString("new_daily_deaths");
-//                                                activeCases = response.getString("active_cases_est");
-//                                                totalCases = response.getString("cases");
-//                                                totalDeaths = response.getString("deaths");
-//                                                caseMessage = caseMessage + countyfips + ":  New cases on " + yesterday + ": " + newCaseNumber
-//                                                        + " Active Cases: " + activeCases + " Total Cases: " + totalCases + "  ";
-//                                                deathMessage = deathMessage + "  New deaths on " + yesterday + ": " + newDeathNumber
-//                                                        + " Total deaths: " + totalDeaths + "  ";
-//                                                pastLocationCases.setText(caseMessage);
-//                                                pastLocationDeaths.setText(deathMessage);
-//                                            } catch (JSONException e) {
-//
-//                                            }
-//                                        }
-//                                    });
-//                                }
+
 
 
                             }
@@ -194,10 +171,8 @@ public class DashboardActivity extends AppCompatActivity {
                     Log.w(TAG, e.toString());
                 }
             }
-
         });
-
         return ListenableWorker.Result.success();
     }
-    }
+}
 
