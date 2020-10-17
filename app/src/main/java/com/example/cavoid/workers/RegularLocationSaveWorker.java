@@ -3,7 +3,9 @@ package com.example.cavoid.workers;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,11 +14,15 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.android.volley.Response;
+import com.example.cavoid.activities.LoadingActivity;
 import com.example.cavoid.api.Repository;
 import com.example.cavoid.database.LocationDao;
 import com.example.cavoid.database.LocationDatabase;
 import com.example.cavoid.database.PastLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import org.joda.time.LocalDate;
@@ -28,6 +34,7 @@ import java.io.IOException;
 public class RegularLocationSaveWorker extends Worker {
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
     }
 
     @NonNull
@@ -45,22 +52,31 @@ public class RegularLocationSaveWorker extends Worker {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED){
             return Result.failure();
         }
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null){
-                Log.w(TAG, "Could not find user's location!");
-            }
-            else {
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setNumUpdates(2);
+        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location == null) {
+                    Log.w(TAG, "Could not find user's location!");
+                    return;
+                }
+
                 Log.i(TAG, "Saving location: " + location.toString());
                 LocalDate date = LocalDate.now();
                 try {
 
-                    Repository.getFipsCodeFromCurrentLocation(getApplicationContext(), location, new Response.Listener<JSONObject>(){
+                    Repository.getFipsCodeFromCurrentLocation(getApplicationContext(), location, new Response.Listener<JSONObject>() {
 
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
                                 PastLocation pastLocation = new PastLocation();
                                 pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
+                                pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                                 pastLocation.date = date;
                                 pastLocation.wasNotified = false;
                                 LocationDatabase.databaseWriteExecutor.execute(() -> dao.insertLocations(pastLocation));
@@ -76,10 +92,11 @@ public class RegularLocationSaveWorker extends Worker {
                     Log.w(TAG, e.toString());
                 }
 
+
             }
+        };
 
-
-        });
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         return Result.success();
     }
 }

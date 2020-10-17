@@ -33,7 +33,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
 
         super.onCreate(savedInstanceState);
 
@@ -78,21 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    protected void createWorkers(long delay) {
-        WorkManager mWorkManager = WorkManager.getInstance(this);
-        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
-                .build();
-        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
-                .build();
-        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 20, TimeUnit.MINUTES).build();
 
-
-        mWorkManager.enqueue(GetRequest);
-        mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
-    }
 
     /**
      * Manipulates the map once available.

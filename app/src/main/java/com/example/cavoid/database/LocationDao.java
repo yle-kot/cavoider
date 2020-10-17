@@ -16,17 +16,23 @@ import java.util.List;
 
 @Dao
 public interface LocationDao {
-    @Query( "SELECT * FROM past_location [pl]  " +
-            "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips")
+    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]  " +
+            "LEFT OUTER JOIN active_cases [ac] ON pl.fips = ac.fips")
     List<PastLocation> getAll();
 
-    @Query( "SELECT * FROM past_location [pl]" +
- //           "LEFT JOIN active_cases as ac ON pl.fips == ac.fips" +
+    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
+            "LEFT OUTER JOIN active_cases as ac ON pl.fips = ac.fips" +
             " WHERE date IN (:dates)")
     List<PastLocation> loadAllByDates(LocalDate[] dates);
 
-    @Query( "SELECT * FROM past_location [pl] " +
-            "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips " +
+    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
+            "LEFT OUTER JOIN active_cases as ac ON pl.fips = ac.fips " +
+            "ORDER BY pl.timestamp DESC " +
+            "LIMIT 1")
+    PastLocation getLatestLocation();
+
+    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl] " +
+            "LEFT OUTER JOIN active_cases [ac] ON pl.fips = ac.fips " +
             "WHERE pl.fips LIKE :fips LIMIT 1")
     PastLocation findByLocation(String fips);
 

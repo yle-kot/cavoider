@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  *      LocationDao.databaseWriteExecutor.execute( () -> locDao.readOrWriteMethodHere() );
  *
  */
-@Database(entities = {PastLocation.class, ActiveCases.class}, version = 4, exportSchema = false)
+@Database(entities = {PastLocation.class, ActiveCases.class}, version = 5, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class LocationDatabase extends RoomDatabase {
     public abstract LocationDao locationDao();
@@ -40,6 +40,7 @@ public abstract class LocationDatabase extends RoomDatabase {
                 if (INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             LocationDatabase.class, DB_NAME)
+                            .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .allowMainThreadQueries()
                             .build();
