@@ -27,6 +27,7 @@ import com.example.cavoid.database.PastLocation;
 import com.example.cavoid.workers.RegularLocationSaveWorker;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Dash;
 
 import org.joda.time.LocalDate;
 import org.json.JSONException;
@@ -84,79 +85,75 @@ public class DashboardActivity extends AppCompatActivity {
         updateDashBoard();
 
     }
+
     public Date yesterday() {
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
         return cal.getTime();
     }
+
     public String getYesterdayDateString() {
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         return dateFormat.format(yesterday());
     }
 
-    public ListenableWorker.Result updateDashBoard(){
+    public boolean updateDashBoard() {
         TextView currentCounty = (TextView) findViewById(R.id.greetingTextView);
         TextView cases = (TextView) findViewById(R.id.casesTextView);
         TextView deaths = (TextView) findViewById(R.id.deathsTextView);
-        TextView pastLocationCases =(TextView) findViewById(R.id.pastCasesTextView);
+        TextView pastLocationCases = (TextView) findViewById(R.id.pastCasesTextView);
         TextView pastLocationDeaths = (TextView) findViewById(R.id.pastDeathsTextView);
 
 
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        String TAG = RegularLocationSaveWorker.class.getName();
+        String TAG = DashboardActivity.class.getName();
 
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return ListenableWorker.Result.failure();
+            return false;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            return ListenableWorker.Result.failure();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
         }
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null){
-                Log.w(TAG, "Could not find user's location!");
-            }
-            else {
-                Log.i(TAG, "Saving location: " + location.toString());
-                LocalDate date = LocalDate.now();
+        LocationDao locDb = LocationDatabase.getDatabase(DashboardActivity.this).getLocationDao();
+        PastLocation latestLocation = locDb.getLatestLocation();
+        if (latestLocation == null) {
+            Log.w(TAG, "No saved locations returned from db!");
+            return false;
+        }
+
+        String countyfips = latestLocation.fips;
+        String countyName = latestLocation.countyName;
+        String yesterday = getYesterdayDateString();
+
+        currentCounty.setText(String.format("Here are the covid statistics for %s", countyName));
+
+
+        //This gets the statistics for the current county and sets the first card
+        Repository.getPosTests(getApplicationContext(), countyfips, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
                 try {
-                    Repository.getFipsCodeFromCurrentLocation(getApplicationContext(), location, new Response.Listener<JSONObject>(){
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            JSONObject data = response;
-                            try {
-                                String countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
-                                String countyfips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
-                                String yesterday = getYesterdayDateString();
+                    //String reportDate = response.getString("report_date");
+                    newCaseNumber = response.getString("new_daily_cases");
+                    newDeathNumber = response.getString("new_daily_deaths");
+                    activeCases = response.getString("active_cases_est");
+                    totalCases = response.getString("cases");
+                    totalDeaths = response.getString("deaths");
+                    caseMessage = "  " + yesterday + " New cases: " + newCaseNumber
+                            + " Active cases: " + activeCases + " Total cases: " + totalCases + "  ";
+                    deathMessage = "  " + yesterday + " New deaths: " + newDeathNumber
+                            + " Total deaths: " + totalDeaths + "  ";
+                    cases.setText(caseMessage);
+                    deaths.setText(deathMessage);
+                } catch (JSONException e) {
+                    Log.w(TAG, "Could not get data from JSON response!");
+                    e.printStackTrace();
+                }
+            }
+        });
 
-                                currentCounty.setText("Here are the covid statistics for " + countyName);
-
-                                //LocationDao locDao = LocationDatabase.getLocationDao();
-
-                                //This gets the statistics for the current county and sets the first card
-                                Repository.getPosTests(getApplicationContext(), countyfips, new Response.Listener<JSONObject>() {
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        try {
-                                            //String reportDate = response.getString("report_date");
-                                            newCaseNumber = response.getString("new_daily_cases");
-                                            newDeathNumber = response.getString("new_daily_deaths");
-                                            activeCases = response.getString("active_cases_est");
-                                            totalCases = response.getString("cases");
-                                            totalDeaths = response.getString("deaths");
-                                            caseMessage =  "  " + yesterday +  " New cases: " + newCaseNumber
-                                                    + " Active cases: " + activeCases + " Total cases: " + totalCases + "  ";
-                                            deathMessage = "  " + yesterday +  " New deaths: " + newDeathNumber
-                                                    + " Total deaths: " + totalDeaths + "  ";
-                                            cases.setText(caseMessage);
-                                            deaths.setText(deathMessage);
-                                        } catch (JSONException e) {
-
-                                        }
-                                    }
-                                });
-
-                                //Go through the database of past locations then for each fips get statistics for that county
-                                //update pastLocationCases and pastLocationDeaths with the current text + next past location stats
+        //Go through the database of past locations then for each fips get statistics for that county
+        //update pastLocationCases and pastLocationDeaths with the current text + next past location stats
 //                                pastLocationList = ExposureCheck.getPastFips(getApplicationContext());
 //                                for(String p:pastLocationList){
 //                                    Repository.getPosTests(getApplicationContext(), p, new Response.Listener<JSONObject>() {
@@ -183,21 +180,7 @@ public class DashboardActivity extends AppCompatActivity {
 //                                }
 
 
-                            }
-                            catch(JSONException e) {
-
-                            }
-
-                        }
-                    });
-                } catch (IOException e) {
-                    Log.w(TAG, e.toString());
-                }
-            }
-
-        });
-
-        return ListenableWorker.Result.success();
+        return true;
     }
-    }
+}
 

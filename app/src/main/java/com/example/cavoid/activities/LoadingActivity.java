@@ -20,6 +20,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
 
@@ -126,6 +131,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private void changeToMainScreen(){
         if (ActivityCompat.checkSelfPermission(LoadingActivity.this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
         ){
+            createWorkers(GeneralUtilities.getSecondsUntilHour(8));
             startActivity(changeScreenIntent);
         }
     }
@@ -187,5 +193,21 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private void requestPermission(String permissionName, int permissionRequestCode) {
         ActivityCompat.requestPermissions(this,
                 new String[]{permissionName}, permissionRequestCode);
+    }
+
+    protected void createWorkers(long delay) {
+        WorkManager mWorkManager = WorkManager.getInstance(this);
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
+
+
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
     }
 }
