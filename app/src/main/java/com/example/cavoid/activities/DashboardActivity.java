@@ -59,17 +59,9 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        Button notificationButton = (Button) findViewById(R.id.notificationButton);
         Button mapButton = (Button) findViewById(R.id.mapButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
-        //For when the NotificationActivity is created
-//        notificationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent notificationIntent = new Intent(DashboardActivity.this, notificationActivity.class);
-//                startActivity(notificationIntent);
-//            }
-//        });
+
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,17 +90,17 @@ public class DashboardActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add:
-                break;
             case R.id.action_settings:
-                Intent notificationIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                Log.d(DashboardActivity.class.getName(), "Intent didn't start" + notificationIntent);
-                this.startActivity(notificationIntent);
+                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
+                this.startActivity(settingsIntent);
                 break;
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_appInfo:
+                Intent appInfoIntent = new Intent(DashboardActivity.this, AppInfoActivity.class);
+                this.startActivity(appInfoIntent);
+                break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     public Date yesterday() {

@@ -22,4 +22,16 @@
     <string name="total_casesTitle" />
     <string name="total_deathsTitle" />
     <string name="fips_code">FIPS Code</string>
+    <string name="data_sources">Covid-19 Data Information</string>
+    <string name="data_sources_info">All Covid-19 data reported in the is app is from The New York
+        Times Covid-19 data set which is based on reports from state and
+        local health agencies. Their data can be found here: https://github.com/nytimes/covid-19-data.
+        The data was used to calculate some of the statistics in this app. Data reported in this app
+        may differ from other sources due to differences in reporting standards and reporting lag times.</string>
+    <string name="app_overview">App Overview Information</string>
+    <string name="app_overview_info">This app is designed to provide users with an overview of
+        the Covid-19 information in their area. This apps uses a user\'s location in order to alert
+        them of the Covid-19 status in areas they have visited or are currently visiting. This app
+        is not designed as a contact tracing app and should not be used as such. This app is
+        provided purely for informational purposes.</string>
 </resources>
