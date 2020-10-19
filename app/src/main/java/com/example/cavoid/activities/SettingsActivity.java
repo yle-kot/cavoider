@@ -4,14 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.cavoid.R;
 import com.example.cavoid.database.ExposureCheck;
-
+import com.example.cavoid.activities.LoadingActivity;
 import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -21,13 +24,17 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        ArrayList<String> pastFips = new ArrayList<String>();
-        pastFips.add("51760");
-        ArrayList<String> fips = ExposureCheck.fipsToNotify(getApplicationContext(), pastFips);
-        final TextView fips_code = (TextView) findViewById(R.id.fips_code);
-        if (fips.size() > 0) {
-            fips_code.setText(fips.get(0));
-        }
+        Button notificationButton = (Button) findViewById(R.id.notificationButton);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent notificationIntent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Priority");
+                startActivity(notificationIntent);
+            }
+        });
+
     }
 
     @Override

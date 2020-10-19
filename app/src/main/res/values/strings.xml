@@ -34,4 +34,9 @@
         them of the Covid-19 status in areas they have visited or are currently visiting. This app
         is not designed as a contact tracing app and should not be used as such. This app is
         provided purely for informational purposes.</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="change_notifcation_settings">Change Current Location Notifcation Settings</string>
+    <string name="current_location_notifcation_description">Notifies whenever entering an area with high community spread</string>
+    <string name="location_settings">Location Settings</string>
+    <string name="current_location_setting_description">Current Location Settings must be enabled for full functionality of this app. This app does not work without them.</string>
 </resources>
