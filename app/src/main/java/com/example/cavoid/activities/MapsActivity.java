@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -70,9 +71,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 20, TimeUnit.MINUTES).build();
 
 
-        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueueUniquePeriodicWork(GetRequest.getClass().getName(), ExistingPeriodicWorkPolicy.REPLACE, SaveLocationRequest);
         mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
+        mWorkManager.enqueue(GetRequest);
     }
 
     /**

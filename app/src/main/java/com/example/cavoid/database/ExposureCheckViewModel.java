@@ -24,20 +24,21 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class ExposureCheckViewModel extends AndroidViewModel {
+    private Repository APIRepository;
     private ArrayList<String> allFipsFromLastTwoWeeks;
     private volatile int counter;
     private volatile ArrayList<String> fipsToNotify;
     private volatile MutableLiveData<Boolean> isDone;
 
 
-    public ExposureCheckViewModel(@NonNull Application application) {
+    public ExposureCheckViewModel(@NonNull Application application, Repository repository) {
         super(application);
-
+        this.APIRepository = repository;
         this.fipsToNotify = new ArrayList<String>();
-        allFipsFromLastTwoWeeks = getPastFips(getApplication().getApplicationContext());
+        this.allFipsFromLastTwoWeeks = getPastFips(getApplication().getApplicationContext());
         this.isDone = new MutableLiveData<>();
         this.isDone.setValue(false);
-        fipsToNotify(getApplication().getApplicationContext(), allFipsFromLastTwoWeeks);
+        fipsToNotify(getApplication().getApplicationContext(), APIRepository, allFipsFromLastTwoWeeks);
     }
 
     public MutableLiveData<Boolean> getIsDone(){
@@ -64,9 +65,9 @@ public class ExposureCheckViewModel extends AndroidViewModel {
         return pastFips;
     }
 
-    public void fipsToNotify(Context context, ArrayList<String> pastLocations) {
+    public void fipsToNotify(Context context, Repository repo, ArrayList<String> pastLocations) {
         for (String location : pastLocations) {
-            Repository.getPosTests(context, location, new Response.Listener<JSONObject>() {
+            repo.getPosTests(location, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     String percentChange;

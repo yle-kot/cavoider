@@ -37,13 +37,14 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
         LocalDate twoWeeksAgoDate = DateTime.now().minusDays(14).toLocalDate();
+        Repository repo = new Repository(getApplicationContext());
 
         LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(twoWeeksAgoDate));
 
         /* Updates the reports for a location every day */
         List<PastLocation> locations = dao.getAll();
         for (PastLocation location : locations){
-            Repository.getPosTests(getApplicationContext(), location.fips, new Response.Listener<JSONObject>() {
+            repo.getPosTests(location.fips, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     ActiveCases activeCases = new ActiveCases();
@@ -71,7 +72,8 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     }
 
     private void notifyOfCurrentCovidTrend(final Context context, final String fips){
-        Repository.getPosTests(context, fips, new Response.Listener<JSONObject>() {
+        Repository repo = new Repository(context);
+        repo.getPosTests(fips, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 JSONObject data = response;
