@@ -23,15 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-//TODO Change this to a model with observable data fields!
-public class ExposureCheck extends AndroidViewModel {
+public class ExposureCheckViewModel extends AndroidViewModel {
     private ArrayList<String> allFipsFromLastTwoWeeks;
     private volatile int counter;
     private volatile ArrayList<String> fipsToNotify;
     private volatile MutableLiveData<Boolean> isDone;
 
 
-    public ExposureCheck(@NonNull Application application) {
+    public ExposureCheckViewModel(@NonNull Application application) {
         super(application);
 
         this.fipsToNotify = new ArrayList<String>();
@@ -80,7 +79,7 @@ public class ExposureCheck extends AndroidViewModel {
                     try {
                         if (Integer.parseInt(percentChange) > 0) {
                             fipsToNotify.add(location);
-                            synchronized (ExposureCheck.class){
+                            synchronized (ExposureCheckViewModel.class){
                                 counter = counter + 1;
                                 isDone.setValue(counter == pastLocations.size());
                             }
