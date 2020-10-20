@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
+import static com.example.cavoid.database.Converters.fromString;
 import static org.junit.Assert.*;
 
 /**
@@ -47,10 +48,10 @@ public class SimpleEntityReadWriteTest {
     @Test
     public void writeAndReadData() {
         PastLocation pastLocation = new PastLocation();
-        pastLocation.date = "May";
+        pastLocation.date = fromString("May");
         pastLocation.fips = "51087";
         pastLocation.wasNotified = false;
-        locationDao.insertAll(pastLocation);
+        locationDao.insertLocations(pastLocation);
         List<PastLocation> things = locationDao.getAll();
         assertEquals(pastLocation.date,things.get(0).date);
     }
