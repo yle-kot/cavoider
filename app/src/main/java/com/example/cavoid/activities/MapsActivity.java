@@ -80,10 +80,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-        mWorkManager.enqueueUniquePeriodicWork(GetRequest.getClass().getName(), ExistingPeriodicWorkPolicy.REPLACE, SaveLocationRequest);
-        mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(GetRequest);
-    }
 
     /**
      * Manipulates the map once available.
