@@ -38,6 +38,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         LocationDao dao = locDb.getLocationDao();
         LocalDate twoWeeksAgoDate = DateTime.now().minusDays(14).toLocalDate();
 
+        // Cleans database of old records
         LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(twoWeeksAgoDate));
 
         /* Updates the reports for a location every day */
