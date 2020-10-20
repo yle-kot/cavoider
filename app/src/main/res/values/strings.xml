@@ -11,6 +11,14 @@
     <string name="off">off</string>
     <string name="Off">Off</string>
     <string name="On">On</string>
-
-
+    <string name="dashboardGreeting">Here are the covid statistics for...</string>
+    <string name="_14_day_trend">14 Day Trend</string>
+    <string name="date">12/12/20:</string>
+    <string name="casesTitle" />
+    <string name="deathsTitle" />
+    <string name="_14DayTrendTitle">14 Day Trend</string>
+    <string name="trendlineTitle">Trendline</string>
+    <string name="subscription_message">subscription message</string>
+    <string name="total_casesTitle" />
+    <string name="total_deathsTitle" />
 </resources>

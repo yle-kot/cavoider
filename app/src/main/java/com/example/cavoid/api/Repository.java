@@ -2,6 +2,7 @@ package com.example.cavoid.api;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -35,13 +36,15 @@ public class Repository {
         RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
-        String url = "https://powerful-anchorage-13412.herokuapp.com/latest/"+fips;
+        String url = String.format("https://powerful-anchorage-13412.herokuapp.com/latest/%s",fips);
 
         //Object request gets the JSON object from the internet
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, callback, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.w("Our API Handler", "No response from API");
+                        Log.w("Our API Handler", error);
 
                     }
                 });
@@ -55,6 +58,8 @@ public class Repository {
         String longitude = "lon="+location.getLongitude();
         baseUrl += latitude+longitude;
         String fips = "";
+        //Might need countyName string for dashboard
+        String countyName = "";
         RequestQueue queue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {

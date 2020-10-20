@@ -22,10 +22,19 @@ import com.android.volley.RequestQueue;
 import com.example.cavoid.database.LocationDao;
 import com.example.cavoid.database.LocationDatabase;
 import com.example.cavoid.database.PastLocation;
+import com.example.cavoid.utilities.GeneralUtilities;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
 
 import org.joda.time.LocalDate;
 
 import java.util.List;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
 
@@ -39,9 +48,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         super.onCreate(savedInstanceState);
 
         createNotificationChannel();
-
-
-        changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+       changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
 
         AlertDialog permAlert;
 
@@ -130,6 +137,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q ||
                 ActivityCompat.checkSelfPermission(LoadingActivity.this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
         ){
+            createWorkers(GeneralUtilities.getSecondsUntilHour(8));
             startActivity(changeScreenIntent);
         }
     }
@@ -191,6 +199,22 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private void requestPermission(String permissionName, int permissionRequestCode) {
         ActivityCompat.requestPermissions(this,
                 new String[]{permissionName}, permissionRequestCode);
+    }
+
+    protected void createWorkers(long delay) {
+        WorkManager mWorkManager = WorkManager.getInstance(this);
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
+
+
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
     }
 
     private String readLastLocation(LocalDate date[]){
