@@ -4,6 +4,8 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,7 +25,14 @@ import java.net.URL;
 
 public class Repository {
 
-    public static void getPosTests(Context context, String fips, Response.Listener<JSONObject> callback){
+    private String posTests = "";
+    private Context context;
+
+    public Repository(Context context){
+        this.context = context;
+    }
+
+    public void getPosTests(String fips, Response.Listener<JSONObject> callback){
         RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
@@ -43,7 +52,7 @@ public class Repository {
         queue.add(jsonObjectRequest);
     }
 
-    public static void getFipsCodeFromCurrentLocation(Context context, Location location, Response.Listener<JSONObject> callback) throws IOException {
+    public void getFipsCodeFromCurrentLocation(Location location, Response.Listener<JSONObject> callback) throws IOException {
         String baseUrl = "https://geo.fcc.gov/api/census/area?";
         String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
         String longitude = "lon="+location.getLongitude();

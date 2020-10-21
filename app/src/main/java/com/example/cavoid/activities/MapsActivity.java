@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -59,8 +60,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         pastLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
-                startActivity(pastLocationIntent);
+                // TODO Implement settings screen
+                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -75,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
+
 
 
 
