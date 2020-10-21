@@ -91,7 +91,7 @@ public class RegularLocationSaveWorker extends Worker {
                     Log.w(TAG, e.toString());
                 }
 
-            }
+
 
             }
         };
