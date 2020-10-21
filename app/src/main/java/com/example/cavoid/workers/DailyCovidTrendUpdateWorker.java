@@ -1,22 +1,27 @@
 package com.example.cavoid.workers;
 
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.android.volley.Response;
+import com.example.cavoid.R;
+import com.example.cavoid.activities.PastLocationActivity;
 import com.example.cavoid.api.Repository;
 import com.example.cavoid.database.ActiveCases;
-import com.example.cavoid.database.ExposureCheckViewModel;
 import com.example.cavoid.database.LocationDao;
 import com.example.cavoid.database.LocationDatabase;
 import com.example.cavoid.database.PastLocation;
-import com.example.cavoid.utilities.AppNotificationHandler;
 import com.example.cavoid.utilities.GeneralUtilities;
 
 import org.joda.time.Days;
@@ -29,23 +34,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class DailyCovidTrendUpdateWorker extends Worker {
     private LocationDatabase locDb;
-    private LocationDao dao;
+    private LocationDao locDao;
     private LocalDate twoWeeksAgoDate;
     private Repository repo;
     private Context context;
-    private volatile ArrayList<String> fipsToNotify;
+    private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
     private Boolean isDone;
+    private String TAG;
+
+    private String PAST_LOCATION_CHANNEL_ID = "Past Location";
+    private int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
+    private int NOTIFICATION_ID = 2937;
 
     public DailyCovidTrendUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.locDb = LocationDatabase.getDatabase(getApplicationContext());
-        this.dao = locDb.getLocationDao();
+        this.locDao = locDb.getLocationDao();
         this.twoWeeksAgoDate = DateTime.now().minusDays(14).toLocalDate();
         this.repo = new Repository(getApplicationContext());
         this.context = context;
+        this.TAG = DailyCovidTrendUpdateWorker.class.getName();
     }
 
     @NonNull
@@ -56,7 +69,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         updateCovidReportsForAllLocationsSince(twoWeeksAgoDate);
 
         ArrayList<String> fipsVisitedLastTwoWeeks = getsFipsVisitedOn(getDatesSince(twoWeeksAgoDate));
-        addFipsToNotify(repo, fipsVisitedLastTwoWeeks);
+        createFipsToNotifyList(repo, fipsVisitedLastTwoWeeks);
 
         return Result.success();
     }
@@ -73,7 +86,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     }
 
     private ArrayList<String> getsFipsVisitedOn(LocalDate[] dateList) {
-        List<PastLocation> pastLocations = dao.loadAllByDates(dateList);
+        List<PastLocation> pastLocations = locDao.loadAllByDates(dateList);
         ArrayList<String> pastFips = new ArrayList<String>();
         for (PastLocation location : pastLocations) {
             pastFips.add(location.fips);
@@ -81,21 +94,22 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         return pastFips;
     }
 
-    public void addFipsToNotify(Repository repo, ArrayList<String> pastFips) {
+    public void createFipsToNotifyList(Repository repo, ArrayList<String> pastFips) {
         for (String fips : pastFips) {
             repo.getPosTests(fips, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    String percentChange;
+                    String percentChange = "";
+                    String countyName = "";
                     try {
                         percentChange = response.getString("percent_change_14_days");
+                        countyName = response.getString("county");
                     } catch (JSONException e) {
-                        Log.e("fipsToNotify", "Expected percent_change_14_days to be a string" + e.getMessage());
-                        percentChange = null;
+                        Log.e(TAG, "Expected percent_change_14_days to be a string" + e.getMessage());
                     }
                     try {
                         if (Integer.parseInt(percentChange) > 0) {
-                            fipsToNotify.add(fips);
+                            fipsToNotifyList.add(countyName);
                             synchronized (DailyCovidTrendUpdateWorker.class){
                                 counter = counter + 1;
                                 if (counter == pastFips.size()) {
@@ -106,7 +120,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
                         }
                     }
                     catch (NumberFormatException exception) {
-                        Log.i("fipsToNotify", "Expected percent_change_14_days to have a integer value");
+                        Log.i(TAG, "Expected percent_change_14_days to have a integer value");
                     }
                 }
             });
@@ -115,7 +129,59 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     }
 
     private void finalizeWorker() {
+        // Create a notification to notify the user that they were exposed to X locations
+        // X locations is defined in fipsToNotifyList
+        if (fipsToNotifyList.size() > 0)
+            createWarningNotificationForFips(fipsToNotifyList);
+
         scheduleNextWorker();
+    }
+
+    private void createWarningNotificationForFips(ArrayList<String> countiesToNotify) {
+        String title = "COVID-19 spread in your area";
+        String message;
+        if (countiesToNotify.size() < 3){
+            StringBuilder sb = new StringBuilder();
+            sb.append("You recently visited :\n");
+            for (int i = 0; i < countiesToNotify.size(); i++){
+                sb.append(countiesToNotify.get(i));
+            }
+            message = sb.toString();
+        }else{
+            // Lots of county, simply open the app plz.
+            message="You recently visited several counties with COVID spread. " +
+                    "Open app for more info";
+        }
+
+        createNotificationLinkingToPastLocationActivity(title, message);
+    }
+
+    private void createNotificationLinkingToPastLocationActivity(String title, String message){
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        PendingIntent pendingIntent = getPendingIntentTo(PastLocationActivity.class);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, PAST_LOCATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_trend_up)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDeleteIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL);
+        mNotificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    private PendingIntent getPendingIntentTo(Class<? extends Activity> activity){
+        Intent gotToPastLocationIntent = new Intent(context, activity);
+
+        PendingIntent goToActivityIntent = PendingIntent.getActivity(
+                context,
+                GOTO_PAST_LOCATION_PENDING_INTENT_ID,
+                gotToPastLocationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        return goToActivityIntent;
     }
 
     private void scheduleNextWorker() {
@@ -143,7 +209,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
                         activeCases.activeCases = -1;
                     }
                     activeCases.reportDate = LocalDate.now();
-                    dao.insertReports(activeCases);
+                    locDao.insertReports(activeCases);
                 }
             });
         }
@@ -151,34 +217,6 @@ public class DailyCovidTrendUpdateWorker extends Worker {
 
     private void cleanDatabaseRecordsOlderThan(LocalDate date) {
         // Cleans database of old records
-        LocationDatabase.databaseWriteExecutor.execute(() -> dao.cleanRecordsOlderThan(date));
-    }
-
-    private void notifyOfCurrentCovidTrend(final Context context, final String fips){
-        Repository repo = new Repository(context);
-        repo.getPosTests(fips, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                JSONObject data = response;
-                String posTests;
-                //Saves the positive case number from JSON file to string in application
-                try{
-                    posTests = data.getString("case_trend_14_days");
-                }catch (JSONException e){
-                    posTests = "ERR";
-                }
-
-                String title = "Daily COVID Trend Alert";
-                StringBuilder message = new StringBuilder("COVID is trending ");
-                try {
-                    message.append(Float.parseFloat(posTests) > 0 ? "upwards" : "downwards");
-                }
-                catch (NumberFormatException ex) {
-                    message.append("flat");
-                }
-                message.append(" in your area.");
-                AppNotificationHandler.deliverNotification(context, title,message.toString());
-            }
-        });
+        LocationDatabase.databaseWriteExecutor.execute(() -> locDao.cleanRecordsOlderThan(date));
     }
 }
