@@ -41,6 +41,10 @@ public class ExposureCheckViewModel extends AndroidViewModel {
         fipsToNotify(getApplication().getApplicationContext(), APIRepository, allFipsFromLastTwoWeeks);
     }
 
+    public ArrayList<String> getAllFipsFromLastTwoWeeks(){
+        return allFipsFromLastTwoWeeks;
+    }
+
     public MutableLiveData<Boolean> getIsDone(){
         return isDone;
     }

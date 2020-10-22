@@ -1,25 +1,18 @@
 package com.example.cavoid.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.android.volley.Response;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
-import com.example.cavoid.database.ExposureCheck;
-import com.example.cavoid.database.PastLocation;
+import com.example.cavoid.database.ExposureCheckViewModel;
 import com.example.cavoid.utilities.PastLocationAdapter;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,7 +34,9 @@ public class PastLocationActivity extends AppCompatActivity {
     private String totalDeaths;
     private String caseMessage;
     private String deathMessage;
+    private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
+    private Repository repo;
     public ArrayList<String> messages;
 
 
@@ -58,7 +53,9 @@ public class PastLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_location);
-        pastLocationsList = ExposureCheck.getPastFips(getApplicationContext());
+        repo = new Repository(getApplicationContext());
+        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
         String yesterday = getYesterdayDateString();
         Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
         Button mapButton = (Button) findViewById(R.id.mapButton);
@@ -93,13 +90,5 @@ public class PastLocationActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         });
-        //For when the notification activity is created
-//        notificationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent notificationIntent = new Intent(PastLocationActivity.this, NotificationActivity.class);
-//                startActivity(notificationIntent);
-//            }
-//        });
     }
 }
