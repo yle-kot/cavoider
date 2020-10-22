@@ -6,10 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.ListenableWorker;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,37 +15,29 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Response;
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
-import com.example.cavoid.database.ExposureCheck;
 import com.example.cavoid.database.LocationDao;
 import com.example.cavoid.database.LocationDatabase;
 import com.example.cavoid.database.PastLocation;
-import com.example.cavoid.workers.RegularLocationSaveWorker;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.Dash;
 
-import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
     private String newCaseNumber;
     private String newDeathNumber;
     private String activeCases;
@@ -56,6 +46,7 @@ public class DashboardActivity extends AppCompatActivity {
     private String caseMessage;
     private String deathMessage;
     private ArrayList<String> pastLocationList;
+    private Repository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +55,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         Button mapButton = (Button) findViewById(R.id.mapButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
+        repo = new Repository(this);
 
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +118,7 @@ public class DashboardActivity extends AppCompatActivity {
 
 
         //This gets the statistics for the current county and sets the first card
-        Repository.getPosTests(getApplicationContext(), countyfips, new Response.Listener<JSONObject>() {
+        repo.getPosTests(countyfips, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {

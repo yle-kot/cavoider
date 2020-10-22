@@ -31,9 +31,11 @@ public interface LocationDao {
             "LIMIT 1")
     PastLocation getLatestLocation();
 
-    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl] " +
-            "LEFT OUTER JOIN active_cases [ac] ON pl.fips = ac.fips " +
-            "WHERE pl.fips LIKE :fips LIMIT 1")
+    @Query( "SELECT * FROM past_location [pl] " +
+            "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips " +
+            "WHERE pl.fips LIKE :fips " +
+            "ORDER BY pl.date DESC" +
+            " LIMIT 1")
     PastLocation findByLocation(String fips);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

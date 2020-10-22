@@ -34,7 +34,6 @@ import java.io.IOException;
 public class RegularLocationSaveWorker extends Worker {
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-
     }
 
     @NonNull
@@ -44,6 +43,7 @@ public class RegularLocationSaveWorker extends Worker {
 
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
+        Repository repo = new Repository(getApplicationContext());
 
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -68,8 +68,7 @@ public class RegularLocationSaveWorker extends Worker {
                 Log.i(TAG, "Saving location: " + location.toString());
                 LocalDate date = LocalDate.now();
                 try {
-
-                    Repository.getFipsCodeFromCurrentLocation(getApplicationContext(), location, new Response.Listener<JSONObject>() {
+                    repo.getFipsCodeFromCurrentLocation(location, new Response.Listener<JSONObject>(){
 
                         @Override
                         public void onResponse(JSONObject response) {
@@ -91,6 +90,7 @@ public class RegularLocationSaveWorker extends Worker {
                 } catch (IOException e) {
                     Log.w(TAG, e.toString());
                 }
+
 
 
             }
