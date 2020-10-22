@@ -92,11 +92,8 @@ public class DashboardActivity extends AppCompatActivity {
         TextView deaths = (TextView) findViewById(R.id.deathsTextView);
         TextView pastLocationCases = (TextView) findViewById(R.id.pastCasesTextView);
         TextView pastLocationDeaths = (TextView) findViewById(R.id.pastDeathsTextView);
-
-
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         String TAG = DashboardActivity.class.getName();
-
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
@@ -126,12 +123,10 @@ public class DashboardActivity extends AppCompatActivity {
                     newCaseNumber = response.getString("new_daily_cases");
                     newDeathNumber = response.getString("new_daily_deaths");
                     activeCases = response.getString("active_cases_est");
-                    totalCases = response.getString("cases");
-                    totalDeaths = response.getString("deaths");
-                    caseMessage = "  " + yesterday + " New cases: " + newCaseNumber
-                            + " Active cases: " + activeCases + " Total cases: " + totalCases + "  ";
-                    deathMessage = "  " + yesterday + " New deaths: " + newDeathNumber
-                            + " Total deaths: " + totalDeaths + "  ";
+                    caseMessage = " New cases: " + newCaseNumber
+                            + " Active cases: " + activeCases;
+                    deathMessage =  " New deaths: " + newDeathNumber
+                            + " Total deaths: " ;
                     cases.setText(caseMessage);
                     deaths.setText(deathMessage);
 

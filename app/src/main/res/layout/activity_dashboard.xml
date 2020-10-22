@@ -27,8 +27,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation=".25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:paddingBottom="5dp"
+                android:paddingTop="10dp"
                 android:text="@string/casesTextView" />
 
             <TextView
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:paddingTop="5dp"
+                android:paddingTop="10dp"
                 android:text="@string/deathsTitle"
                 android:textAlignment="center" />
         </LinearLayout>

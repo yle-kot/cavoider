@@ -42,7 +42,6 @@ public abstract class LocationDatabase extends RoomDatabase {
                             LocationDatabase.class, DB_NAME)
                             .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
-                            .allowMainThreadQueries()
                             .build();
                 }
             }
