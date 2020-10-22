@@ -16,9 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
-import com.android.volley.Response;
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
 import com.example.cavoid.database.LocationDao;
@@ -47,11 +47,15 @@ public class DashboardActivity extends AppCompatActivity {
     private String deathMessage;
     private ArrayList<String> pastLocationList;
     private Repository repo;
+    private DashboardActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        viewModel = ViewModelProviders.of(this).get(DashboardActivityViewModel.class);
+
 
         Button mapButton = (Button) findViewById(R.id.mapButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
@@ -71,8 +75,13 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(pastLocationIntent);
             }
         });
-        updateDashBoard();
 
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                updateDashBoard();
+            }
+        });
     }
 
     public Date yesterday() {
@@ -82,7 +91,7 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     public String getYesterdayDateString() {
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("MMM d");
         return dateFormat.format(yesterday());
     }
 
@@ -92,51 +101,11 @@ public class DashboardActivity extends AppCompatActivity {
         TextView deaths = (TextView) findViewById(R.id.deathsTextView);
         TextView pastLocationCases = (TextView) findViewById(R.id.pastCasesTextView);
         TextView pastLocationDeaths = (TextView) findViewById(R.id.pastDeathsTextView);
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        String TAG = DashboardActivity.class.getName();
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        LocationDao locDb = LocationDatabase.getDatabase(DashboardActivity.this).getLocationDao();
-        PastLocation latestLocation = locDb.getLatestLocation();
-        if (latestLocation == null) {
-            Log.w(TAG, "No saved locations returned from db!");
-            return false;
-        }
 
-        String countyfips = latestLocation.fips;
-        String countyName = latestLocation.countyName;
+
         String yesterday = getYesterdayDateString();
 
-        currentCounty.setText(String.format("Here are the covid statistics for %s", countyName));
-
-
-        //This gets the statistics for the current county and sets the first card
-        repo.getPosTests(countyfips, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    //String reportDate = response.getString("report_date");
-                    newCaseNumber = response.getString("new_daily_cases");
-                    newDeathNumber = response.getString("new_daily_deaths");
-                    activeCases = response.getString("active_cases_est");
-                    caseMessage = " New cases: " + newCaseNumber
-                            + " Active cases: " + activeCases;
-                    deathMessage =  " New deaths: " + newDeathNumber
-                            + " Total deaths: " ;
-                    cases.setText(caseMessage);
-                    deaths.setText(deathMessage);
-
-                } catch (JSONException e) {
-                    Log.w(TAG, "Could not get data from JSON response!");
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        currentCounty.setText(String.format("Here are the covid statistics for %s", viewModel.countyName));
 
         return true;
     }
