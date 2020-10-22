@@ -1,16 +1,7 @@
 package com.example.cavoid.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.ListenableWorker;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,14 +12,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.cavoid.R;
 import com.example.cavoid.api.Repository;
-import com.example.cavoid.database.LocationDao;
-import com.example.cavoid.database.LocationDatabase;
-import com.example.cavoid.database.PastLocation;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
