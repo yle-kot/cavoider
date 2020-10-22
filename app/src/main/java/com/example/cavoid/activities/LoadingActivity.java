@@ -1,4 +1,8 @@
 package com.example.cavoid.activities;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -11,6 +15,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -199,28 +204,5 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private void requestPermission(String permissionName, int permissionRequestCode) {
         ActivityCompat.requestPermissions(this,
                 new String[]{permissionName}, permissionRequestCode);
-    }
-
-    protected void createWorkers(long delay) {
-        WorkManager mWorkManager = WorkManager.getInstance(this);
-        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
-                .build();
-        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
-                .build();
-        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
-
-
-        mWorkManager.enqueue(GetRequest);
-        mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
-    }
-
-    private String readLastLocation(LocalDate date[]){
-        LocationDatabase db = Room.databaseBuilder(getApplicationContext(), LocationDatabase.class, "PastLocations").build();
-        LocationDao locationDao = db.getLocationDao();
-        List<PastLocation> record = locationDao.loadAllByDates(date);
-        return record.get(0).fips;
     }
 }

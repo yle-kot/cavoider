@@ -1,5 +1,8 @@
 package com.example.cavoid.activities;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -90,5 +93,27 @@ public class PastLocationActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(PastLocationActivity.this, SettingsActivity.class);
+                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
+                this.startActivity(settingsIntent);
+                break;
+            case R.id.action_appInfo:
+                Intent appInfoIntent = new Intent(PastLocationActivity.this, AppInfoActivity.class);
+                this.startActivity(appInfoIntent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
