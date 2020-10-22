@@ -21,4 +21,7 @@
     <string name="subscription_message">subscription message</string>
     <string name="total_casesTitle" />
     <string name="total_deathsTitle" />
+    <string name="notifications">Notifications</string>
+    <string name="map">Map</string>
+    <string name="past_locations">Past Locations</string>
 </resources>
