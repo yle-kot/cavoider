@@ -58,9 +58,7 @@ public class ExposureCheck {
                     }
                 }
             });
-
         }
         return fipsToNotify;
     }
-
 }

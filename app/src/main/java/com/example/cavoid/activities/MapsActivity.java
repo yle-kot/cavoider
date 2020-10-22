@@ -37,7 +37,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps);
-        Button notificationButton = (Button)findViewById(R.id.notificationButton);
         Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
 //        notificationButton.setOnClickListener(new View.OnClickListener() {

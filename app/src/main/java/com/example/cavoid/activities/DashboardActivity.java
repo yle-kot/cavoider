@@ -2,6 +2,7 @@ package com.example.cavoid.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.ListenableWorker;
 
 import android.Manifest;
@@ -44,6 +45,9 @@ import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
     private String newCaseNumber;
     private String newDeathNumber;
     private String activeCases;
@@ -57,17 +61,10 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        Button notificationButton = (Button) findViewById(R.id.notificationButton);
+
         Button mapButton = (Button) findViewById(R.id.mapButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
-        //For when the NotificationActivity is created
-//        notificationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent notificationIntent = new Intent(DashboardActivity.this, notificationActivity.class);
-//                startActivity(notificationIntent);
-//            }
-//        });
+
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
