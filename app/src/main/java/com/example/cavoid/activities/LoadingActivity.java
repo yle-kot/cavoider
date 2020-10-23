@@ -53,7 +53,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         super.onCreate(savedInstanceState);
 
         createNotificationChannel();
-       changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+        changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
 
         AlertDialog permAlert;
 
@@ -98,19 +98,6 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
      */
 
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        for (int i = 0; i < permissions.length; i++) {
-//            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-//                Toast.makeText(LoadingActivity.this, String.format("%s is required for app to function", permissions[i]), Toast.LENGTH_LONG).show();
-//                finishAffinity();
-//                return;
-//            }
-//        }
-//        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
-//        startActivity(changeScreenIntent);
-//    }
 
     public void createNotificationChannel() {
 
@@ -186,10 +173,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 .create().show();
     }
 
-    private void showExplanation(String title,
-                                 String message,
-                                 final String permission,
-                                 final int permissionRequestCode) {
+    private void showExplanation(String title, String message, final String permission, final int permissionRequestCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title)
                 .setMessage(message)
@@ -204,5 +188,25 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private void requestPermission(String permissionName, int permissionRequestCode) {
         ActivityCompat.requestPermissions(this,
                 new String[]{permissionName}, permissionRequestCode);
+    }
+
+    protected void createWorkers(long delay) {
+        WorkManager mWorkManager = WorkManager.getInstance(this);
+        OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
+                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .build();
+        PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
+        mWorkManager.enqueue(GetRequest);
+        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueue(SaveLocationRequest);
+    }
+    private String readLastLocation(LocalDate date[]){
+        LocationDatabase db = Room.databaseBuilder(getApplicationContext(), LocationDatabase.class, "PastLocations").build();
+        LocationDao locationDao = db.getLocationDao();
+        List<PastLocation> record = locationDao.loadAllByDates(date);
+        return record.get(0).fips;
     }
 }

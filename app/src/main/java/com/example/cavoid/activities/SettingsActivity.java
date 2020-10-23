@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.cavoid.R;
-import com.example.cavoid.database.ExposureCheck;
 import com.example.cavoid.activities.LoadingActivity;
 import java.util.ArrayList;
 

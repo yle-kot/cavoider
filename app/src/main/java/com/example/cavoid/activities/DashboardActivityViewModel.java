@@ -21,9 +21,15 @@ public class DashboardActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
     private PastLocation mostRecentLocation;
+    public String activeCasesEst;
+    public String caseFatality;
+    public String deathsPer100K;
+    public String state;
+    public String fips;
+    public String casesPer100K;
+    public String reportDate;
     public String newCaseNumber;
     public String newDeathNumber;
-    public String activeCases;
     public String totalCases;
     public String countyName;
     public String totalDeaths;
@@ -57,13 +63,19 @@ public class DashboardActivityViewModel extends AndroidViewModel {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    //String reportDate = response.getString("report_date");
+
+                    activeCasesEst = response.getString("active_cases_est");
+                    caseFatality = response.getString("case_fatality");
+                    totalCases = response.getString("cases");
+                    casesPer100K = response.getString("cases_per_100k_people");
+                    deathsPer100K = response.getString("deaths_per_100k_people");
                     newCaseNumber = response.getString("new_daily_cases");
                     newDeathNumber = response.getString("new_daily_deaths");
-                    activeCases = response.getString("active_cases_est");
-                    totalCases = response.getString("cases");
                     totalDeaths = response.getString("deaths");
-                    countyName = response.getString("county_name");
+                    countyName = response.getString("county");
+                    fips = response.getString("fips");
+                    reportDate = response.getString("report_date");
+                    state = response.getString("state");
 
                     counter.setValue(counter.getValue() + 1);
 
