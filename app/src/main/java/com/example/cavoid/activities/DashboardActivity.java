@@ -31,8 +31,8 @@ public class DashboardActivity extends AppCompatActivity {
     private String totalDeaths;
     private String caseMessage;
     private String deathMessage;
-    private ArrayList<String> pastLocationList;
     private DashboardActivityViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +71,12 @@ public class DashboardActivity extends AppCompatActivity {
         currentCounty.setText(String.format("COVID-19 statistics for %s, %s on %s.", viewModel.countyName, viewModel.state, yesterday));
         cases.setText(String.format("New Cases: %s Active Cases: %s",viewModel.newCaseNumber,viewModel.activeCasesEst));
         deaths.setText(String.format("New Deaths: %s",viewModel.newDeathNumber));
+        Log.d("poop",viewModel.countyName);
     }
+
     public String getYesterdayString() {
         String suffix = "";
-        Date cal = Calendar.getInstance().getTime();
+        Calendar cal = Calendar.getInstance();
        //  cal.add(Calendar.DATE, -1);
         int day = Calendar.DAY_OF_MONTH;
         Instant now = Instant.now();
@@ -94,7 +96,8 @@ public class DashboardActivity extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();        inflater.inflate(R.menu.main_menu, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
 

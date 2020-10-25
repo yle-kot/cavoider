@@ -52,6 +52,3 @@ public abstract class LocationDatabase extends RoomDatabase {
         return locationDao();
     }
 }
-
-
-

@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +46,7 @@ public class PastLocationActivity extends AppCompatActivity {
     private ArrayList<String> pastLocationsList;
     private Repository repo;
     public ArrayList<String> messages;
+    private PastLocationActivityViewModel viewModel;
 
 
     public Date yesterday() {
@@ -62,26 +65,20 @@ public class PastLocationActivity extends AppCompatActivity {
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
+        viewModel = new ViewModelProvider(this).get(PastLocationActivityViewModel.class);
         String yesterday = getYesterdayDateString();
         Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
         Button mapButton = (Button) findViewById(R.id.mapButton);
-
-        //TODO:Asynchronously get data from the api to display
-
         recyclerView = (RecyclerView) findViewById(R.id.pastLocationsRecyclerView);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
-
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        // specify an adapter (see also next example)
         mAdapter = new PastLocationAdapter(this,pastLocationsList);
+        pastLocationsList = viewModel.getMessages().getValue();
         recyclerView.setAdapter(mAdapter);
-
-
         dashboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,6 +91,13 @@ public class PastLocationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent mapIntent = new Intent(PastLocationActivity.this, MapsActivity.class);
                 startActivity(mapIntent);
+            }
+        });
+        viewModel.getMessages().observe(this, new Observer<ArrayList<String>>() {
+            @Override
+            public void onChanged(ArrayList<String> strings) {
+                // specify an adapter (see also next example)
+                pastLocationsList = viewModel.getMessages().getValue();
             }
         });
     }

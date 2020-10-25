@@ -35,6 +35,8 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public String countyName;
     public String totalDeaths;
     public String TAG;
+    public int i;
+    private String message;
     private Repository repo;
     private MutableLiveData<Integer> counter;
     private ArrayList<PastLocation> pastLocations;
@@ -47,14 +49,21 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         pastLocations = (ArrayList<PastLocation>) locDao.getAll();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
-        updatePastLocations();
+        updatePastLocationMessages();
+    }
+
+    public MutableLiveData<ArrayList<String>> getMessages() {
+        if(messages == null){
+            messages = new MutableLiveData<ArrayList<String>>();
+        }
+        return messages;
     }
 
     //TODO:Make this method update past locations then in PastLocationAdapter update when the data changes using an observer(DashboardActivity, android tutorial page)
     //TODO:Make sure this works
-    public void updatePastLocations(){
-        for(PastLocation p: pastLocations) {
-            repo.getPosTests(p.fips, new Response.Listener<JSONObject>() {
+    public void updatePastLocationMessages(){
+        for(i = 0; i < pastLocations.size();i++) {
+            repo.getPosTests(pastLocations.get(i).fips, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
@@ -70,6 +79,8 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
                         fips = response.getString("fips");
                         //reportDate = response.getString("report_date");
                         state = response.getString("state");
+                        messages.getValue().add(i,  countyName + " New cases: " + newCaseNumber + "  Active Cases: " + activeCasesEst + " Total Cases: " + totalCases);
+                        messages.getValue().add(i,  countyName + " New deaths: " + newDeathNumber + " Total Cases: " + totalCases);
                     }
                     catch(JSONException j){
 
