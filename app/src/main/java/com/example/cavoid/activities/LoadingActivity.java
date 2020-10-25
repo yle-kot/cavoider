@@ -204,9 +204,9 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         mWorkManager.enqueue(SaveLocationRequest);
     }
     private String readLastLocation(LocalDate date[]){
-        LocationDatabase db = Room.databaseBuilder(getApplicationContext(), LocationDatabase.class, "PastLocations").build();
-        LocationDao locationDao = db.getLocationDao();
-        List<PastLocation> record = locationDao.loadAllByDates(date);
+        LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
+        LocationDao dao = locDb.getLocationDao();
+        List<PastLocation> record = dao.loadAllByDates(date);
         return record.get(0).fips;
     }
 }
