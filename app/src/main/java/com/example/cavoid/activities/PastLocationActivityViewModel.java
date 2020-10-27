@@ -18,7 +18,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-//TODO Implement live data for the pastlocationactivity
 public class PastLocationActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
@@ -35,32 +34,32 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public String countyName;
     public String totalDeaths;
     public String TAG;
+    public String reportDate;
     public int i;
-    private String message;
     private Repository repo;
     private MutableLiveData<Integer> counter;
     private ArrayList<PastLocation> pastLocations;
-    private MutableLiveData<ArrayList<String>> messages;
+    public ArrayList<String> messages;
 
     public PastLocationActivityViewModel(@NonNull Application application){
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<PastLocation>) locDao.getAll();
+        messages = new ArrayList<String>();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
         updatePastLocationMessages();
     }
 
-    public MutableLiveData<ArrayList<String>> getMessages() {
-        if(messages == null){
-            messages = new MutableLiveData<ArrayList<String>>();
+    public MutableLiveData<Integer> getCounter() {
+        if(counter == null){
+            counter = new MutableLiveData<Integer>();
+            counter.setValue(0);
         }
-        return messages;
+        return counter;
     }
 
-    //TODO:Make this method update past locations then in PastLocationAdapter update when the data changes using an observer(DashboardActivity, android tutorial page)
-    //TODO:Make sure this works
     public void updatePastLocationMessages(){
         for(i = 0; i < pastLocations.size();i++) {
             repo.getPosTests(pastLocations.get(i).fips, new Response.Listener<JSONObject>() {
@@ -77,10 +76,11 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
                         totalDeaths = response.getString("deaths");
                         countyName = response.getString("county");
                         fips = response.getString("fips");
-                        //reportDate = response.getString("report_date");
+                        reportDate = response.getString("report_date");
                         state = response.getString("state");
-                        messages.getValue().add(i,  countyName + " New cases: " + newCaseNumber + "  Active Cases: " + activeCasesEst + " Total Cases: " + totalCases);
-                        messages.getValue().add(i,  countyName + " New deaths: " + newDeathNumber + " Total Cases: " + totalCases);
+                        messages.add(countyName + " New cases: " + newCaseNumber + "  Active Cases: " + activeCasesEst + " Total Cases: " + totalCases);
+                        messages.add(countyName + " New deaths: " + newDeathNumber + " Total Deaths: " + totalDeaths);
+                        counter.setValue(counter.getValue() + 1);
                     }
                     catch(JSONException j){
 

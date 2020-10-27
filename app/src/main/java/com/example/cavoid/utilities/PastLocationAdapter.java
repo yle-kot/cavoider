@@ -16,10 +16,11 @@ import com.example.cavoid.R;
 import java.util.ArrayList;
 
 public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHolder>{
+    PastLocationViewHolder vh;
     ArrayList<String> pastLocationMessages;
     Context c;
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    //The adapter constructor
     public PastLocationAdapter(Context c, ArrayList<String> data) {
         this.c = c;
         pastLocationMessages = data;
@@ -31,23 +32,30 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
         // create a new view
         CardView v = (CardView)LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row, parent, false);
-        PastLocationViewHolder vh = new PastLocationViewHolder(v);
+        vh = new PastLocationViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(@NonNull PastLocationViewHolder vh, int position) {
-        if((position+1) < pastLocationMessages.size()) {
+        if(position > 0  && (position%2 !=0)){
+            position++;
+        }
+        if(position+1 < pastLocationMessages.size()) {
             vh.pastCasesTextView.setText(pastLocationMessages.get(position));
             vh.pastDeathsTextView.setText(pastLocationMessages.get(position + 1));
         }
     }
 
-
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return pastLocationMessages.size();
+        if(pastLocationMessages != null) {
+            return pastLocationMessages.size();
+        }
+        else {
+            return 0;
+        }
     }
 
 }

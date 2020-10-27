@@ -71,7 +71,6 @@ public class DashboardActivity extends AppCompatActivity {
         currentCounty.setText(String.format("COVID-19 statistics for %s, %s on %s.", viewModel.countyName, viewModel.state, yesterday));
         cases.setText(String.format("New Cases: %s Active Cases: %s",viewModel.newCaseNumber,viewModel.activeCasesEst));
         deaths.setText(String.format("New Deaths: %s",viewModel.newDeathNumber));
-        Log.d("poop",viewModel.countyName);
     }
 
     public String getYesterdayString() {

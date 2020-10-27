@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -76,8 +77,8 @@ public class PastLocationActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new PastLocationAdapter(this,pastLocationsList);
-        pastLocationsList = viewModel.getMessages().getValue();
+        mAdapter = new PastLocationAdapter(this,messages);
+        messages = viewModel.messages;
         recyclerView.setAdapter(mAdapter);
         dashboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,11 +94,15 @@ public class PastLocationActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         });
-        viewModel.getMessages().observe(this, new Observer<ArrayList<String>>() {
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
-            public void onChanged(ArrayList<String> strings) {
-                // specify an adapter (see also next example)
-                pastLocationsList = viewModel.getMessages().getValue();
+            public void onChanged(Integer integer) {
+                messages = viewModel.messages;
+                for(int i = 0; i < messages.size();i++){
+                    Log.d("Poop", messages.get(i));
+                }
+                mAdapter = new PastLocationAdapter(getApplicationContext(),messages);
+                recyclerView.setAdapter(mAdapter);
             }
         });
     }
