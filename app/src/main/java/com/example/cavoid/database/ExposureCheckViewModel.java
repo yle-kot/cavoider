@@ -6,9 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.android.volley.Response;
 import com.example.cavoid.api.Repository;
@@ -18,10 +16,8 @@ import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 public class ExposureCheckViewModel extends AndroidViewModel {
     private Repository APIRepository;
@@ -39,6 +35,10 @@ public class ExposureCheckViewModel extends AndroidViewModel {
         this.isDone = new MutableLiveData<>();
         this.isDone.setValue(false);
         fipsToNotify(getApplication().getApplicationContext(), APIRepository, allFipsFromLastTwoWeeks);
+    }
+
+    public ArrayList<String> getAllFipsFromLastTwoWeeks(){
+        return allFipsFromLastTwoWeeks;
     }
 
     public MutableLiveData<Boolean> getIsDone(){
@@ -92,8 +92,6 @@ public class ExposureCheckViewModel extends AndroidViewModel {
                     }
                 }
             });
-
         }
     }
-
 }

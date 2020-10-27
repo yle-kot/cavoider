@@ -3,6 +3,9 @@ package com.example.cavoid.activities;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -38,18 +41,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps);
-        Button notificationButton = (Button)findViewById(R.id.notificationButton);
         Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
         Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
-//        notificationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // TODO Implement settings screen
-//                  Intent notificationIntent = new Intent(MapsActivity.this,NotificationActivity.class);
-                    //startActivity(notificationIntent);
-//                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+
         dashboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,8 +54,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         pastLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Implement settings screen
-                Toast.makeText(MapsActivity.this, "Button was pressed lol", Toast.LENGTH_SHORT).show();
+                Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
+                startActivity(pastLocationIntent);
             }
         });
 
@@ -75,6 +69,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(MapsActivity.this, SettingsActivity.class);
+                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
+                this.startActivity(settingsIntent);
+                break;
+            case R.id.action_appInfo:
+                Intent appInfoIntent = new Intent(MapsActivity.this, AppInfoActivity.class);
+                this.startActivity(appInfoIntent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 

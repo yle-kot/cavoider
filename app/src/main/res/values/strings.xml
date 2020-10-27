@@ -14,11 +14,34 @@
     <string name="dashboardGreeting">Here are the covid statistics for...</string>
     <string name="_14_day_trend">14 Day Trend</string>
     <string name="date">12/12/20:</string>
-    <string name="casesTitle" />
-    <string name="deathsTitle" />
     <string name="_14DayTrendTitle">14 Day Trend</string>
     <string name="trendlineTitle">Trendline</string>
     <string name="subscription_message">subscription message</string>
     <string name="total_casesTitle" />
     <string name="total_deathsTitle" />
+    <string name="fips_code">FIPS Code</string>
+    <string name="data_sources">Covid-19 Data Information</string>
+    <string name="data_sources_info">All Covid-19 data reported in the is app is from The New York
+        Times Covid-19 data set which is based on reports from state and
+        local health agencies. Their data can be found here: https://github.com/nytimes/covid-19-data.
+        The data was used to calculate some of the statistics in this app. Data reported in this app
+        may differ from other sources due to differences in reporting standards and reporting lag times.</string>
+    <string name="app_overview">App Overview Information</string>
+    <string name="app_overview_info">This app is designed to provide users with an overview of
+        the Covid-19 information in their area. This apps uses a user\'s location in order to alert
+        them of the Covid-19 status in areas they have visited or are currently visiting. This app
+        is not designed as a contact tracing app and should not be used as such. This app is
+        provided purely for informational purposes.</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="change_current_location_notification_settings">Change Current Location Notification Settings</string>
+    <string name="current_location_notification_description">Notifies whenever entering an area with high community spread</string>
+    <string name="community_spread_notification_description">Notifies whenever an area visited in the last 14 days has high community spread</string>
+    <string name="location_settings">Location Settings</string>
+    <string name="current_location_setting_description">Current Location Settings must be enabled for full functionality of this app. This app does not work without current location enabled. Current location data is only saved as county.</string>
+    <string name="notifications">Notifications</string>
+    <string name="map">Map</string>
+    <string name="past_locations">Past Locations</string>
+    <string name="casesTextView"></string>
+    <string name="deathsTitle" />
+    <string name="change_community_spread_notification_settings">Change Community Spread Notification Settings</string>
 </resources>

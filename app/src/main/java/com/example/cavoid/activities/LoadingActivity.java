@@ -1,4 +1,8 @@
 package com.example.cavoid.activities;
+import com.example.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.example.cavoid.workers.RegularLocationSaveWorker;
+import com.example.cavoid.workers.GetWorker;
+import com.example.cavoid.utilities.GeneralUtilities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -11,6 +15,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -39,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
+    private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
     private static final int REQUEST_ACCESS_BACKGROUND_LOCATION_STATE = 227;
     private static final int REQUEST_ACCESS_COARSE_LOCATION_STATE = 228;
     private Intent changeScreenIntent;
@@ -48,7 +54,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
         super.onCreate(savedInstanceState);
 
         createNotificationChannel();
-       changeScreenIntent = new Intent(LoadingActivity.this, MapsActivity.class);
+        changeScreenIntent = new Intent(LoadingActivity.this, DashboardActivity.class);
 
         AlertDialog permAlert;
 
@@ -93,19 +99,6 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
      */
 
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        for (int i = 0; i < permissions.length; i++) {
-//            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-//                Toast.makeText(LoadingActivity.this, String.format("%s is required for app to function", permissions[i]), Toast.LENGTH_LONG).show();
-//                finishAffinity();
-//                return;
-//            }
-//        }
-//        createWorkers(GeneralUtilities.getSecondsUntilHour(8));
-//        startActivity(changeScreenIntent);
-//    }
 
     public void createNotificationChannel() {
 
@@ -121,6 +114,11 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
             // Create the NotificationChannel with all the parameters.
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
+                            "Alert",
+                            NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationChannel pastLocationChannel = new NotificationChannel
+                    (PAST_LOCATION_CHANNEL_ID,
                             "Community Spread Alert",
                             NotificationManager.IMPORTANCE_HIGH);
 
@@ -130,6 +128,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
             notificationChannel.setDescription
                     ("Notifies the user of a newly found exposure to community spread");
             mNotificationManager.createNotificationChannel(notificationChannel);
+            mNotificationManager.createNotificationChannel(pastLocationChannel);
         }
     }
 
@@ -181,10 +180,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 .create().show();
     }
 
-    private void showExplanation(String title,
-                                 String message,
-                                 final String permission,
-                                 final int permissionRequestCode) {
+    private void showExplanation(String title, String message, final String permission, final int permissionRequestCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title)
                 .setMessage(message)
@@ -210,17 +206,14 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
-
-
         mWorkManager.enqueue(GetRequest);
         mWorkManager.enqueue(CovidRequest);
         mWorkManager.enqueue(SaveLocationRequest);
     }
-
     private String readLastLocation(LocalDate date[]){
-        LocationDatabase db = Room.databaseBuilder(getApplicationContext(), LocationDatabase.class, "PastLocations").build();
-        LocationDao locationDao = db.getLocationDao();
-        List<PastLocation> record = locationDao.loadAllByDates(date);
+        LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
+        LocationDao dao = locDb.getLocationDao();
+        List<PastLocation> record = dao.loadAllByDates(date);
         return record.get(0).fips;
     }
 }
