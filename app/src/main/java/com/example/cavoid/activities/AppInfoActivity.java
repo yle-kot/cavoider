@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.cavoid.R;
 
@@ -16,6 +18,33 @@ public class AppInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
+
+        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
+        dashboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent dashboardIntent = new Intent(AppInfoActivity.this, DashboardActivity.class);
+                startActivity(dashboardIntent);
+            }
+        });
+
+        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
+        pastLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent pastLocationIntent = new Intent(AppInfoActivity.this, PastLocationActivity.class);
+                startActivity(pastLocationIntent);
+            }
+        });
+
+        Button mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mapIntent = new Intent(AppInfoActivity.this, MapsActivity.class);
+                startActivity(mapIntent);
+            }
+        });
     }
 
     @Override

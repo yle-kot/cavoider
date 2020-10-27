@@ -10,11 +10,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.cavoid.R;
-import com.example.cavoid.activities.LoadingActivity;
-import java.util.ArrayList;
+import com.example.cavoid.database.PastLocation;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -23,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        Button notificationButton = (Button) findViewById(R.id.notificationButton);
+        Button notificationButton = (Button) findViewById(R.id.communitySpreadNotificationButton);
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -34,6 +32,32 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
+        dashboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent dashboardIntent = new Intent(SettingsActivity.this, DashboardActivity.class);
+                startActivity(dashboardIntent);
+            }
+        });
+
+        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
+        pastLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent pastLocationIntent = new Intent(SettingsActivity.this, PastLocationActivity.class);
+                startActivity(pastLocationIntent);
+            }
+        });
+
+        Button mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mapIntent = new Intent(SettingsActivity.this, MapsActivity.class);
+                startActivity(mapIntent);
+            }
+        });
     }
 
     @Override
