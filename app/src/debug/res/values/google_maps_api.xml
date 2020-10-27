@@ -4,12 +4,12 @@
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
-    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=1C:1B:D3:DC:CC:37:AE:58:7D:23:15:5A:1E:0E:2F:1B:22:9A:A2:ED%3Bcom.example.cavoid
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=1C:1B:D3:DC:CC:37:AE:58:7D:23:15:5A:1E:0E:2F:1B:22:9A:A2:ED%3Bcom.operationcodify.cavoid
 
     You can also add your credentials to an existing key, using these values:
 
     Package name:
-    com.example.cavoid
+    com.operationcodify.cavoid
 
     SHA-1 certificate fingerprint:
     1C:1B:D3:DC:CC:37:AE:58:7D:23:15:5A:1E:0E:2F:1B:22:9A:A2:ED
