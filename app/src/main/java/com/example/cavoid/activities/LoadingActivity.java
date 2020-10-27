@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
 
     private static final String PRIMARY_CHANNEL_ID = "Priority";
+    private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
     private static final int REQUEST_ACCESS_BACKGROUND_LOCATION_STATE = 227;
     private static final int REQUEST_ACCESS_COARSE_LOCATION_STATE = 228;
     private Intent changeScreenIntent;
@@ -113,6 +114,11 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
             // Create the NotificationChannel with all the parameters.
             NotificationChannel notificationChannel = new NotificationChannel
                     (PRIMARY_CHANNEL_ID,
+                            "Alert",
+                            NotificationManager.IMPORTANCE_HIGH);
+
+            NotificationChannel pastLocationChannel = new NotificationChannel
+                    (PAST_LOCATION_CHANNEL_ID,
                             "Community Spread Alert",
                             NotificationManager.IMPORTANCE_HIGH);
 
@@ -122,6 +128,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
             notificationChannel.setDescription
                     ("Notifies the user of a newly found exposure to community spread");
             mNotificationManager.createNotificationChannel(notificationChannel);
+            mNotificationManager.createNotificationChannel(pastLocationChannel);
         }
     }
 
