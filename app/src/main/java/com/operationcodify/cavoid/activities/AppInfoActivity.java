@@ -1,5 +1,6 @@
 package com.operationcodify.cavoid.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 
 public class AppInfoActivity extends AppCompatActivity {
@@ -19,30 +21,25 @@ public class AppInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
 
-        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
-        dashboardButton.setOnClickListener(new View.OnClickListener() {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent dashboardIntent = new Intent(AppInfoActivity.this, DashboardActivity.class);
-                startActivity(dashboardIntent);
-            }
-        });
-
-        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
-        pastLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pastLocationIntent = new Intent(AppInfoActivity.this, PastLocationActivity.class);
-                startActivity(pastLocationIntent);
-            }
-        });
-
-        Button mapButton = (Button) findViewById(R.id.mapButton);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mapIntent = new Intent(AppInfoActivity.this, MapsActivity.class);
-                startActivity(mapIntent);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.dashboardBottomMenu:
+                        Intent dashboardIntent = new Intent(AppInfoActivity.this, DashboardActivity.class);
+                        startActivity(dashboardIntent);
+                        break;
+                    case R.id.pastLocationBottomMenu:
+                        Intent pastLocationIntent = new Intent(AppInfoActivity.this, PastLocationActivity.class);
+                        startActivity(pastLocationIntent);
+                        break;
+                    case R.id.mapBottomMenu:
+                        Intent mapIntent = new Intent(AppInfoActivity.this, MapsActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                }
+                return false;
             }
         });
     }
