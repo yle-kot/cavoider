@@ -1,7 +1,9 @@
 package com.operationcodify.cavoid.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -20,6 +23,29 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.invisibleBottomMenu);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.dashboardBottomMenu:
+                        Intent dashboardIntent = new Intent(SettingsActivity.this, DashboardActivity.class);
+                        startActivity(dashboardIntent);
+                        break;
+                    case R.id.pastLocationBottomMenu:
+                        Intent pastLocationIntent = new Intent(SettingsActivity.this, PastLocationActivity.class);
+                        startActivity(pastLocationIntent);
+                        break;
+                    case R.id.mapBottomMenu:
+                        Intent mapIntent = new Intent(SettingsActivity.this, MapsActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                }
+                return false;
+            }
+        });
+
         Button notificationButton = (Button) findViewById(R.id.communitySpreadNotificationButton);
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -28,33 +54,6 @@ public class SettingsActivity extends AppCompatActivity {
                 notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
                 notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Priority");
                 startActivity(notificationIntent);
-            }
-        });
-
-        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
-        dashboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent dashboardIntent = new Intent(SettingsActivity.this, DashboardActivity.class);
-                startActivity(dashboardIntent);
-            }
-        });
-
-        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
-        pastLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pastLocationIntent = new Intent(SettingsActivity.this, PastLocationActivity.class);
-                startActivity(pastLocationIntent);
-            }
-        });
-
-        Button mapButton = (Button) findViewById(R.id.mapButton);
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mapIntent = new Intent(SettingsActivity.this, MapsActivity.class);
-                startActivity(mapIntent);
             }
         });
     }
