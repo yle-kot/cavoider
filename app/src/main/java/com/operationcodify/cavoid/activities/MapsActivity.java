@@ -34,6 +34,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.mapBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -47,7 +48,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         startActivity(pastLocationIntent);
                         break;
                 }
-                return false;
+                return true;
             }
         });
 

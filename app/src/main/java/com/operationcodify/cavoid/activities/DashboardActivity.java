@@ -38,6 +38,7 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -51,7 +52,7 @@ public class DashboardActivity extends AppCompatActivity {
                         startActivity(mapIntent);
                         break;
                 }
-                return false;
+                return true;
             }
         });
         viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);

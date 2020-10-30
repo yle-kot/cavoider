@@ -66,6 +66,7 @@ public class PastLocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_past_location);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -79,7 +80,7 @@ public class PastLocationActivity extends AppCompatActivity {
                         startActivity(mapIntent);
                         break;
                 }
-                return false;
+                return true;
             }
         });
 
