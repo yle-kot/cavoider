@@ -67,7 +67,7 @@ public class DashboardActivity extends AppCompatActivity {
         TextView pastLocationDeaths = findViewById(R.id.pastDeathsTextView);
         currentCounty.setText(String.format("COVID-19 statistics for %s, %s on %s.", viewModel.countyName, viewModel.state, yesterday));
         cases.setText(String.format("New Cases: %s Active Cases: %s",viewModel.newCaseNumber,viewModel.activeCasesEst));
-        deaths.setText(String.format("New Deaths: %s",viewModel.newDeathNumber));
+        deaths.setText(String.format("New Deaths: %s Total Deaths: %s",viewModel.newDeathNumber, viewModel.totalDeaths));
     }
 
     public String getYesterdayString() {

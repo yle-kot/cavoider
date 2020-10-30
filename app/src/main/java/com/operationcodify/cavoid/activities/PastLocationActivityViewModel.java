@@ -1,6 +1,7 @@
 package com.operationcodify.cavoid.activities;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 public class PastLocationActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
-    private PastLocation mostRecentLocation;
     public String activeCasesEst;
     public String caseFatality;
     public String deathsPer100K;
@@ -37,14 +37,14 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public int i;
     private Repository repo;
     private MutableLiveData<Integer> counter;
-    private ArrayList<PastLocation> pastLocations;
+    private ArrayList<String> pastLocations;
     public ArrayList<String> messages;
 
     public PastLocationActivityViewModel(@NonNull Application application){
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
-        pastLocations = (ArrayList<PastLocation>) locDao.getAll();
+        pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
         messages = new ArrayList<String>();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
@@ -61,7 +61,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
 
     public void updatePastLocationMessages(){
         for(i = 0; i < pastLocations.size();i++) {
-            repo.getPosTests(pastLocations.get(i).fips, new Response.Listener<JSONObject>() {
+            repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
@@ -82,7 +82,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
                         counter.setValue(counter.getValue() + 1);
                     }
                     catch(JSONException j){
-
+                        Log.i(TAG,"Could not get a response!");
                     }
                 }
             });

@@ -21,6 +21,7 @@ import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ActiveCases;
 import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
+import com.operationcodify.cavoid.database.NotifiedLocation;
 import com.operationcodify.cavoid.database.PastLocation;
 import com.operationcodify.cavoid.utilities.GeneralUtilities;
 
@@ -42,6 +43,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     private LocalDate twoWeeksAgoDate;
     private Repository repo;
     private Context context;
+    NotifiedLocation notifiedLocation;
     private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
     private Boolean isDone;
@@ -69,6 +71,8 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         updateCovidReportsForAllLocationsSince(twoWeeksAgoDate);
 
         ArrayList<String> fipsVisitedLastTwoWeeks = getsFipsVisitedOn(getDatesSince(twoWeeksAgoDate));
+        ArrayList<String> fipsNotified = (ArrayList<String>) locDao.getAllNotifiedFips();
+        fipsVisitedLastTwoWeeks.removeAll(fipsNotified);
         createFipsToNotifyList(repo, fipsVisitedLastTwoWeeks);
 
         return Result.success();
@@ -95,6 +99,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     }
 
     public void createFipsToNotifyList(Repository repo, ArrayList<String> pastFips) {
+
         for (String fips : pastFips) {
             repo.getPosTests(fips, new Response.Listener<JSONObject>() {
                 @Override
@@ -144,6 +149,10 @@ public class DailyCovidTrendUpdateWorker extends Worker {
             StringBuilder sb = new StringBuilder();
             sb.append("You recently visited :\n");
             for (int i = 0; i < countiesToNotify.size(); i++){
+                notifiedLocation =  new NotifiedLocation();
+                notifiedLocation.fips = countiesToNotify.get(i);
+                notifiedLocation.date = DateTime.now().toLocalDate();
+                LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertNotifiedLocations(notifiedLocation));
                 sb.append(countiesToNotify.get(i));
             }
             message = sb.toString();
