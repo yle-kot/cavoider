@@ -3,6 +3,8 @@ package com.operationcodify.cavoid.utilities;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.time.Clock;
+
 public class GeneralUtilities {
 
     /**
@@ -13,11 +15,14 @@ public class GeneralUtilities {
      * @return Milliseconds until specified hour
      */
     public static long getSecondsUntilHour(int hour){
+        return getSecondsUntilHour(hour, DateTime.now());
+    }
+    public static long getSecondsUntilHour(int hour, DateTime now){
         long delay;
-        if (DateTime.now().getHourOfDay() < (hour -  1)) {
-            delay = new Duration(DateTime.now() , DateTime.now().withTimeAtStartOfDay().plusHours(hour)).getStandardSeconds();
+        if (now.getHourOfDay() < (hour -  1)) {
+            delay = new Duration(now , now.withTimeAtStartOfDay().plusHours(hour)).getStandardSeconds();
         } else {
-            delay = new Duration(DateTime.now() , DateTime.now().withTimeAtStartOfDay().plusDays(1).plusHours(hour)).getStandardSeconds();
+            delay = new Duration(now , now.withTimeAtStartOfDay().plusDays(1).plusHours(hour)).getStandardSeconds();
         }
         return delay;
     }
