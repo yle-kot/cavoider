@@ -9,9 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,21 +32,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps);
-        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
-        Button pastLocationButton = (Button) findViewById(R.id.pastLocationButton);
 
-        dashboardButton.setOnClickListener(new View.OnClickListener() {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.mapBottomMenu);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent dashboardIntent = new Intent(MapsActivity.this, DashboardActivity.class);
-                startActivity(dashboardIntent);
-            }
-        });
-        pastLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
-                startActivity(pastLocationIntent);
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.dashboardBottomMenu:
+                        Intent dashboardIntent = new Intent(MapsActivity.this, DashboardActivity.class);
+                        startActivity(dashboardIntent);
+                        break;
+                    case R.id.pastLocationBottomMenu:
+                        Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
+                        startActivity(pastLocationIntent);
+                        break;
+                }
+                return true;
             }
         });
 

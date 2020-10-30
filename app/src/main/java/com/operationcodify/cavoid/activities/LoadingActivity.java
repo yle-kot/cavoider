@@ -28,6 +28,9 @@ import com.operationcodify.cavoid.database.PastLocation;
 import org.joda.time.LocalDate;
 
 import java.util.List;
+
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -199,9 +202,9 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
-        mWorkManager.enqueue(GetRequest);
-        mWorkManager.enqueue(CovidRequest);
-        mWorkManager.enqueue(SaveLocationRequest);
+        mWorkManager.enqueueUniqueWork(GetWorker.class.getName(), ExistingWorkPolicy.REPLACE, GetRequest);
+        mWorkManager.enqueueUniqueWork(DailyCovidTrendUpdateWorker.class.getName(), ExistingWorkPolicy.REPLACE, CovidRequest);
+        mWorkManager.enqueueUniquePeriodicWork(RegularLocationSaveWorker.class.getName(), ExistingPeriodicWorkPolicy.REPLACE, SaveLocationRequest);
     }
     private String readLastLocation(LocalDate date[]){
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());

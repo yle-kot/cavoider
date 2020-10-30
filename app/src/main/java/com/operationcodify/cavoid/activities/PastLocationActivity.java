@@ -1,5 +1,6 @@
 package com.operationcodify.cavoid.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -16,9 +17,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
+import com.operationcodify.cavoid.database.PastLocation;
 import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.text.DateFormat;
@@ -61,13 +64,31 @@ public class PastLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_location);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.dashboardBottomMenu:
+                        Intent dashboardIntent = new Intent(PastLocationActivity.this, DashboardActivity.class);
+                        startActivity(dashboardIntent);
+                        break;
+                    case R.id.mapBottomMenu:
+                        Intent mapIntent = new Intent(PastLocationActivity.this, MapsActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                }
+                return true;
+            }
+        });
+
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
         viewModel = new ViewModelProvider(this).get(PastLocationActivityViewModel.class);
         String yesterday = getYesterdayDateString();
-        Button dashboardButton = (Button) findViewById(R.id.dashboardButton);
-        Button mapButton = (Button) findViewById(R.id.mapButton);
         recyclerView = (RecyclerView) findViewById(R.id.pastLocationsRecyclerView);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -78,20 +99,6 @@ public class PastLocationActivity extends AppCompatActivity {
         mAdapter = new PastLocationAdapter(this,messages);
         messages = viewModel.messages;
         recyclerView.setAdapter(mAdapter);
-        dashboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent dashboardIntent = new Intent(PastLocationActivity.this, DashboardActivity.class);
-                startActivity(dashboardIntent);
-            }
-        });
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mapIntent = new Intent(PastLocationActivity.this, MapsActivity.class);
-                startActivity(mapIntent);
-            }
-        });
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
