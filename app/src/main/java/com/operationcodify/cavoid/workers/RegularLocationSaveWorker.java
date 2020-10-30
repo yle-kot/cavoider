@@ -76,7 +76,6 @@ public class RegularLocationSaveWorker extends Worker {
                                 pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
                                 pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                                 pastLocation.date = date;
-                                pastLocation.wasNotified = false;
                                 LocationDatabase.databaseWriteExecutor.execute(() -> dao.insertLocations(pastLocation));
                                 Log.i(TAG, "Saved location: " + pastLocation.fips);
                             } catch (JSONException e) {

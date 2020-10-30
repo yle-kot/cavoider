@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import org.joda.time.LocalDate;
 import java.util.List;
@@ -38,8 +39,22 @@ public interface LocationDao {
             " LIMIT 1")
     PastLocation findByLocation(String fips);
 
+    @Query("SELECT  DISTINCT pl.fips FROM past_location [pl]")
+    List<String>getAllDistinctFips();
+
+    @Query( "SELECT DISTINCT fips FROM notified_location ")
+    List<String>getAllNotifiedFips();
+
+    @Query( "SELECT pl.fips FROM past_location[pl] " +
+            "LEFT JOIN notified_location[nl] ON pl.fips == nl.fips " +
+            "WHERE nl.fips == null")
+    List<String>getAllFipsToNotify();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertLocations(PastLocation... pastLocations);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertNotifiedLocations(NotifiedLocation... NotifiedLocations);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertReports(ActiveCases... activeCases);
@@ -47,10 +62,15 @@ public interface LocationDao {
     @Delete
     void delete(PastLocation pastLocation);
 
+    @Update()
+    void createNewNotificationEntry(NotifiedLocation... notifiedLocations);
+
     @Query( "DELETE FROM past_location WHERE date < :date; "
 //            "DELETE FROM active_cases as ac " +
 //            "OUTER JOIN past_locations as pl on ac.fips = pl.fips " +
 //            "WHERE ac.fips != pl.fips"
     )
     void cleanRecordsOlderThan(LocalDate date);
+
+
 }

@@ -24,8 +24,6 @@ public class PastLocation {
     @ColumnInfo(name="county_name")
     public String countyName;
 
-    @ColumnInfo(name = "was_notified")
-    public Boolean wasNotified = false;
 
     public long timestamp = Instant.now().getMillis();
 }
