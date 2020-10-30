@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  *      LocationDao.databaseWriteExecutor.execute( () -> locDao.readOrWriteMethodHere() );
  *
  */
-@Database(entities = {PastLocation.class, ActiveCases.class, NotifiedLocation.class}, version = 5, exportSchema = false)
+@Database(entities = {PastLocation.class, ActiveCases.class, NotifiedLocation.class}, version = 6, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class LocationDatabase extends RoomDatabase {
     public abstract LocationDao locationDao();
