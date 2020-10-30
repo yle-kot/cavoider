@@ -16,7 +16,7 @@ public class TestUtilities {
     @Test
     public void getSecondsUntilHour_LessThanOneHour_ReturnsTomorrowsOccurrence(){
         DateTime fakeNow = new DateTime(2020, 10, 22, 7, 10, 0, 0);
-        int expectedSeconds = 89401; // (50min * 60sec) + (24hr * 60min * 60 sec)
+        int expectedSeconds = 89400; // (50min * 60sec) + (24hr * 60min * 60 sec)
         assertEquals(expectedSeconds, GeneralUtilities.getSecondsUntilHour(8, fakeNow));
     }
 
