@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import java.util.List;
 
@@ -49,6 +50,9 @@ public interface LocationDao {
             "LEFT JOIN notified_location[nl] ON pl.fips == nl.fips " +
             "WHERE nl.fips == null")
     List<String>getAllFipsToNotify();
+
+    @Query( "Select nl.date FROM notified_location[nl] WHERE nl.fips == :fips")
+    LocalDate getTimeOfLastNotificationFor(String fips);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertLocations(PastLocation... pastLocations);

@@ -5,12 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,7 +18,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
-import com.operationcodify.cavoid.database.PastLocation;
 import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.text.DateFormat;
@@ -29,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TreeSet;
 
 public class PastLocationActivity extends AppCompatActivity {
 
@@ -47,8 +44,9 @@ public class PastLocationActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<String> messages;
+    public TreeSet<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
+    private static final String TAG = PastLocationActivity.class.getSimpleName();
 
 
     public Date yesterday() {
@@ -96,17 +94,13 @@ public class PastLocationActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new PastLocationAdapter(this,messages);
-        messages = viewModel.messages;
+        mAdapter = new PastLocationAdapter(this, reports);
+        reports = viewModel.getReports();
         recyclerView.setAdapter(mAdapter);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                messages = viewModel.messages;
-                for(int i = 0; i < messages.size();i++){
-                    Log.d("Poop", messages.get(i));
-                }
-                mAdapter = new PastLocationAdapter(getApplicationContext(),messages);
+                mAdapter = new PastLocationAdapter( getApplicationContext(), reports);
                 recyclerView.setAdapter(mAdapter);
             }
         });
