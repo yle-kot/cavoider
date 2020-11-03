@@ -105,28 +105,25 @@ public class DailyCovidTrendUpdateWorker extends Worker {
             repo.getPosTests(fips, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    String percentChange = "";
+                    double week1 = 0;
+                    double week2 = 0;
                     String countyName = "";
                     try {
-                        percentChange = response.getString("percent_change_14_days");
+                        week1 = response.getDouble("week_1_rolling_avg_per_100k_people");
+                        week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
                         countyName = response.getString("county");
                     } catch (JSONException e) {
                         Log.e(TAG, "Expected percent_change_14_days to be a string" + e.getMessage());
                     }
-                    try {
-                        if (Integer.parseInt(percentChange) > 0) {
-                            fipsToNotifyList.add(countyName);
-                            synchronized (DailyCovidTrendUpdateWorker.class){
-                                counter = counter + 1;
-                                if (counter == pastFips.size()) {
-                                    finalizeWorker();
-                                }
+                    if ((int)Math.round(week2) > (int)Math.round(week1)) {
+                        fipsToNotifyList.add(countyName);
+                        synchronized (DailyCovidTrendUpdateWorker.class){
+                            counter = counter + 1;
+                            if (counter == pastFips.size()) {
+                                finalizeWorker();
                             }
-
                         }
-                    }
-                    catch (NumberFormatException exception) {
-                        Log.i(TAG, "Expected percent_change_14_days to have a integer value");
+
                     }
                 }
             });
