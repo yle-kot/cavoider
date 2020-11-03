@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -200,7 +201,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
-        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueueUniqueWork(DailyCovidTrendUpdateWorker.class.getName(), ExistingWorkPolicy.REPLACE, CovidRequest);
     }
 
     private void updateCovidReportsForAllLocationsSince(LocalDate date) {
