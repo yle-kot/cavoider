@@ -1,6 +1,5 @@
 package com.operationcodify.cavoid.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,13 +17,13 @@ import com.operationcodify.cavoid.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 public class DashboardActivity extends AppCompatActivity {
 
     private DashboardActivityViewModel viewModel;
+    public SimpleDateFormat dateFormat;
+    public String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,13 +112,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     public String getYesterdayString() {
         String suffix = "";
+        int day = 0;
         Calendar cal = Calendar.getInstance();
-       //  cal.add(Calendar.DATE, -1);
-        int day = Calendar.DAY_OF_MONTH;
-        Instant now = Instant.now();
-        Instant yesterday = now.minus(1, ChronoUnit.DAYS);
-
-        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("MMM. d");
+        DateFormat dateFormat = new SimpleDateFormat("MMM. d");
+        date = dateFormat.format(cal.getTime());
         if (day == 12) {
             suffix = "th";
         }
@@ -129,7 +125,7 @@ public class DashboardActivity extends AppCompatActivity {
             case 3:  suffix = "rd";
             default: suffix = "th";
         }
-        return dateFormat.format(cal.getTime()) + suffix;
+        return dateFormat.format(date + suffix);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
