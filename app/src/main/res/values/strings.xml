@@ -44,4 +44,6 @@
     <string name="casesTextView"></string>
     <string name="deathsTitle" />
     <string name="change_community_spread_notification_settings">Change Community Spread Notification Settings</string>
+    <string name="onboardingTitle" />
+    <string name="onboardingDescription" />
 </resources>
