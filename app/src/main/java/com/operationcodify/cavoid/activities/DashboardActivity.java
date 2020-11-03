@@ -1,12 +1,11 @@
 package com.operationcodify.cavoid.activities;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -24,13 +24,6 @@ import java.util.Calendar;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private String newCaseNumber;
-    private String newDeathNumber;
-    private String activeCases;
-    private String totalCases;
-    private String totalDeaths;
-    private String caseMessage;
-    private String deathMessage;
     private DashboardActivityViewModel viewModel;
 
     @Override
@@ -65,14 +58,57 @@ public class DashboardActivity extends AppCompatActivity {
     }
     public void updateDashBoard() {
         String yesterday = getYesterdayString();
+
         TextView currentCounty = findViewById(R.id.greetingTextView);
-        TextView cases = findViewById(R.id.casesTextView);
-        TextView deaths = findViewById(R.id.deathsTextView);
-        TextView pastLocationCases = findViewById(R.id.pastCasesTextView);
-        TextView pastLocationDeaths = findViewById(R.id.pastDeathsTextView);
         currentCounty.setText(String.format("COVID-19 statistics for %s, %s on %s.", viewModel.countyName, viewModel.state, yesterday));
-        cases.setText(String.format("New Cases: %s Active Cases: %s",viewModel.newCaseNumber,viewModel.activeCasesEst));
-        deaths.setText(String.format("New Deaths: %s Total Deaths: %s",viewModel.newDeathNumber, viewModel.totalDeaths));
+
+        TextView totalCases = findViewById(R.id.TotalcasesTextView);
+        totalCases.setText("Total Cases:");
+
+        TextView totalCasesNum = findViewById(R.id.TotalcasesNum);
+        totalCasesNum.setText(viewModel.totalCases);
+
+        TextView totalDeaths = findViewById(R.id.TotalDeathTextView);
+        totalDeaths.setText("Total Deaths:");
+
+        TextView totalDeathsNum = findViewById(R.id.TotalDeathNum);
+        totalDeathsNum.setText(viewModel.totalDeaths);
+
+        TextView newCases = findViewById(R.id.casesTextView);
+        newCases.setText("New Cases:");
+
+        TextView newCasesNum = findViewById(R.id.casesNum);
+        newCasesNum.setText(viewModel.newCaseNumber);
+
+        TextView newDeaths = findViewById(R.id.deathsTextView);
+        newDeaths.setText("New Deaths");
+
+        TextView newDeathsNum = findViewById(R.id.deathsNum);
+        newDeathsNum.setText(viewModel.newDeathNumber);
+
+        TextView activeCasesEst = findViewById(R.id.EstCasesTextView);
+        activeCasesEst.setText("Estimated Active Cases:");
+
+        TextView activeCasesEstNum = findViewById(R.id.EstCasesNum);
+        activeCasesEstNum.setText(viewModel.activeCasesEst);
+
+        TextView casesPer100K = findViewById(R.id.casesPerTextView);
+        casesPer100K.setText("Cases per 100K People:");
+
+        TextView casesPer100KNum = findViewById(R.id.casesPerNum);
+        casesPer100KNum.setText(viewModel.casesPer100K);
+
+        TextView caseFatality = findViewById(R.id.CaseFatalityTextView);
+        caseFatality.setText("Case Fatality:");
+
+        TextView caseFatalityNum = findViewById(R.id.CaseFatalityNum);
+        caseFatalityNum.setText(viewModel.caseFatality);
+
+        TextView deathPer100K = findViewById(R.id.DeathPerTextView);
+        deathPer100K.setText("New Deaths");
+
+        TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
+        deathPer100KNum.setText(viewModel.deathsPer100K);
     }
 
     public String getYesterdayString() {

@@ -44,4 +44,12 @@
     <string name="casesTextView"></string>
     <string name="deathsTitle" />
     <string name="change_community_spread_notification_settings">Change Community Spread Notification Settings</string>
+    <string name="total_cases">total_cases</string>
+    <string name="case_fatality">case_fatality</string>
+    <string name="total_deaths">total_deaths</string>
+    <string name="new_deaths">new_deaths</string>
+    <string name="cases_per_100k_people">cases_per_100k</string>
+    <string name="cases_per_100k">cases_per_100k</string>
+    <string name="new_cases">new_cases</string>
+    <string name="estimated_average_cases">estimated_average_cases</string>
 </resources>
