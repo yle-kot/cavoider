@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.operationcodify.cavoid">
-    <!-- Specific Feed activity theme -->
-    <style android:name="FeedActivityThemeLight" android:parent="ActivityTheme.Primary.Base.Light">
-        <item android:name="android:windowBackground">#F4F4F6</item>
-    </style>
-    <style android:name="FeedActivityThemeDark" android:parent="ActivityTheme.Primary.Base.Dark">
-        <item android:name="android:windowBackground">#33343B</item>
-    </style>
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the "MyLocation" functionality.
-    -->
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
