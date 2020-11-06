@@ -109,6 +109,7 @@ public class DashboardActivity extends AppCompatActivity {
         TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
         deathPer100KNum.setText(viewModel.deathsPer100K);
     }
+    // Todo: Return a string of correct date. Ex: "Nov. 8th"
 
     public String getYesterdayString() {
         String suffix = "";
@@ -125,7 +126,7 @@ public class DashboardActivity extends AppCompatActivity {
             case 3:  suffix = "rd";
             default: suffix = "th";
         }
-        return dateFormat.format(date + suffix);
+        return suffix;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
