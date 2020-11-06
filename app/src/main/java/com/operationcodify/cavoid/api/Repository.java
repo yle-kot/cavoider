@@ -45,24 +45,30 @@ public class Repository {
     }
 
     public void getFipsCodeFromCurrentLocation(Location location, Response.Listener<JSONObject> callback) throws IOException {
-        String baseUrl = "https://geo.fcc.gov/api/census/area?";
-        String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
-        String longitude = "lon="+location.getLongitude();
-        baseUrl += latitude+longitude;
-        String fips = "";
-        //Might need countyName string for dashboard
-        String countyName = "";
-        RequestQueue queue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+        if(location == null){
+            String baseUrl = "https://geo.fcc.gov/api/census/area?";
+            String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
+            String longitude = "lon="+location.getLongitude();
+            baseUrl += latitude+longitude;
+            String fips = "";
+            //Might need countyName string for dashboard
+            String countyName = "";
+            RequestQueue queue = Volley.newRequestQueue(context);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
 
-                    }
-                });
-        // Access the RequestQueue through your singleton class.
-        queue.add(jsonObjectRequest);
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+            // Access the RequestQueue through your singleton class.
+            queue.add(jsonObjectRequest);
+        }
+        else{
+            throw new NullPointerException("Location Does not exist");
+        }
 
     }
 
