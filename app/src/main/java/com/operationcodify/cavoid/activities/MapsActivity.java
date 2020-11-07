@@ -1,40 +1,49 @@
 package com.operationcodify.cavoid.activities;
 
-import android.app.NotificationManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.operationcodify.cavoid.api.Repository;
+import com.operationcodify.cavoid.database.ExposureCheckViewModel;
+import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsActivity extends AppCompatActivity {
 
-    private GoogleMap mMap;
-    private NotificationManager mNotificationManager;
-
+    private ExposureCheckViewModel exposureCheck;
+    private ArrayList<String> pastLocationsList;
+    private Repository repo;
+    public ArrayList<String> messages;
+    private GraphActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_maps);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        bottomNavigationView.setSelectedItemId(R.id.mapBottomMenu);
+        bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -52,16 +61,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        repo = new Repository(getApplicationContext());
+        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
+        viewModel = new ViewModelProvider(this).get(GraphActivityViewModel.class);
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                updateList();
+            }
+        });
+    }
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-
+    public void updateList() {
+        ArrayList<String> activeCasesEst = viewModel.activeCasesEst;
+        List<BarEntry> activeCasesEntries = new ArrayList<>();
+        if (activeCasesEst != null) {
+            for (int i = 0; i < activeCasesEst.size(); i++) {
+                int cases = 0;
+                try {
+                    cases = Integer.getInteger(activeCasesEst.get(i));
+                } catch (NumberFormatException ex) {
+                }
+                activeCasesEntries.add(new BarEntry(i, cases));
+                if (i == 9) {
+                    break;
+                }
+            }
         }
-
+        activeCasesEntries.add(new BarEntry(0, 0));
+        BarChart pastLocationActiveCases = (BarChart) findViewById(R.id.pastLocationChart);
+        BarDataSet set = new BarDataSet(activeCasesEntries, "BarDataSet");
+        BarData data = new BarData(set);
+        pastLocationActiveCases.setData(data);
+        pastLocationActiveCases.setFitBars(true);
+        pastLocationActiveCases.invalidate();
     }
 
     @Override
@@ -85,36 +119,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-//        Polygon polygon = PolygonUtils.createCountyPolygon(MapsActivity.this, mMap);
-//        polygon.setClickable(true);
-//        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-//            @Override
-//            public void onPolygonClick(Polygon polygon){
-//                System.out.println("click");
-//                polygon.setFillColor(Color.RED);
-//            }
-//        });
-
-    }
-
-
 
 }
