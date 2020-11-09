@@ -1,5 +1,6 @@
 package com.operationcodify.cavoid.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,9 +17,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
@@ -27,9 +33,10 @@ import com.operationcodify.cavoid.database.ExposureCheckViewModel;
 import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity {
+public class GraphActivity extends AppCompatActivity {
 
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
@@ -49,11 +56,11 @@ public class MapsActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.dashboardBottomMenu:
-                        Intent dashboardIntent = new Intent(MapsActivity.this, DashboardActivity.class);
+                        Intent dashboardIntent = new Intent(GraphActivity.this, DashboardActivity.class);
                         startActivity(dashboardIntent);
                         break;
                     case R.id.pastLocationBottomMenu:
-                        Intent pastLocationIntent = new Intent(MapsActivity.this, PastLocationActivity.class);
+                        Intent pastLocationIntent = new Intent(GraphActivity.this, PastLocationActivity.class);
                         startActivity(pastLocationIntent);
                         break;
                 }
@@ -74,28 +81,40 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     public void updateList() {
-        ArrayList<String> activeCasesEst = viewModel.activeCasesEst;
+        HashMap<String, Double> activeCasesEst = viewModel.activeCasesEst;
+        Object[] countyNames = activeCasesEst.keySet().toArray();
+        Object[] activeCasesPerCounty = activeCasesEst.values().toArray();
         List<BarEntry> activeCasesEntries = new ArrayList<>();
-        if (activeCasesEst != null) {
+        ArrayList<String> xAxisLabel = new ArrayList<>();
+        if (!activeCasesEst.isEmpty()) {
             for (int i = 0; i < activeCasesEst.size(); i++) {
-                int cases = 0;
-                try {
-                    cases = Integer.getInteger(activeCasesEst.get(i));
-                } catch (NumberFormatException ex) {
-                }
-                activeCasesEntries.add(new BarEntry(i, cases));
+                double cases =  (double) activeCasesPerCounty[i];
+                int intCases = (int) cases;
+                activeCasesEntries.add(new BarEntry(i, intCases));
+                xAxisLabel.add(countyNames[i].toString());
                 if (i == 9) {
                     break;
                 }
             }
         }
-        activeCasesEntries.add(new BarEntry(0, 0));
-        BarChart pastLocationActiveCases = (BarChart) findViewById(R.id.pastLocationChart);
-        BarDataSet set = new BarDataSet(activeCasesEntries, "BarDataSet");
+        else {
+            activeCasesEntries.add(new BarEntry(0, 0));
+        }
+        BarChart pastLocationChart = (BarChart) findViewById(R.id.pastLocationChart);
+        Description description = pastLocationChart.getDescription();
+        description.setEnabled(false);
+        YAxis yAxisRight = pastLocationChart.getAxisRight();
+        yAxisRight.setEnabled(false);
+        YAxis yAxisLeft = pastLocationChart.getAxisLeft();
+        XAxis xAxis = pastLocationChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
+        xAxis.setGranularity(1f);
+        BarDataSet set = new BarDataSet(activeCasesEntries, "Past Location Active Cases Estimate");
         BarData data = new BarData(set);
-        pastLocationActiveCases.setData(data);
-        pastLocationActiveCases.setFitBars(true);
-        pastLocationActiveCases.invalidate();
+        pastLocationChart.setData(data);
+        pastLocationChart.setFitBars(true);
+        pastLocationChart.invalidate();
     }
 
     @Override
@@ -108,12 +127,12 @@ public class MapsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent settingsIntent = new Intent(MapsActivity.this, SettingsActivity.class);
+                Intent settingsIntent = new Intent(GraphActivity.this, SettingsActivity.class);
                 //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
                 this.startActivity(settingsIntent);
                 break;
             case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(MapsActivity.this, AppInfoActivity.class);
+                Intent appInfoIntent = new Intent(GraphActivity.this, AppInfoActivity.class);
                 this.startActivity(appInfoIntent);
                 break;
         }
