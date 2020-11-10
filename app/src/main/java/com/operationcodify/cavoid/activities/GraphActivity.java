@@ -75,12 +75,12 @@ public class GraphActivity extends AppCompatActivity {
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                updateList();
+                updateGraph();
             }
         });
     }
 
-    public void updateList() {
+    public void updateGraph() {
         HashMap<String, Double> activeCasesEst = viewModel.activeCasesEst;
         Object[] countyNames = activeCasesEst.keySet().toArray();
         Object[] activeCasesPerCounty = activeCasesEst.values().toArray();
@@ -105,7 +105,6 @@ public class GraphActivity extends AppCompatActivity {
         description.setEnabled(false);
         YAxis yAxisRight = pastLocationChart.getAxisRight();
         yAxisRight.setEnabled(false);
-        YAxis yAxisLeft = pastLocationChart.getAxisLeft();
         XAxis xAxis = pastLocationChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
