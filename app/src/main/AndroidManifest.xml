@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.operationcodify.cavoid">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.operationcodify.cavoid"
+    tools:ignore="MissingLeanbackLauncher">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.AppInfoActivity"></activity>
+        <activity android:name=".activities.AppInfoActivity"/>
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.PastLocationActivity" />
         <activity android:name=".activities.DashboardActivity" />
@@ -27,6 +36,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.OnboardingActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:theme="@style/Theme.Leanback.Onboarding">
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

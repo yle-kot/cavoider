@@ -1,7 +1,9 @@
 package com.operationcodify.cavoid.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,8 +37,15 @@ public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // Check if we need to display our OnboardingSupportFragment
+        if (!sharedPreferences.getBoolean(MyOnboardingSupportFragment.preferences, false)) {
+            // The user hasn't seen the OnboardingSupportFragment yet, so show it
+            startActivity(new Intent(this, OnboardingActivity.class));
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

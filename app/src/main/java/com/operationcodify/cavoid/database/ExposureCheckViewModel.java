@@ -70,25 +70,22 @@ public class ExposureCheckViewModel extends AndroidViewModel {
             repo.getPosTests(location, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    String percentChange;
+                    double week1 = 0;
+                    double week2 = 0;
+                    String countyName = "";
                     try {
-                        percentChange = response.getString("percent_change_14_days");
+                        week1 = response.getDouble("week_1_rolling_avg_per_100k_people");
+                        week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
+                        countyName = response.getString("county");
                     } catch (JSONException e) {
                         Log.e("fipsToNotify", "Expected percent_change_14_days to be a string" + e.getMessage());
-                        percentChange = null;
                     }
-                    try {
-                        if (Integer.parseInt(percentChange) > 0) {
-                            fipsToNotify.add(location);
-                            synchronized (ExposureCheckViewModel.class){
-                                counter = counter + 1;
-                                isDone.setValue(counter == pastLocations.size());
-                            }
-
+                    if ((int)Math.round(week2) > (int)Math.round(week1)) {
+                        fipsToNotify.add(countyName);
+                        synchronized (ExposureCheckViewModel.class){
+                            counter = counter + 1;
+                            isDone.setValue(counter == pastLocations.size());
                         }
-                    }
-                    catch (NumberFormatException exception) {
-                        Log.i("fipsToNotify", "Expected percent_change_14_days to have a integer value");
                     }
                 }
             });
