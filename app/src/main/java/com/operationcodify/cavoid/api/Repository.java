@@ -46,7 +46,9 @@ public class Repository {
 
     public void getFipsCodeFromCurrentLocation(Location location, Response.Listener<JSONObject> callback) throws IOException {
 
-        if(location == null){
+        String locale = context.getResources().getConfiguration().locale.getCountry();
+
+        if(locale.equals("US")){
             String baseUrl = "https://geo.fcc.gov/api/census/area?";
             String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
             String longitude = "lon="+location.getLongitude();
@@ -67,9 +69,8 @@ public class Repository {
             queue.add(jsonObjectRequest);
         }
         else{
-            throw new NullPointerException("Location Does not exist");
+            System.out.println("Hello");
         }
-
     }
 
 

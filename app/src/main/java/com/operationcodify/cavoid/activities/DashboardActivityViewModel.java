@@ -67,13 +67,23 @@ public class DashboardActivityViewModel extends AndroidViewModel {
                 try {
 
                     activeCasesEst = response.getString("active_cases_est");
+                    int active_est = Integer.parseInt(activeCasesEst);
+                    activeCasesEst = Integer.toString(active_est);
+
                     caseFatality = response.getString("case_fatality");
                     totalCases = response.getString("cases");
                     casesPer100K = response.getString("cases_per_100k_people");
                     deathsPer100K = response.getString("deaths_per_100k_people");
                     newCaseNumber = response.getString("new_daily_cases");
+
                     newDeathNumber = response.getString("new_daily_deaths");
+                    int new_death = Integer.parseInt(newDeathNumber);
+                    newDeathNumber = Integer.toString(new_death);
+
                     totalDeaths = response.getString("deaths");
+                    int total_death = Integer.parseInt(totalDeaths);
+                    totalDeaths = Integer.toString(total_death);
+
                     countyName = response.getString("county");
                     fips = response.getString("fips");
                     reportDate = response.getString("report_date");
