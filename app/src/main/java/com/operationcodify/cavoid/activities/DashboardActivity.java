@@ -15,9 +15,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 
+import org.joda.time.Chronology;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.Instant;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -55,6 +61,7 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
     }
+
     public void updateDashBoard() {
         String yesterday = getYesterdayString();
 
@@ -113,21 +120,25 @@ public class DashboardActivity extends AppCompatActivity {
 
     public String getYesterdayString() {
         String suffix = "";
-        int day = 0;
-        Calendar cal = Calendar.getInstance();
-        DateFormat dateFormat = new SimpleDateFormat("MMM. d");
-        date = dateFormat.format(cal.getTime());
+        DateTime now = new Instant().toDateTime();
+        int day = now.getDayOfMonth();
+        String month = now.monthOfYear().getAsText();
         if (day == 12) {
             suffix = "th";
         }
         switch (day % 10) {
-            case 1:  suffix = "st";
-            case 2:  suffix = "nd";
-            case 3:  suffix = "rd";
-            default: suffix = "th";
+            case 1:
+                suffix = "st";
+            case 2:
+                suffix = "nd";
+            case 3:
+                suffix = "rd";
+            default:
+                suffix = "th";
         }
-        return suffix;
+        return String.format("%s %d%s", month, day, suffix);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
