@@ -56,8 +56,8 @@ public class DashboardActivity extends AppCompatActivity {
                         Intent pastLocationIntent = new Intent(DashboardActivity.this, PastLocationActivity.class);
                         startActivity(pastLocationIntent);
                         break;
-                    case R.id.mapBottomMenu:
-                        Intent mapIntent = new Intent(DashboardActivity.this, MapsActivity.class);
+                    case R.id.graphBottomMenu:
+                        Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
                         break;
                 }

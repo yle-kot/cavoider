@@ -20,29 +20,6 @@ public class AppInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_info);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        bottomNavigationView.setSelectedItemId(R.id.invisibleBottomMenu);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.dashboardBottomMenu:
-                        Intent dashboardIntent = new Intent(AppInfoActivity.this, DashboardActivity.class);
-                        startActivity(dashboardIntent);
-                        break;
-                    case R.id.pastLocationBottomMenu:
-                        Intent pastLocationIntent = new Intent(AppInfoActivity.this, PastLocationActivity.class);
-                        startActivity(pastLocationIntent);
-                        break;
-                    case R.id.mapBottomMenu:
-                        Intent mapIntent = new Intent(AppInfoActivity.this, MapsActivity.class);
-                        startActivity(mapIntent);
-                        break;
-                }
-                return false;
-            }
-        });
     }
 
     @Override

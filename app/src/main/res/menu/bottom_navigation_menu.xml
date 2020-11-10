@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/dashboardBottomMenu"
-        android:icon="@drawable/ic_baseline_insert_chart_outlined_24"
+        android:icon="@drawable/ic_baseline_dashboard_24"
         android:title="Dashboard" />
 
     <item
@@ -11,13 +11,9 @@
         android:title="Past Location" />
 
     <item
-        android:id="@+id/mapBottomMenu"
-        android:icon="@drawable/ic_baseline_map_24"
-        android:title="Map" />
-    <item
-        android:id="@+id/invisibleBottomMenu"
-        android:title=""
-        android:visible="false"> </item>
+        android:id="@+id/graphBottomMenu"
+        android:icon="@drawable/ic_baseline_insert_chart_outlined_24"
+        android:title="Graph" > </item>
 
 </menu>
 

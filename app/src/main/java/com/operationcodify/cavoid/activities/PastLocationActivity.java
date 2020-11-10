@@ -19,13 +19,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
+import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TreeSet;
 
 public class PastLocationActivity extends AppCompatActivity {
 
@@ -73,8 +73,8 @@ public class PastLocationActivity extends AppCompatActivity {
                         Intent dashboardIntent = new Intent(PastLocationActivity.this, DashboardActivity.class);
                         startActivity(dashboardIntent);
                         break;
-                    case R.id.mapBottomMenu:
-                        Intent mapIntent = new Intent(PastLocationActivity.this, MapsActivity.class);
+                    case R.id.graphBottomMenu:
+                        Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
                         break;
                 }
