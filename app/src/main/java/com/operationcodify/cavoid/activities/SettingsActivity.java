@@ -23,29 +23,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        bottomNavigationView.setSelectedItemId(R.id.invisibleBottomMenu);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.dashboardBottomMenu:
-                        Intent dashboardIntent = new Intent(SettingsActivity.this, DashboardActivity.class);
-                        startActivity(dashboardIntent);
-                        break;
-                    case R.id.pastLocationBottomMenu:
-                        Intent pastLocationIntent = new Intent(SettingsActivity.this, PastLocationActivity.class);
-                        startActivity(pastLocationIntent);
-                        break;
-                    case R.id.mapBottomMenu:
-                        Intent mapIntent = new Intent(SettingsActivity.this, MapsActivity.class);
-                        startActivity(mapIntent);
-                        break;
-                }
-                return false;
-            }
-        });
-
         Button notificationButton = (Button) findViewById(R.id.communitySpreadNotificationButton);
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -11,36 +11,34 @@ import com.android.volley.Response;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
+import com.operationcodify.cavoid.database.PastLocation;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.HashMap;
 
-public class PastLocationActivityViewModel extends AndroidViewModel {
+public class GraphActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
-
+    public HashMap<String, Double> activeCasesEst;
+    public String fips;
     public String TAG;
     public int i;
     private Repository repo;
     private MutableLiveData<Integer> counter;
     private ArrayList<String> pastLocations;
-    private ArrayList<ParsedPastLocationReport> reports;
 
-    public PastLocationActivityViewModel(@NonNull Application application){
+    public GraphActivityViewModel(@NonNull Application application){
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
-        reports = new ArrayList<>();
+        activeCasesEst = new HashMap<String, Double>();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
-        updatePastLocationMessages();
-    }
-
-    public ArrayList<ParsedPastLocationReport> getReports(){
-        return this.reports;
+        updateDataForChart();
     }
 
     public MutableLiveData<Integer> getCounter() {
@@ -51,18 +49,22 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         return counter;
     }
 
-    public void updatePastLocationMessages(){
+    public void updateDataForChart(){
         for(i = 0; i < pastLocations.size();i++) {
             repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    ParsedPastLocationReport newReport = new ParsedPastLocationReport(response, locDao);
-                    Log.d(TAG, "Adding a new report to pastLocationsReport: " + newReport.fips + "--" + newReport.reportGenerationDate);
-                    reports.add(newReport);
-                    counter.setValue(counter.getValue() + 1);
+                    try {
+                        Double activeCaseForCounty = response.getDouble("active_cases_est");
+                        String countyName = response.getString("county");
+                        activeCasesEst.put(countyName, activeCaseForCounty);
+                        counter.setValue(counter.getValue() + 1);
+                    }
+                    catch(JSONException j){
+                        Log.i(TAG,"Could not get a response!");
+                    }
                 }
             });
         }
     }
 }
-

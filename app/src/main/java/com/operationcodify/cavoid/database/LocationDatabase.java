@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  *
  * In order to perform write operations on the database:
  *      LocationDao locDao = LocationDatabase.getLocationDao();
- *      LocationDao.databaseWriteExecutor.execute( () -> locDao.readOrWriteMethodHere() );
+ *      LocationDatabase.databaseWriteExecutor.execute( () -> locDao.writeMethodHere() );
  *
  */
 @Database(entities = {PastLocation.class, ActiveCases.class, NotifiedLocation.class}, version = 6, exportSchema = false)
