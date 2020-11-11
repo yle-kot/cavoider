@@ -8,6 +8,7 @@
     <string name="alarm_off">alarm off</string>
     <string name="alarm_on">alarm on</string>
     <string name="turn_on_notification_for_rise_in_cases">Turn on notification for rise in cases</string>
+    <string name="off">off</string>
     <string name="Off">Off</string>
     <string name="On">On</string>
     <string name="dashboardGreeting">Here are the covid statistics for...</string>
@@ -43,16 +44,6 @@
     <string name="casesTextView"></string>
     <string name="deathsTitle" />
     <string name="change_community_spread_notification_settings">Change Community Spread Notification Settings</string>
-    <string name="total_cases">total_cases</string>
-    <string name="case_fatality">case_fatality</string>
-    <string name="total_deaths">total_deaths</string>
-    <string name="new_deaths">new_deaths</string>
-    <string name="cases_per_100k_people">cases_per_100k</string>
-    <string name="cases_per_100k">cases_per_100k</string>
-    <string name="new_cases">new_cases</string>
-    <string name="estimated_average_cases">estimated_average_cases</string>
-    <string name="light_theme">light theme</string>
-    <string name="dark_theme">dark theme</string>
-    <string name="battery_saver_theme">battery saver theme</string>
-    <string name="system_theme">system_theme</string>
+    <string name="onboardingTitle" />
+    <string name="onboardingDescription" />
 </resources>
