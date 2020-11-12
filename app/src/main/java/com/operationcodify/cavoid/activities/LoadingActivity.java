@@ -223,17 +223,18 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     }
 
     protected void createWorkers(long delay) {
-        WorkManager mWorkManager = WorkManager.getInstance(this);
+        WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest GetRequest = new OneTimeWorkRequest.Builder(GetWorker.class)
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
-                .setInitialDelay(delay, TimeUnit.SECONDS)
+//                .setInitialDelay(delay, TimeUnit.SECONDS)
+                .setInitialDelay(15*60, TimeUnit.SECONDS)
                 .build();
         PeriodicWorkRequest SaveLocationRequest = new PeriodicWorkRequest.Builder(RegularLocationSaveWorker.class, 15, TimeUnit.MINUTES).build();
-        mWorkManager.enqueueUniqueWork(GetWorker.class.getName(), ExistingWorkPolicy.REPLACE, GetRequest);
-        mWorkManager.enqueueUniqueWork(DailyCovidTrendUpdateWorker.class.getName(), ExistingWorkPolicy.REPLACE, CovidRequest);
-        mWorkManager.enqueueUniquePeriodicWork(RegularLocationSaveWorker.class.getName(), ExistingPeriodicWorkPolicy.REPLACE, SaveLocationRequest);
+        mWorkManager.enqueueUniqueWork(GetWorker.class.getSimpleName(), ExistingWorkPolicy.REPLACE, GetRequest);
+        mWorkManager.enqueueUniqueWork(DailyCovidTrendUpdateWorker.class.getSimpleName(), ExistingWorkPolicy.REPLACE, CovidRequest);
+        mWorkManager.enqueueUniquePeriodicWork(RegularLocationSaveWorker.class.getSimpleName(), ExistingPeriodicWorkPolicy.REPLACE, SaveLocationRequest);
     }
     private String readLastLocation(LocalDate date[]){
         LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());

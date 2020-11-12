@@ -19,7 +19,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
-import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +31,7 @@ public class PastLocationActivity extends AppCompatActivity {
     //TODO:Finish implementing recycleview with hunter
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private PastLocationAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private String newCaseNumber;
     private String newDeathNumber;
@@ -44,8 +43,9 @@ public class PastLocationActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<String> messages;
+    public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
+    private static final String TAG = PastLocationActivity.class.getSimpleName();
 
 
     public Date yesterday() {
@@ -93,18 +93,20 @@ public class PastLocationActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new PastLocationAdapter(this,messages);
-        messages = viewModel.messages;
+
+        reports = viewModel.getReports();
+        mAdapter = new PastLocationAdapter(this, reports);
         recyclerView.setAdapter(mAdapter);
+
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                messages = viewModel.messages;
-                for(int i = 0; i < messages.size();i++){
-                    Log.d("Poop", messages.get(i));
+                if (integer == 0 ){
+                    return;
                 }
-                mAdapter = new PastLocationAdapter(getApplicationContext(),messages);
-                recyclerView.setAdapter(mAdapter);
+                ParsedPastLocationReport report = reports.get(integer - 1);
+                Log.d(TAG, "Adding report to view: " + report.countyName);
+                mAdapter.add(report);
             }
         });
     }

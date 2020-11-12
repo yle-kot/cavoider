@@ -1,5 +1,7 @@
 package com.operationcodify.cavoid.utilities;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
@@ -15,6 +17,7 @@ public class GeneralUtilities {
      * @return Milliseconds until specified hour
      */
     public static long getSecondsUntilHour(int hour){
+
         return getSecondsUntilHour(hour, DateTime.now());
     }
     public static long getSecondsUntilHour(int hour, DateTime now){

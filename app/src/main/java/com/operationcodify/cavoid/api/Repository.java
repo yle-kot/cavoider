@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.operationcodify.cavoid.workers.RegularLocationSaveWorker;
 
 import org.json.JSONObject;
 
@@ -19,6 +20,7 @@ public class Repository {
 
     private String posTests = "";
     private Context context;
+    private static final String TAG = Repository.class.getSimpleName();
 
     public Repository(Context context){
         this.context = context;
@@ -35,8 +37,8 @@ public class Repository {
                 (Request.Method.GET, url, null, callback, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.w("Our API Handler", "No response from API");
-                        Log.w("Our API Handler", error);
+                        Log.w(TAG, "No response from API");
+                        Log.w(TAG, error);
 
                     }
                 });
