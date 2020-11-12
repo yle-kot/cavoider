@@ -17,15 +17,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 
-import org.joda.time.Chronology;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.Instant;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -81,49 +76,49 @@ public class DashboardActivity extends AppCompatActivity {
         totalCases.setText("Total Cases:");
 
         TextView totalCasesNum = findViewById(R.id.TotalcasesNum);
-        totalCasesNum.setText(viewModel.totalCases);
+        totalCasesNum.setText(viewModel.totalCases2);
 
         TextView totalDeaths = findViewById(R.id.TotalDeathTextView);
         totalDeaths.setText("Total Deaths:");
 
         TextView totalDeathsNum = findViewById(R.id.TotalDeathNum);
-        totalDeathsNum.setText(viewModel.totalDeaths);
+        totalDeathsNum.setText(viewModel.totalDeaths2);
 
         TextView newCases = findViewById(R.id.casesTextView);
         newCases.setText("New Cases:");
 
         TextView newCasesNum = findViewById(R.id.casesNum);
-        newCasesNum.setText(viewModel.newCaseNumber);
+        newCasesNum.setText(viewModel.newCaseNumber2);
 
         TextView newDeaths = findViewById(R.id.deathsTextView);
         newDeaths.setText("New Deaths");
 
         TextView newDeathsNum = findViewById(R.id.deathsNum);
-        newDeathsNum.setText(viewModel.newDeathNumber);
+        newDeathsNum.setText(viewModel.newDeathNumber2);
 
         TextView activeCasesEst = findViewById(R.id.EstCasesTextView);
         activeCasesEst.setText("Estimated Active Cases:");
 
         TextView activeCasesEstNum = findViewById(R.id.EstCasesNum);
-        activeCasesEstNum.setText(viewModel.activeCasesEst);
+        activeCasesEstNum.setText(viewModel.activeCasesEst2);
 
         TextView casesPer100K = findViewById(R.id.casesPerTextView);
         casesPer100K.setText("Cases per 100K People:");
 
         TextView casesPer100KNum = findViewById(R.id.casesPerNum);
-        casesPer100KNum.setText(viewModel.casesPer100K);
+        casesPer100KNum.setText(viewModel.casesPer100K2);
 
         TextView caseFatality = findViewById(R.id.CaseFatalityTextView);
         caseFatality.setText("Case Fatality:");
 
         TextView caseFatalityNum = findViewById(R.id.CaseFatalityNum);
-        caseFatalityNum.setText(viewModel.caseFatality);
+        caseFatalityNum.setText(viewModel.caseFatality2);
 
         TextView deathPer100K = findViewById(R.id.DeathPerTextView);
         deathPer100K.setText("New Deaths");
 
         TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
-        deathPer100KNum.setText(viewModel.deathsPer100K);
+        deathPer100KNum.setText(viewModel.deathsPer100K2);
     }
     // Todo: Return a string of correct date. Ex: "Nov. 8th"
 
