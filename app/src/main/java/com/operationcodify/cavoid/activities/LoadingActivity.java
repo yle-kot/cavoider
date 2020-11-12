@@ -83,18 +83,6 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
                     REQUEST_ACCESS_BACKGROUND_LOCATION_STATE);
         }
     }
-    public boolean isNightModeEnabled() {
-        return isNightModeEnabled;
-    }
-
-    public void setIsNightModeEnabled(boolean isNightModeEnabled) {
-        this.isNightModeEnabled = isNightModeEnabled;
-
-        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putBoolean(NIGHT_MODE, isNightModeEnabled);
-        editor.apply();
-    }
 
     private void showPermission(String permission, String explanationTitle, String explanationMessage, int permissionState) {
         int permissionCheck = ContextCompat.checkSelfPermission(
