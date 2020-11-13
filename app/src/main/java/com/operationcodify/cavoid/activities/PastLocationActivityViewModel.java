@@ -15,13 +15,23 @@ import com.operationcodify.cavoid.database.LocationDatabase;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 public class PastLocationActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
-
+    public String activeCasesEst;
+    public String caseFatality;
+    public String deathsPer100K;
+    public String state;
+    public String fips;
+    public String casesPer100K;
+    public String newCaseNumber;
+    public String newDeathNumber;
+    public String totalCases;
+    public String countyName;
+    public String totalDeaths;
     public String TAG;
+    public String reportDate;
     public int i;
     private Repository repo;
     private MutableLiveData<Integer> counter;
@@ -65,4 +75,3 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         }
     }
 }
-
