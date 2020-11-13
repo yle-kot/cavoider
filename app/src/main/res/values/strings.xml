@@ -47,4 +47,11 @@
     <string name="chartTitle">Estimated Active Cases for Previously Visited Counties</string>
     <string name="onboardingTitle" />
     <string name="onboardingDescription" />
+    <string name="new_cases">new_cases</string>
+    <string name="estimated_average_cases">estimated average cases</string>
+    <string name="new_deaths">New Deaths:</string>
+    <string name="cases_per_100k">cases per 100k</string>
+    <string name="total_cases">total_cases</string>
+    <string name="total_deaths">total deaths</string>
+    <string name="case_fatality">case_fatality</string>
 </resources>
