@@ -51,6 +51,11 @@ public interface LocationDao {
             "WHERE nl.fips == null")
     List<String>getAllFipsToNotify();
 
+    //TODO Add query that joins active cases onto past locations into PastLocationWithActiveCases
+    @Query( "SELECT pl.fips, pl.date, pl.county_name, pl.timestamp,ac.active_cases, ac.report_date FROM past_location[pl]"+
+            "LEFT JOIN active_cases[ac] ON pl.fips == ac.fips")
+    List<PastLocationWithActiveCases> getPastLocationWithActiveCases();
+
     @Query( "Select nl.date FROM notified_location[nl] WHERE nl.fips == :fips")
     LocalDate getTimeOfLastNotificationFor(String fips);
 
