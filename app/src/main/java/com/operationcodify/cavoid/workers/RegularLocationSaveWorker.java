@@ -14,15 +14,15 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.android.volley.Response;
-import com.operationcodify.cavoid.api.Repository;
-import com.operationcodify.cavoid.database.LocationDao;
-import com.operationcodify.cavoid.database.LocationDatabase;
-import com.operationcodify.cavoid.database.PastLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.operationcodify.cavoid.api.Repository;
+import com.operationcodify.cavoid.database.LocationDao;
+import com.operationcodify.cavoid.database.LocationDatabase;
+import com.operationcodify.cavoid.database.PastLocation;
 
 import org.joda.time.LocalDate;
 import org.json.JSONException;
@@ -55,6 +55,7 @@ public class RegularLocationSaveWorker extends Worker {
         locationRequest.setNumUpdates(2);
         locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
+
         LocationCallback locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -78,6 +79,7 @@ public class RegularLocationSaveWorker extends Worker {
                                 pastLocation.date = date;
                                 LocationDatabase.databaseWriteExecutor.execute(() -> dao.insertLocations(pastLocation));
                                 Log.i(TAG, "Saved location: " + pastLocation.fips);
+
                             } catch (JSONException e) {
                                 Log.w(TAG, "Could not fetch current fips...\n" + e.toString());
 

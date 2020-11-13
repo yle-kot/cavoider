@@ -11,7 +11,6 @@ import com.android.volley.Response;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
-import com.operationcodify.cavoid.database.PastLocation;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +36,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public int i;
     private Repository repo;
     private MutableLiveData<Integer> counter;
-    private ArrayList<String> pastLocations;
+    public ArrayList<String> pastLocations;
     public ArrayList<String> messages;
 
     public PastLocationActivityViewModel(@NonNull Application application){
