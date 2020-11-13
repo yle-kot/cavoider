@@ -1,10 +1,8 @@
 package com.operationcodify.cavoid.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,19 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
@@ -33,7 +28,7 @@ import com.operationcodify.cavoid.database.ExposureCheckViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.PriorityQueue;
 
 public class GraphActivity extends AppCompatActivity {
 
@@ -46,7 +41,7 @@ public class GraphActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_graph);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
@@ -80,39 +75,52 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     public void updateGraph() {
-        HashMap<String, Double> activeCasesEst = viewModel.activeCasesEst;
-        Object[] countyNames = activeCasesEst.keySet().toArray();
-        Object[] activeCasesPerCounty = activeCasesEst.values().toArray();
-        List<BarEntry> activeCasesEntries = new ArrayList<>();
+        PriorityQueue<GraphActivityViewModel.ChartData> rollingAvg = viewModel.rollingAvg;
+        ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
         ArrayList<String> xAxisLabel = new ArrayList<>();
-        if (!activeCasesEst.isEmpty()) {
-            for (int i = 0; i < activeCasesEst.size(); i++) {
-                double cases =  (double) activeCasesPerCounty[i];
-                int intCases = (int) cases;
-                activeCasesEntries.add(new BarEntry(i, intCases));
-                xAxisLabel.add(countyNames[i].toString());
-                if (i == 9) {
-                    break;
-                }
+        ArrayList<Integer> rollingAvgState = new ArrayList<>();
+        ArrayList<String> states = new ArrayList<>();
+        if (!rollingAvg.isEmpty()) {
+            for (int i = 0; i < rollingAvg.size(); i++) {
+                GraphActivityViewModel.ChartData chartData = rollingAvg.poll();
+                float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
+                //int casesState = (int) chartData.getWeek2RollingAvgState();
+                String county = chartData.getCounty();
+                //String state = chartData.getState();
+                rollingAvgEntries.add(new BarEntry(i, casesCounty));
+                xAxisLabel.add(county);
+                /*if (!states.contains(state)) {
+                    rollingAvgState.add(casesState);
+                    states.add(state);
+                }*/
             }
         }
         else {
-            activeCasesEntries.add(new BarEntry(0, 0));
+            rollingAvgEntries.add(new BarEntry(0, 0));
         }
         BarChart pastLocationChart = (BarChart) findViewById(R.id.pastLocationChart);
         Description description = pastLocationChart.getDescription();
         description.setEnabled(false);
         YAxis yAxisRight = pastLocationChart.getAxisRight();
         yAxisRight.setEnabled(false);
+        YAxis yAxisLeft = pastLocationChart.getAxisLeft();
+        if (states.size() > 1) {
+            for (int i = 0; i < states.size(); i++) {
+                LimitLine stateLine = new LimitLine(rollingAvgState.get(i), (states.get(i) + " Weekly Rolling Avg"));
+                stateLine.setLineColor(Color.BLACK);
+                yAxisLeft.addLimitLine(stateLine);
+            }
+        }
         XAxis xAxis = pastLocationChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
         xAxis.setGranularity(1f);
-        BarDataSet set = new BarDataSet(activeCasesEntries, "Past Location Active Cases Estimate");
+        BarDataSet set = new BarDataSet(rollingAvgEntries, "County Weekly Rolling Avg");
         BarData data = new BarData(set);
         pastLocationChart.setData(data);
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
+        pastLocationChart.setAutoScaleMinMaxEnabled(true);
     }
 
     @Override
