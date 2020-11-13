@@ -50,6 +50,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         updatePastLocationMessages();
     }
 
+
     public MutableLiveData<Integer> getCounter() {
         if(counter == null){
             counter = new MutableLiveData<Integer>();
