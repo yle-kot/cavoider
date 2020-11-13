@@ -78,7 +78,7 @@ public class ExposureCheckViewModel extends AndroidViewModel {
                         week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
                         countyName = response.getString("county");
                     } catch (JSONException e) {
-                        Log.e("fipsToNotify", "Expected percent_change_14_days to be a string" + e.getMessage());
+                        Log.e("fipsToNotify", "Expected week_1_rolling_avg_per_100k_people & week_2_rolling_avg_per_100k_people to be a string" + e.getMessage());
                     }
                     if ((int)Math.round(week2) > (int)Math.round(week1)) {
                         fipsToNotify.add(countyName);
