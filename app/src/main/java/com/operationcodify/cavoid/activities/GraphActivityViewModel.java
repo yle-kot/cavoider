@@ -65,12 +65,12 @@ public class GraphActivityViewModel extends AndroidViewModel {
 
                         ChartData chartData = new ChartData(rollingAvgForCounty, county);
                         //ChartData chartData = new ChartData(rollingAvgForCounty, rollingAvgForState, county, state);
-                        if (rollingAvg.size() < 10) {
+                        if (rollingAvg.size() < 8) {
                             rollingAvg.add(chartData);
                         }
                         else {
                             ChartData lowest = rollingAvg.peek();
-                            if (casesCompare.compare(chartData, lowest) == 1) {
+                            if (casesCompare.compare(chartData, lowest) > 0) {
                                 rollingAvg.poll();
                                 rollingAvg.add(chartData);
                             }

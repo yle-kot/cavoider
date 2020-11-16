@@ -80,10 +80,15 @@ public class GraphActivity extends AppCompatActivity {
         ArrayList<String> xAxisLabel = new ArrayList<>();
         ArrayList<Integer> rollingAvgState = new ArrayList<>();
         ArrayList<String> states = new ArrayList<>();
+        float highestValue = 10;
         if (!rollingAvg.isEmpty()) {
-            for (int i = 0; i < rollingAvg.size(); i++) {
+            int rollingAvgSize = rollingAvg.size();
+            for (int i = 0; i < rollingAvgSize; i++) {
                 GraphActivityViewModel.ChartData chartData = rollingAvg.poll();
                 float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
+                if (i == (rollingAvgSize - 1)) {
+                    highestValue = casesCounty + 10;
+                }
                 //int casesState = (int) chartData.getWeek2RollingAvgState();
                 String county = chartData.getCounty();
                 //String state = chartData.getState();
@@ -105,22 +110,33 @@ public class GraphActivity extends AppCompatActivity {
         yAxisRight.setEnabled(false);
         YAxis yAxisLeft = pastLocationChart.getAxisLeft();
         if (states.size() > 1) {
+            ArrayList<String> addedStates = new ArrayList<>();
             for (int i = 0; i < states.size(); i++) {
-                LimitLine stateLine = new LimitLine(rollingAvgState.get(i), (states.get(i) + " Weekly Rolling Avg"));
-                stateLine.setLineColor(Color.BLACK);
-                yAxisLeft.addLimitLine(stateLine);
+                float rollingAvgStateValue = (float) rollingAvgState.get(i);
+                String stateName = states.get(i);
+                if ((rollingAvgStateValue + 10) > highestValue) {
+                    highestValue = rollingAvgStateValue + 10;
+                }
+                if (!addedStates.contains(stateName)) {
+                    LimitLine stateLine = new LimitLine(rollingAvgStateValue, stateName + " Weekly Rolling Avg");
+                    stateLine.setLineColor(Color.BLACK);
+                    yAxisLeft.addLimitLine(stateLine);
+                }
+                addedStates.add(stateName);
             }
         }
+        yAxisLeft.setAxisMinimum(0);
+        yAxisLeft.setAxisMaximum(highestValue);
         XAxis xAxis = pastLocationChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
         xAxis.setGranularity(1f);
+        xAxis.setLabelRotationAngle(-60f);
         BarDataSet set = new BarDataSet(rollingAvgEntries, "County Weekly Rolling Avg");
         BarData data = new BarData(set);
         pastLocationChart.setData(data);
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
-        pastLocationChart.setAutoScaleMinMaxEnabled(true);
     }
 
     @Override
