@@ -15,23 +15,30 @@ import static com.operationcodify.cavoid.activities.MyOnboardingSupportFragment.
 
 public class OnboardingActivity extends FragmentActivity{
     MyOnboardingSupportFragment fragment = new MyOnboardingSupportFragment();
+    static int page = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
         TextView title = findViewById(R.id.onboardingTitle);
-        title.setText(fragment.getPageTitle(1));
+        title.setText(fragment.getPageTitle(page));
         TextView description = findViewById(R.id.onboardingDescription);
-        description.setText(fragment.getPageDescription(1));
+        description.setText(fragment.getPageDescription(page));
         Button onBoardButton = (Button) findViewById(R.id.onboardingButton);
         onBoardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-                sharedPreferencesEditor.putBoolean(preferences, true);
-                sharedPreferencesEditor.apply();
-                //fragment.onFinishFragment();
-                startActivity(new Intent(OnboardingActivity.this, DashboardActivity.class));
+                if(page == fragment.getPageCount()) {
+                    SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                    sharedPreferencesEditor.putBoolean(preferences, true);
+                    sharedPreferencesEditor.apply();
+                    //fragment.onFinishFragment();
+                    startActivity(new Intent(OnboardingActivity.this, DashboardActivity.class));
+                }
+                else{
+                    page++;
+                    startActivity(new Intent(OnboardingActivity.this, OnboardingActivity.class));
+                }
             }
         });
     }
