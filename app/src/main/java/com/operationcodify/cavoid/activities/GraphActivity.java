@@ -35,7 +35,6 @@ public class GraphActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<String> messages;
     private GraphActivityViewModel viewModel;
 
     @Override
@@ -78,7 +77,7 @@ public class GraphActivity extends AppCompatActivity {
         PriorityQueue<GraphActivityViewModel.ChartData> rollingAvg = viewModel.rollingAvg;
         ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
         ArrayList<String> xAxisLabel = new ArrayList<>();
-        ArrayList<Integer> rollingAvgState = new ArrayList<>();
+        ArrayList<Float> rollingAvgState = new ArrayList<>();
         ArrayList<String> states = new ArrayList<>();
         float highestValue = 10;
         if (!rollingAvg.isEmpty()) {
@@ -89,15 +88,15 @@ public class GraphActivity extends AppCompatActivity {
                 if (i == (rollingAvgSize - 1)) {
                     highestValue = casesCounty + 10;
                 }
-                //int casesState = (int) chartData.getWeek2RollingAvgState();
+                float casesState = (float) chartData.getWeek2RollingAvgState();
                 String county = chartData.getCounty();
-                //String state = chartData.getState();
+                String state = chartData.getState();
                 rollingAvgEntries.add(new BarEntry(i, casesCounty));
                 xAxisLabel.add(county);
-                /*if (!states.contains(state)) {
+                if (!states.contains(state)) {
                     rollingAvgState.add(casesState);
                     states.add(state);
-                }*/
+                }
             }
         }
         else {
@@ -109,17 +108,19 @@ public class GraphActivity extends AppCompatActivity {
         YAxis yAxisRight = pastLocationChart.getAxisRight();
         yAxisRight.setEnabled(false);
         YAxis yAxisLeft = pastLocationChart.getAxisLeft();
-        if (states.size() > 1) {
+        if (states.size() > 0) {
             ArrayList<String> addedStates = new ArrayList<>();
             for (int i = 0; i < states.size(); i++) {
-                float rollingAvgStateValue = (float) rollingAvgState.get(i);
+                float rollingAvgStateValue = rollingAvgState.get(i);
                 String stateName = states.get(i);
                 if ((rollingAvgStateValue + 10) > highestValue) {
                     highestValue = rollingAvgStateValue + 10;
                 }
                 if (!addedStates.contains(stateName)) {
-                    LimitLine stateLine = new LimitLine(rollingAvgStateValue, stateName + " Weekly Rolling Avg");
+                    LimitLine stateLine = new LimitLine(rollingAvgStateValue, stateName + " Average New Cases");
                     stateLine.setLineColor(Color.BLACK);
+                    stateLine.setLineWidth(2f);
+                    stateLine.enableDashedLine(30, 25, 0);
                     yAxisLeft.addLimitLine(stateLine);
                 }
                 addedStates.add(stateName);
@@ -132,8 +133,9 @@ public class GraphActivity extends AppCompatActivity {
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
         xAxis.setGranularity(1f);
         xAxis.setLabelRotationAngle(-60f);
-        BarDataSet set = new BarDataSet(rollingAvgEntries, "County Weekly Rolling Avg");
+        BarDataSet set = new BarDataSet(rollingAvgEntries, "Average New Cases");
         BarData data = new BarData(set);
+        pastLocationChart.setDrawValueAboveBar(false);
         pastLocationChart.setData(data);
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();

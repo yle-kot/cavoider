@@ -58,13 +58,12 @@ public class GraphActivityViewModel extends AndroidViewModel {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
-                        Double rollingAvgForCounty = (double) response.getDouble("week_2_rolling_avg_per_100k_people");
-                        //double rollingAvgForState = response.getDouble("state_week_2_rolling_avg_per_100k_people");
+                        double rollingAvgForCounty = (double) response.getDouble("week_2_rolling_avg_per_100k_people");
+                        double rollingAvgForState = (double) response.getDouble("state_week_2_rolling_avg_per_100k_people");
                         String county = response.getString("county");
-                        //String state = response.getString("state");
+                        String state = response.getString("state_abbreviation");
 
-                        ChartData chartData = new ChartData(rollingAvgForCounty, county);
-                        //ChartData chartData = new ChartData(rollingAvgForCounty, rollingAvgForState, county, state);
+                        ChartData chartData = new ChartData(rollingAvgForCounty, rollingAvgForState, county, state);
                         if (rollingAvg.size() < 8) {
                             rollingAvg.add(chartData);
                         }
