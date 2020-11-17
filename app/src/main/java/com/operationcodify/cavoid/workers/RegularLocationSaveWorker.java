@@ -122,14 +122,22 @@ public class RegularLocationSaveWorker extends Worker {
                 try {
                     LocalDate date = LocalDate.now();
                     PastLocation pastLocation = new PastLocation();
+
                     pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
                     pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                     pastLocation.date = date;
+
                     LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertLocations(pastLocation));
                     // TODO Notify user if new location && trend > 0
                     Log.i(TAG, "Saved location: " + pastLocation.fips);
                 } catch (JSONException e) {
-                    Log.w(TAG, "Could not fetch current fips...\n" + e.toString());
+                    try {
+                        if (response.getString("status").equals("error")){
+                            Log.w(TAG, "Invalid location! Outside of US?");
+                        }
+                    } catch (JSONException ex2){
+                        Log.w(TAG, "Unknown FCC API Error" + response.toString());
+                    }
 
                 }
 
