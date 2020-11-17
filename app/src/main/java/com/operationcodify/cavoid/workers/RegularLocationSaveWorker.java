@@ -136,7 +136,7 @@ public class RegularLocationSaveWorker extends Worker {
                             Log.w(TAG, "Invalid location! Outside of US?");
                         }
                     } catch (JSONException ex2){
-                        Log.w(TAG, "Unknown FCC API Error: " + response.toString());
+                        Log.w(TAG, "Unknown FCC API Error" + response.toString());
                     }
 
                 }
