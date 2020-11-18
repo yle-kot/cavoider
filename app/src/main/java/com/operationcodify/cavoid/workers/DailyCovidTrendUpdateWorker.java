@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -26,6 +27,9 @@ import com.operationcodify.cavoid.database.PastLocation;
 import com.operationcodify.cavoid.utilities.GeneralUtilities;
 
 import org.joda.time.DateTime;
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.json.JSONException;
@@ -47,19 +51,19 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
     private Boolean isDone;
-    private String TAG;
-    private String PAST_LOCATION_CHANNEL_ID = "Past Location";
-    private int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
-    private int NOTIFICATION_ID = 2937;
+    private static final String TAG = DailyCovidTrendUpdateWorker.class.getSimpleName();
+    private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
+    private static final int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
+    private static final int NOTIFICATION_ID = 2937;
 
     public DailyCovidTrendUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        JodaTimeAndroid.init(context);
         this.locDb = LocationDatabase.getDatabase(getApplicationContext());
         this.locDao = locDb.getLocationDao();
         this.twoWeeksAgoDate = DateTime.now().minusDays(14).toLocalDate();
         this.repo = new Repository(getApplicationContext());
         this.context = context;
-        this.TAG = DailyCovidTrendUpdateWorker.class.getName();
     }
 
     @NonNull
@@ -69,12 +73,18 @@ public class DailyCovidTrendUpdateWorker extends Worker {
 
         updateCovidReportsForAllLocationsSince(twoWeeksAgoDate);
 
-        ArrayList<String> fipsVisitedLastTwoWeeks = getsFipsVisitedOn(getDatesSince(twoWeeksAgoDate));
-        ArrayList<String> fipsNotified = (ArrayList<String>) locDao.getAllNotifiedFips();
-        fipsVisitedLastTwoWeeks.removeAll(fipsNotified);
+        ArrayList<String> fipsVisitedLastTwoWeeks = getRecentFipsNotNotified();
         createFipsToNotifyList(repo, fipsVisitedLastTwoWeeks);
 
         return Result.success();
+    }
+
+    @NotNull
+    private ArrayList<String> getRecentFipsNotNotified() {
+        ArrayList<String> fipsVisitedLastTwoWeeks = getsFipsVisitedOn(getDatesSince(twoWeeksAgoDate));
+        ArrayList<String> fipsNotified = (ArrayList<String>) locDao.getAllNotifiedFips();
+        fipsVisitedLastTwoWeeks.removeAll(fipsNotified);
+        return fipsVisitedLastTwoWeeks;
     }
 
     private LocalDate[] getDatesSince(LocalDate date) {
@@ -98,7 +108,6 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     }
 
     public void createFipsToNotifyList(Repository repo, ArrayList<String> pastFips) {
-
         for (String fips : pastFips) {
             repo.getPosTests(fips, new Response.Listener<JSONObject>() {
                 @Override
@@ -191,12 +200,13 @@ public class DailyCovidTrendUpdateWorker extends Worker {
 
     private void scheduleNextWorker() {
         /* Create next instance of the worker, ~12 hours from now! */
-        long delay = GeneralUtilities.getSecondsUntilHour(8);
+//        long delay = GeneralUtilities.getSecondsUntilHour(8);
+        long delay = 15 * 60;
         WorkManager mWorkManager = WorkManager.getInstance(getApplicationContext());
         OneTimeWorkRequest CovidRequest = new OneTimeWorkRequest.Builder(DailyCovidTrendUpdateWorker.class)
                 .setInitialDelay(delay, TimeUnit.SECONDS)
                 .build();
-        mWorkManager.enqueue(CovidRequest);
+        mWorkManager.enqueueUniqueWork(TAG, ExistingWorkPolicy.REPLACE, CovidRequest);
     }
 
     private void updateCovidReportsForAllLocationsSince(LocalDate date) {

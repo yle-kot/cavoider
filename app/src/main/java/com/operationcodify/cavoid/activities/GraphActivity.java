@@ -30,7 +30,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
-import com.operationcodify.cavoid.utilities.PastLocationAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,6 +32,9 @@ import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
 import com.operationcodify.cavoid.database.PastLocation;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,81 +50,111 @@ public class RegularLocationSaveWorker extends Worker {
     private String CURRENT_LOCATION_CHANNEL_ID = "Current Location";
     private int NOTIFICATION_ID = 2938;
     private int GOTO_CURRENT_LOCATION_PENDING_INTENT_ID = 260;
+    private ArrayList<String> pastLocations;
+    private static final String TAG = RegularLocationSaveWorker.class.getSimpleName();
+    private final LocationDao locDao;
+    private final Repository repo;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
 
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        pastLocations = new ArrayList<>();
         this.context = context;
+        JodaTimeAndroid.init(context);
+        LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
+        locDao = locDb.getLocationDao();
+        repo = new Repository(getApplicationContext());
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
     }
 
+    @SuppressLint("MissingPermission")
     @NonNull
     @Override
     public Result doWork() {
-        String TAG = RegularLocationSaveWorker.class.getName();
-        ArrayList<String> pastLocations;
-
-        LocationDatabase locDb = LocationDatabase.getDatabase(getApplicationContext());
-        LocationDao dao = locDb.getLocationDao();
-        pastLocations = (ArrayList<String>) dao.getAllDistinctFips();
-        Repository repo = new Repository(getApplicationContext());
-
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (isMissingPermissions())
             return Result.failure();
+
+        LocationRequest locationRequest = getLocationRequest();
+        LocationCallback locationCallback = getLocationCallback();
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        return Result.success();
+    }
+
+    @NotNull
+    private LocationRequest getLocationRequest() {
+        return LocationRequest.create()
+                    .setNumUpdates(1)
+                    .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                    .setInterval(10);
+    }
+
+    @NotNull
+    private LocationCallback getLocationCallback() {
+        return new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    Location location = locationResult.getLastLocation();
+                    if (location == null) {
+                        Log.w(TAG, "Could not find user's location!");
+                        return;
+                    }
+
+                    Log.i(TAG, "Saving location: " + location.toString());
+                    try {
+                        repo.getFipsCodeFromCurrentLocation(location, savePastLocationOnFipsCallback());
+                    } catch (IOException e) {
+                        Log.w(TAG, e.toString());
+                    }
+                }
+            };
+    }
+
+    private boolean isMissingPermissions() {
+        if (
+                (
+                        ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED
+                )
+                        || // OR
+                (
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED
+                )
+        ) {
+            return true;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            return Result.failure();
-        }
+        return false;
+    }
 
-
-
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setNumUpdates(2);
-        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
-
-
-        LocationCallback locationCallback = new LocationCallback() {
+    @NotNull
+    private Response.Listener<JSONObject> savePastLocationOnFipsCallback() {
+        return new Response.Listener<JSONObject>() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                Location location = locationResult.getLastLocation();
-                if (location == null) {
-                    Log.w(TAG, "Could not find user's location!");
-                    return;
-                }
-
-                Log.i(TAG, "Saving location: " + location.toString());
-                LocalDate date = LocalDate.now();
+            public void onResponse(JSONObject response) {
                 try {
-                    repo.getFipsCodeFromCurrentLocation(location, new Response.Listener<JSONObject>(){
+                    LocalDate date = LocalDate.now();
+                    PastLocation pastLocation = new PastLocation();
+                    pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
+                    pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
+                    pastLocation.date = date;
+                    if(!pastLocations.contains(pastLocation.fips)){
+                        createWarningNotificationForCurrent(pastLocation.countyName);
+                    }
+                    LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertLocations(pastLocation));
+                    // TODO Notify user if new location && trend > 0
+                    Log.i(TAG, "Saved location: " + pastLocation.fips);
+                } catch (JSONException e) {
+                    Log.w(TAG, "Could not fetch current fips...\n" + e.toString());
 
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                PastLocation pastLocation = new PastLocation();
-                                pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
-                                pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
-                                pastLocation.date = date;
-                                LocationDatabase.databaseWriteExecutor.execute(() -> dao.insertLocations(pastLocation));
-
-                                if(!pastLocations.contains(pastLocation.fips)){
-                                    createWarningNotificationForCurrent(pastLocation.countyName);
-
-                                }
-                                Log.i(TAG, "Saved location: " + pastLocation.fips);
-
-                            } catch (JSONException e) {
-                                Log.w(TAG, "Could not fetch current fips...\n" + e.toString());
-
-                            }
-
-                        }
-                    });
-                } catch (IOException e) {
-                    Log.w(TAG, e.toString());
                 }
+
             }
         };
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        return Result.success();
     }
 
     private void createWarningNotificationForCurrent(String county) {

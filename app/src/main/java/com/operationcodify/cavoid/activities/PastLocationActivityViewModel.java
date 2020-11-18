@@ -12,7 +12,6 @@ import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -36,20 +35,23 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public int i;
     private Repository repo;
     private MutableLiveData<Integer> counter;
-    public ArrayList<String> pastLocations;
-    public ArrayList<String> messages;
+    private ArrayList<String> pastLocations;
+    private ArrayList<ParsedPastLocationReport> reports;
 
     public PastLocationActivityViewModel(@NonNull Application application){
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
-        messages = new ArrayList<String>();
+        reports = new ArrayList<>();
         TAG = DashboardActivityViewModel.class.getName();
         repo = new Repository(application.getApplicationContext());
         updatePastLocationMessages();
     }
 
+    public ArrayList<ParsedPastLocationReport> getReports(){
+        return this.reports;
+    }
 
     public MutableLiveData<Integer> getCounter() {
         if(counter == null){
@@ -64,26 +66,10 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
             repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    try {
-                        activeCasesEst = response.getString("active_cases_est");
-                        caseFatality = response.getString("case_fatality");
-                        totalCases = response.getString("cases");
-                        casesPer100K = response.getString("cases_per_100k_people");
-                        deathsPer100K = response.getString("deaths_per_100k_people");
-                        newCaseNumber = response.getString("new_daily_cases");
-                        newDeathNumber = response.getString("new_daily_deaths");
-                        totalDeaths = response.getString("deaths");
-                        countyName = response.getString("county");
-                        fips = response.getString("fips");
-                        reportDate = response.getString("report_date");
-                        state = response.getString("state");
-                        messages.add(countyName + " New cases: " + newCaseNumber + "  Active Cases: " + activeCasesEst + " Total Cases: " + totalCases);
-                        messages.add(countyName + " New deaths: " + newDeathNumber + " Total Deaths: " + totalDeaths);
-                        counter.setValue(counter.getValue() + 1);
-                    }
-                    catch(JSONException j){
-                        Log.i(TAG,"Could not get a response!");
-                    }
+                    ParsedPastLocationReport newReport = new ParsedPastLocationReport(response, locDao);
+                    Log.d(TAG, "Adding a new report to pastLocationsReport: " + newReport.fips + "--" + newReport.reportGenerationDate);
+                    reports.add(newReport);
+                    counter.setValue(counter.getValue() + 1);
                 }
             });
         }
