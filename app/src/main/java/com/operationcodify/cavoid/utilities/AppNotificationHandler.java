@@ -29,6 +29,4 @@ public class AppNotificationHandler {
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
         mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
-
-
 }

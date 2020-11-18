@@ -33,7 +33,7 @@ public class DashboardActivityViewModel extends AndroidViewModel {
     public double totalDeaths;
     public String activeCasesEst2;
     public String caseFatality2;
-    public String  deathsPer100K2;
+    public String deathsPer100K2;
     public String casesPer100K2;
     public String newCaseNumber2;
     public String newDeathNumber2;

@@ -123,11 +123,11 @@ public class RegularLocationSaveWorker extends Worker {
         return Result.success();
     }
 
-    private void createWarningNotificationForCurrent(String fips) {
+    private void createWarningNotificationForCurrent(String county) {
         String title = "COVID-19 spread in your area";
         String message;
 
-        message= "You've entered " + fips + " which notable spread of COVID-19";
+        message= "It seems like you just went into " + county + ", which rising in COVID-19 cases. Be careful and wear your mask!";
         createNotificationForCurrentActivity(title, message);
     }
 

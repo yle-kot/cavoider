@@ -25,9 +25,9 @@ import com.operationcodify.cavoid.database.NotifiedLocation;
 import com.operationcodify.cavoid.database.PastLocation;
 import com.operationcodify.cavoid.utilities.GeneralUtilities;
 
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,7 +48,6 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     private volatile int counter;
     private Boolean isDone;
     private String TAG;
-
     private String PAST_LOCATION_CHANNEL_ID = "Past Location";
     private int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
     private int NOTIFICATION_ID = 2937;
