@@ -27,7 +27,6 @@ import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class GraphActivity extends AppCompatActivity {
@@ -42,6 +41,24 @@ public class GraphActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
+        addBottomMenu();
+
+        repo = new Repository(getApplicationContext());
+        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
+        viewModel = new ViewModelProvider(this).get(GraphActivityViewModel.class);
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                updateGraph();
+            }
+        });
+    }
+
+    /**
+     * switches to the corresponding activity based on which icon is selected in the bottom menu
+     */
+    public void addBottomMenu() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,19 +77,11 @@ public class GraphActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        repo = new Repository(getApplicationContext());
-        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
-        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
-        viewModel = new ViewModelProvider(this).get(GraphActivityViewModel.class);
-        viewModel.getCounter().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                updateGraph();
-            }
-        });
     }
 
+    /**
+     * processes data from the view model to update the graph
+     */
     public void updateGraph() {
         PriorityQueue<GraphActivityViewModel.ChartData> rollingAvg = viewModel.rollingAvg;
         ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
@@ -103,10 +112,32 @@ public class GraphActivity extends AppCompatActivity {
             rollingAvgEntries.add(new BarEntry(0, 0));
         }
         BarChart pastLocationChart = (BarChart) findViewById(R.id.pastLocationChart);
-        Description description = pastLocationChart.getDescription();
-        description.setEnabled(false);
+        formatRightYAxis(pastLocationChart);
+        formatLeftYAxis(pastLocationChart, states, rollingAvgState, highestValue);
+        formatXAxis(pastLocationChart, xAxisLabel);
+        addDataToBarChart(pastLocationChart, rollingAvgEntries);
+        formatBarChart(pastLocationChart);
+    }
+
+    /**
+     * Disables the y axis on the right side so there aren't duplicate axes
+     * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
+     */
+    public void formatRightYAxis(BarChart pastLocationChart) {
         YAxis yAxisRight = pastLocationChart.getAxisRight();
         yAxisRight.setEnabled(false);
+    }
+
+    /**
+     * Formats the y axis to properly scale based on the data, and  to include a line for
+     *          each of the states across the bar graph
+     * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
+     * @param states the states for each of the selected counties
+     * @param rollingAvgState the rolling average for each of the states
+     * @param highestValue the highest recorded value which is used to set the y axis
+     */
+    public void formatLeftYAxis(BarChart pastLocationChart, ArrayList<String> states,
+                                ArrayList<Float> rollingAvgState, float highestValue) {
         YAxis yAxisLeft = pastLocationChart.getAxisLeft();
         if (states.size() > 0) {
             ArrayList<String> addedStates = new ArrayList<>();
@@ -117,7 +148,8 @@ public class GraphActivity extends AppCompatActivity {
                     highestValue = rollingAvgStateValue + 10;
                 }
                 if (!addedStates.contains(stateName)) {
-                    LimitLine stateLine = new LimitLine(rollingAvgStateValue, stateName + " Average New Cases");
+                    LimitLine stateLine = new LimitLine(rollingAvgStateValue,
+                            stateName + " Average New Cases");
                     stateLine.setLineColor(Color.BLACK);
                     stateLine.setLineWidth(2f);
                     stateLine.enableDashedLine(30, 25, 0);
@@ -128,19 +160,47 @@ public class GraphActivity extends AppCompatActivity {
         }
         yAxisLeft.setAxisMinimum(0);
         yAxisLeft.setAxisMaximum(highestValue);
+    }
+
+    /**
+     * formats the x axis lables and adds the county names as labels
+     * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
+     * @param xAxisLabel the names of the counties for the x axis label
+     */
+    public void formatXAxis(BarChart pastLocationChart, ArrayList<String> xAxisLabel) {
         XAxis xAxis = pastLocationChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IndexAxisValueFormatter(xAxisLabel));
         xAxis.setGranularity(1f);
         xAxis.setLabelRotationAngle(-60f);
+    }
+
+    /**
+     * adds the data to the bar chart
+     * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
+     * @param rollingAvgEntries all the entries for the bar chart based on the county rolling average
+     */
+    public void addDataToBarChart(BarChart pastLocationChart, ArrayList<BarEntry> rollingAvgEntries) {
         BarDataSet set = new BarDataSet(rollingAvgEntries, "Average New Cases");
         BarData data = new BarData(set);
-        pastLocationChart.setDrawValueAboveBar(false);
+        data.setDrawValues(false);
         pastLocationChart.setData(data);
+    }
+
+    /**
+     * formats the bar chart to auto scale the bars in the chart based on the number of bars
+     * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
+     */
+    public void formatBarChart(BarChart pastLocationChart) {
+        Description description = pastLocationChart.getDescription();
+        description.setEnabled(false);
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
     }
 
+    /**
+     * displays the menu in the top toolbar
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -148,6 +208,9 @@ public class GraphActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * switches to the corresponding activity based on the activity selected by the user in the menu
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:

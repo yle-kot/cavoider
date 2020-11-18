@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.Response;
-import com.github.mikephil.charting.data.ChartData;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.LocationDao;
 import com.operationcodify.cavoid.database.LocationDatabase;
@@ -18,7 +17,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class GraphActivityViewModel extends AndroidViewModel {
@@ -44,6 +42,10 @@ public class GraphActivityViewModel extends AndroidViewModel {
         updateDataForChart();
     }
 
+    /**
+     * @return a counter which is used to determine if all of the threads have
+     * finished and the api call is complete for all fips codes
+     */
     public MutableLiveData<Integer> getCounter() {
         if(counter == null){
             counter = new MutableLiveData<Integer>();
@@ -52,6 +54,12 @@ public class GraphActivityViewModel extends AndroidViewModel {
         return counter;
     }
 
+    /**
+     * Creates an api call which gets the data to create a Chart Data object which is added to a
+     *      priority queue to ensures that only the top 8 highest counties are added
+     * The priority queue saves Chart Data objects which are used by the GraphActivity to
+     *      add data to the graph
+     */
     public void updateDataForChart(){
         for(i = 0; i < pastLocations.size();i++) {
             repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {
@@ -119,6 +127,9 @@ public class GraphActivityViewModel extends AndroidViewModel {
         }
     }
 
+    /**
+     * comparator to properly add the counties to the priority queue based on the Chart Data object
+     */
     public static class CasesCompare implements Comparator<ChartData> {
         public int compare(ChartData chartData1, ChartData chartData2) {
             if (chartData1.getWeek2RollingAvgCounty() > chartData2.getWeek2RollingAvgCounty()) {

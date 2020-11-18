@@ -22,8 +22,8 @@
     <string name="fips_code">FIPS Code</string>
     <string name="data_sources">Covid-19 Data Information</string>
     <string name="data_sources_info">All Covid-19 data reported in the is app is from The New York
-        Times Covid-19 data set which is based on reports from state and
-        local health agencies. Their data can be found here: https://github.com/nytimes/covid-19-data.
+        Times Covid-19 data set (https://github.com/nytimes/covid-19-data) and the COVID Tracking Project
+        from The Atlantic (https://github.com/nytimes/covid-19-data) which gather data from state and local health agencies.
         The data was used to calculate some of the statistics in this app. Data reported in this app
         may differ from other sources due to differences in reporting standards and reporting lag times.</string>
     <string name="app_overview">App Overview Information</string>
