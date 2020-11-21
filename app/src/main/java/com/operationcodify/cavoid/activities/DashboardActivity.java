@@ -46,6 +46,8 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        getSupportActionBar().setTitle("Main Dashboard");
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -59,6 +61,10 @@ public class DashboardActivity extends AppCompatActivity {
                     case R.id.graphBottomMenu:
                         Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(DashboardActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
                         break;
                 }
                 return true;
@@ -104,25 +110,5 @@ public class DashboardActivity extends AppCompatActivity {
         }
         return dateFormat.format(cal.getTime()) + suffix;
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), “Intent didnt start” + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(DashboardActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

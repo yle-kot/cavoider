@@ -41,6 +41,7 @@ public class GraphActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
+        getSupportActionBar().setTitle("Graph");
         addBottomMenu();
 
         repo = new Repository(getApplicationContext());
@@ -72,6 +73,10 @@ public class GraphActivity extends AppCompatActivity {
                     case R.id.pastLocationBottomMenu:
                         Intent pastLocationIntent = new Intent(GraphActivity.this, PastLocationActivity.class);
                         startActivity(pastLocationIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(GraphActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
                         break;
                 }
                 return true;
@@ -196,34 +201,6 @@ public class GraphActivity extends AppCompatActivity {
         description.setEnabled(false);
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
-    }
-
-    /**
-     * displays the menu in the top toolbar
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    /**
-     * switches to the corresponding activity based on the activity selected by the user in the menu
-     */
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(GraphActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(GraphActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }

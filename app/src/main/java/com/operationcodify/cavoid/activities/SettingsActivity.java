@@ -20,6 +20,9 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        getSupportActionBar().setTitle("Settings");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Button notificationButton = (Button) findViewById(R.id.communitySpreadNotificationButton);
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,8 +55,8 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent settingsIntent = new Intent(SettingsActivity.this, SettingsActivity.class);
                 this.startActivity(settingsIntent);
                 break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(SettingsActivity.this, AppInfoActivity.class);
+            case R.id.action_covidDataInfo:
+                Intent appInfoIntent = new Intent(SettingsActivity.this, CovidDataActivity.class);
                 this.startActivity(appInfoIntent);
                 break;
         }
