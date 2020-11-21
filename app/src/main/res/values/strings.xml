@@ -56,4 +56,11 @@
     <string name="information_bottom_menu">Information</string>
     <string name="covid_19_data_usage">Covid-19 Statistics</string>
     <string name="covid_data_stats">The data from the New York Times and The Atlantic was used in the calculations which generated the statistics displayed throughout the app. Data reported in this app may differ from other sources due to differences in reporting standards and reporting lag times.</string>
+    <string name="new_cases">new_cases</string>
+    <string name="estimated_average_cases">estimated average cases</string>
+    <string name="new_deaths">New Deaths:</string>
+    <string name="cases_per_100k">cases per 100k</string>
+    <string name="total_cases">total_cases</string>
+    <string name="total_deaths">total deaths</string>
+    <string name="case_fatality">case_fatality</string>
 </resources>
