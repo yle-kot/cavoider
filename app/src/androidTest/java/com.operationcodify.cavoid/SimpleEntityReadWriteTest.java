@@ -50,7 +50,6 @@ public class SimpleEntityReadWriteTest {
         PastLocation pastLocation = new PastLocation();
         pastLocation.date = fromString("May");
         pastLocation.fips = "51087";
-        pastLocation.wasNotified = false;
         locationDao.insertLocations(pastLocation);
         List<PastLocation> things = locationDao.getAll();
         assertEquals(pastLocation.date,things.get(0).date);

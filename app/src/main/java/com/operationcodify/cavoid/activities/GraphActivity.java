@@ -42,13 +42,15 @@ public class GraphActivity extends AppCompatActivity {
     private Repository repo;
     public ArrayList<String> messages;
     private GraphActivityViewModel viewModel;
+    public BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -78,6 +80,13 @@ public class GraphActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
+        super.onResume();
+    }
+
 
     public void updateGraph() {
         HashMap<String, Double> activeCasesEst = viewModel.activeCasesEst;

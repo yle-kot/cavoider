@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -27,6 +28,8 @@ public class DashboardActivity extends AppCompatActivity {
     private DashboardActivityViewModel viewModel;
     public SimpleDateFormat dateFormat;
     public String date;
+    public BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +41,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -50,13 +51,14 @@ public class DashboardActivity extends AppCompatActivity {
                         startActivity(pastLocationIntent);
                         break;
                     case R.id.graphBottomMenu:
-                        Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
-                        startActivity(mapIntent);
+                        Intent graphIntent = new Intent(DashboardActivity.this, GraphActivity.class);
+                        startActivity(graphIntent);
                         break;
                 }
                 return true;
             }
         });
+
         viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
@@ -64,6 +66,12 @@ public class DashboardActivity extends AppCompatActivity {
                 updateDashBoard();
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
+        super.onResume();
     }
 
     public void updateDashBoard() {

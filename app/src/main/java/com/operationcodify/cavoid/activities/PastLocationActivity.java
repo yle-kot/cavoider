@@ -3,6 +3,7 @@ package com.operationcodify.cavoid.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,10 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+//The past location activity shows the user past locations they have visited in the order of most recently notified locations
 
 public class PastLocationActivity extends AppCompatActivity {
-
-    //TODO:Finish implementing recycleview with hunter
 
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
@@ -46,6 +50,7 @@ public class PastLocationActivity extends AppCompatActivity {
     public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
     private static final String TAG = PastLocationActivity.class.getSimpleName();
+    public BottomNavigationView bottomNavigationView;
 
 
     public Date yesterday() {
@@ -61,8 +66,7 @@ public class PastLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_location);
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -73,13 +77,15 @@ public class PastLocationActivity extends AppCompatActivity {
                         startActivity(dashboardIntent);
                         break;
                     case R.id.graphBottomMenu:
-                        Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
-                        startActivity(mapIntent);
+                        Intent graphIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
+                        startActivity(graphIntent);
                         break;
                 }
+
                 return true;
             }
         });
+
 
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
@@ -110,6 +116,13 @@ public class PastLocationActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
+        super.onResume();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
