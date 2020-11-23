@@ -62,6 +62,8 @@ public class PastLocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_location);
 
+        getSupportActionBar().setTitle("Past Location Dashboard");
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -75,6 +77,10 @@ public class PastLocationActivity extends AppCompatActivity {
                     case R.id.graphBottomMenu:
                         Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(PastLocationActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
                         break;
                 }
                 return true;
@@ -111,25 +117,4 @@ public class PastLocationActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(PastLocationActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(PastLocationActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

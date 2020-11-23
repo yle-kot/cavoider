@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
-        android:title="Settings">
-    </item>
-    <item
-        android:id="@+id/action_appInfo"
-        android:title="App Information">
+        android:id="@+id/action_menu"
+        android:title=""
+        app:showAsAction="always"
+        android:icon="@drawable/ic_baseline_settings_24" >
+        <menu>
+            <item
+                android:id="@+id/action_settings"
+                android:title="@string/settings_menu"/>
+            <item
+                android:id="@+id/action_covidDataInfo"
+                android:title="@string/covid_data_information_menu" />
+        </menu>
     </item>
 </menu>

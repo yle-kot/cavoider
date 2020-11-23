@@ -37,15 +37,25 @@ public class ExposureCheckViewModel extends AndroidViewModel {
         fipsToNotify(getApplication().getApplicationContext(), APIRepository, allFipsFromLastTwoWeeks);
     }
 
+    /**
+     * @return all fips codes for each of the counties visited in the last two weeks
+     */
     public ArrayList<String> getAllFipsFromLastTwoWeeks(){
         return allFipsFromLastTwoWeeks;
     }
 
+    /**
+     * @return a boolean to determine if the api call has finished for all fips codes
+     */
     public MutableLiveData<Boolean> getIsDone(){
         return isDone;
     }
 
 
+    /**
+     * @param context which holds the application context
+     * @return all fips codes saved in the database over the past 14 days
+     */
     private ArrayList<String> getPastFips(Context context) {
         LocationDatabase locDb = LocationDatabase.getDatabase(context.getApplicationContext());
         LocationDao dao = locDb.getLocationDao();
@@ -65,6 +75,13 @@ public class ExposureCheckViewModel extends AndroidViewModel {
         return pastFips;
     }
 
+    /**
+     * the method gets the covid data from the api to determine if there is a
+     *                          positive covid trend by comparing the weekly average for the past two weeks
+     * @param context which holds the application context
+     * @param repo the repository which holds the api
+     * @param pastLocations all the fips codes for the past 14 days
+     */
     public void fipsToNotify(Context context, Repository repo, ArrayList<String> pastLocations) {
         for (String location : pastLocations) {
             repo.getPosTests(location, new Response.Listener<JSONObject>() {
@@ -78,7 +95,10 @@ public class ExposureCheckViewModel extends AndroidViewModel {
                         week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
                         countyName = response.getString("county");
                     } catch (JSONException e) {
-                        Log.e("fipsToNotify", "Expected week_1_rolling_avg_per_100k_people & week_2_rolling_avg_per_100k_people to be a string" + e.getMessage());
+                        Log.e("fipsToNotify",
+                                "Expected week_1_rolling_avg_per_100k_people " +
+                                        "& week_2_rolling_avg_per_100k_people to be a string"
+                                        + e.getMessage());
                     }
                     if ((int)Math.round(week2) > (int)Math.round(week1)) {
                         fipsToNotify.add(countyName);
