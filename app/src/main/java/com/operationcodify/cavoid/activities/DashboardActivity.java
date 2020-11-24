@@ -28,6 +28,12 @@ public class DashboardActivity extends AppCompatActivity {
     public SimpleDateFormat dateFormat;
     public String date;
 
+
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -66,6 +72,11 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     public void updateDashBoard() {
         String yesterday = getYesterdayString();
 

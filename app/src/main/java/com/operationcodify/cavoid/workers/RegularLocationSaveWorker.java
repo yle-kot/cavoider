@@ -1,10 +1,10 @@
 package com.operationcodify.cavoid.workers;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -56,6 +56,12 @@ public class RegularLocationSaveWorker extends Worker {
     private final Repository repo;
     private final FusedLocationProviderClient fusedLocationProviderClient;
 
+
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         pastLocations = new ArrayList<>();
@@ -111,6 +117,11 @@ public class RegularLocationSaveWorker extends Worker {
             };
     }
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     private boolean isMissingPermissions() {
         if (
                 (
@@ -157,6 +168,11 @@ public class RegularLocationSaveWorker extends Worker {
         };
     }
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     private void createWarningNotificationForCurrent(String county) {
         String title = "COVID-19 spread in your area";
         String message;
@@ -165,6 +181,11 @@ public class RegularLocationSaveWorker extends Worker {
         createNotificationForCurrentActivity(title, message);
     }
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     private void createNotificationForCurrentActivity(String title, String message){
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
@@ -180,6 +201,12 @@ public class RegularLocationSaveWorker extends Worker {
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
         mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
+
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     private PendingIntent getPendingIntentTo(Class<? extends Activity> activity){
         Intent gotToCurrentLocationIntent = new Intent(context, activity);
 
