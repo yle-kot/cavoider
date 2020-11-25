@@ -1,5 +1,5 @@
 package com.operationcodify.cavoid.activities;
-import android.annotation.SuppressLint;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,8 +7,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,22 +16,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
-import java.text.DateFormat;
+
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
+
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private String newCaseNumber;
-    private String newDeathNumber;
-    private String activeCases;
-    private String totalCases;
-    private String totalDeaths;
-    private String caseMessage;
-    private String deathMessage;
     private DashboardActivityViewModel viewModel;
+    public SimpleDateFormat dateFormat;
+    public String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +38,8 @@ public class DashboardActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        getSupportActionBar().setTitle("Main Dashboard");
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
@@ -60,6 +55,10 @@ public class DashboardActivity extends AppCompatActivity {
                         Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
                         break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(DashboardActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
+                        break;
                 }
                 return true;
             }
@@ -72,57 +71,82 @@ public class DashboardActivity extends AppCompatActivity {
             }
         });
     }
+
     public void updateDashBoard() {
         String yesterday = getYesterdayString();
+
         TextView currentCounty = findViewById(R.id.greetingTextView);
-        TextView cases = findViewById(R.id.casesTextView);
-        TextView deaths = findViewById(R.id.deathsTextView);
-        TextView pastLocationCases = findViewById(R.id.pastCasesTextView);
-        TextView pastLocationDeaths = findViewById(R.id.pastDeathsTextView);
         currentCounty.setText(String.format("COVID-19 statistics for %s, %s on %s.", viewModel.countyName, viewModel.state, yesterday));
-        cases.setText(String.format("New Cases: %s Active Cases: %s",viewModel.newCaseNumber,viewModel.activeCasesEst));
-        deaths.setText(String.format("New Deaths: %s Total Deaths: %s",viewModel.newDeathNumber, viewModel.totalDeaths));
+
+        TextView totalCases = findViewById(R.id.TotalcasesTextView);
+        totalCases.setText("Total Cases:");
+
+        TextView totalCasesNum = findViewById(R.id.TotalcasesNum);
+        totalCasesNum.setText(viewModel.totalCases2);
+
+        TextView totalDeaths = findViewById(R.id.TotalDeathTextView);
+        totalDeaths.setText("Total Deaths:");
+
+        TextView totalDeathsNum = findViewById(R.id.TotalDeathNum);
+        totalDeathsNum.setText(viewModel.totalDeaths2);
+
+        TextView newCases = findViewById(R.id.casesTextView);
+        newCases.setText("New Cases:");
+
+        TextView newCasesNum = findViewById(R.id.casesNum);
+        newCasesNum.setText(viewModel.newCaseNumber2);
+
+        TextView newDeaths = findViewById(R.id.deathsTextView);
+        newDeaths.setText("New Deaths");
+
+        TextView newDeathsNum = findViewById(R.id.deathsNum);
+        newDeathsNum.setText(viewModel.newDeathNumber2);
+
+        TextView activeCasesEst = findViewById(R.id.EstCasesTextView);
+        activeCasesEst.setText("Estimated Active Cases:");
+
+        TextView activeCasesEstNum = findViewById(R.id.EstCasesNum);
+        activeCasesEstNum.setText(viewModel.activeCasesEst2);
+
+        TextView casesPer100K = findViewById(R.id.casesPerTextView);
+        casesPer100K.setText("Cases per 100K People:");
+
+        TextView casesPer100KNum = findViewById(R.id.casesPerNum);
+        casesPer100KNum.setText(viewModel.casesPer100K2);
+
+        TextView caseFatality = findViewById(R.id.CaseFatalityTextView);
+        caseFatality.setText("Case Fatality:");
+
+        TextView caseFatalityNum = findViewById(R.id.CaseFatalityNum);
+        caseFatalityNum.setText(viewModel.caseFatality2);
+
+        TextView deathPer100K = findViewById(R.id.DeathPerTextView);
+        deathPer100K.setText("New Deaths");
+
+        TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
+        deathPer100KNum.setText(viewModel.deathsPer100K2);
     }
+    // Todo: Return a string of correct date. Ex: "Nov. 8th"
 
     public String getYesterdayString() {
         String suffix = "";
-        Calendar cal = Calendar.getInstance();
-       //  cal.add(Calendar.DATE, -1);
-        int day = Calendar.DAY_OF_MONTH;
-        Instant now = Instant.now();
-        Instant yesterday = now.minus(1, ChronoUnit.DAYS);
-
-        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat("MMM. d");
+        DateTime now = new Instant().toDateTime();
+        int day = now.getDayOfMonth();
+        String month = now.monthOfYear().getAsText();
         if (day == 12) {
             suffix = "th";
         }
         switch (day % 10) {
-            case 1:  suffix = "st";
-            case 2:  suffix = "nd";
-            case 3:  suffix = "rd";
-            default: suffix = "th";
+            case 1:
+                suffix = "st";
+            case 2:
+                suffix = "nd";
+            case 3:
+                suffix = "rd";
+            default:
+                suffix = "th";
         }
-        return dateFormat.format(cal.getTime()) + suffix;
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+        return String.format("%s %d%s", month, day, suffix);
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), “Intent didnt start” + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(DashboardActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

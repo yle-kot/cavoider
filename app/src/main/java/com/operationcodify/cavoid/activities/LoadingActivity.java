@@ -1,8 +1,4 @@
 package com.operationcodify.cavoid.activities;
-import com.operationcodify.cavoid.workers.DailyCovidTrendUpdateWorker;
-import com.operationcodify.cavoid.workers.RegularLocationSaveWorker;
-import com.operationcodify.cavoid.workers.GetWorker;
-import com.operationcodify.cavoid.utilities.GeneralUtilities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -10,31 +6,34 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
-
-import com.operationcodify.cavoid.database.LocationDao;
-import com.operationcodify.cavoid.database.LocationDatabase;
-import com.operationcodify.cavoid.database.PastLocation;
-
-import org.joda.time.LocalDate;
-
-import java.util.List;
-
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.operationcodify.cavoid.database.LocationDao;
+import com.operationcodify.cavoid.database.LocationDatabase;
+import com.operationcodify.cavoid.database.PastLocation;
+import com.operationcodify.cavoid.utilities.GeneralUtilities;
+import com.operationcodify.cavoid.workers.DailyCovidTrendUpdateWorker;
+import com.operationcodify.cavoid.workers.GetWorker;
+import com.operationcodify.cavoid.workers.RegularLocationSaveWorker;
+
+import org.joda.time.LocalDate;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
@@ -45,9 +44,26 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     private static final int REQUEST_ACCESS_COARSE_LOCATION_STATE = 228;
     private Intent changeScreenIntent;
 
+    public static final String NIGHT_MODE = "NIGHT_MODE";
+    private boolean isNightModeEnabled = false;
+    private static LoadingActivity singleton = null;
+    public static LoadingActivity getInstance() {
+
+        if(singleton == null)
+        {
+            singleton = new LoadingActivity();
+        }
+        return singleton;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        singleton = this;
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        this.isNightModeEnabled = mPrefs.getBoolean(NIGHT_MODE, false);
 
         createNotificationChannel();
         changeScreenIntent = new Intent(LoadingActivity.this, DashboardActivity.class);
@@ -142,6 +158,7 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
             int requestCode,
             String permissions[],
             int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_ACCESS_COARSE_LOCATION_STATE:
                 if (grantResults.length > 0

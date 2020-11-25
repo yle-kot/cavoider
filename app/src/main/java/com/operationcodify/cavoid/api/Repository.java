@@ -47,25 +47,32 @@ public class Repository {
     }
 
     public void getFipsCodeFromCurrentLocation(Location location, Response.Listener<JSONObject> callback) throws IOException {
-        String baseUrl = "https://geo.fcc.gov/api/census/area?";
-        String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
-        String longitude = "lon="+location.getLongitude();
-        baseUrl += latitude+longitude;
-        String fips = "";
-        //Might need countyName string for dashboard
-        String countyName = "";
-        RequestQueue queue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+        String locale = context.getResources().getConfiguration().locale.getCountry();
 
-                    }
-                });
-        // Access the RequestQueue through your singleton class.
-        queue.add(jsonObjectRequest);
+        if(locale.equals("US")){
+            String baseUrl = "https://geo.fcc.gov/api/census/area?";
+            String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
+            String longitude = "lon="+location.getLongitude();
+            baseUrl += latitude+longitude;
+            String fips = "";
+            //Might need countyName string for dashboard
+            String countyName = "";
+            RequestQueue queue = Volley.newRequestQueue(context);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
 
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+            // Access the RequestQueue through your singleton class.
+            queue.add(jsonObjectRequest);
+        }
+        else{
+            System.out.println("Hello");
+        }
     }
 
 

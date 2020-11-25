@@ -14,17 +14,33 @@ public class MyOnboardingSupportFragment extends OnboardingSupportFragment{
 
     @Override
     protected int getPageCount() {
-        return 1;
+        return 3;
     }
 
     @Override
     protected CharSequence getPageTitle(int pageIndex) {
-        return "WARNING!";
+        if(pageIndex == 1) {
+            return "WARNING!";
+        }
+        else if(pageIndex == 2){
+            return "Privacy";
+        }
+        else{
+            return "Sources" ;
+        }
     }
 
     @Override
     protected CharSequence getPageDescription(int pageIndex) {
-        return "This data doesn't imply an encounter with covid-19.";
+        if(pageIndex == 1) {
+            return "This data doesn't imply an encounter with covid-19.(It doesn't provide contanct tracing.)";
+        }
+        else if(pageIndex == 2){
+            return "Location is stored in the background. This information is never shared, not even with us. It never leaves your phone.";
+        }
+        else{
+            return "All data is sourced from the NYT Covid Tracking Project (see Settings -> App Info) for more information." ;
+        }
     }
 
     @Nullable
