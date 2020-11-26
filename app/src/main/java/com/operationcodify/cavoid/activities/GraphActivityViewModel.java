@@ -37,7 +37,7 @@ public class GraphActivityViewModel extends AndroidViewModel {
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
         rollingAvg = new PriorityQueue<>(casesCompare);
-        TAG = DashboardActivityViewModel.class.getName();
+        TAG = DashboardActivityViewModel.class.getSimpleName();
         repo = new Repository(application.getApplicationContext());
         updateDataForChart();
     }

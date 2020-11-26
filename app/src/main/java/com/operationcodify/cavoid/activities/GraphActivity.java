@@ -3,8 +3,6 @@ package com.operationcodify.cavoid.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -45,9 +42,9 @@ public class GraphActivity extends AppCompatActivity {
         setContentView(R.layout.activity_graph);
 
         getSupportActionBar().setTitle("Graph");
-        addBottomMenu();
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+
+        bottomNavigationView = createBottomNavigationView();
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
@@ -63,7 +60,7 @@ public class GraphActivity extends AppCompatActivity {
     /**
      * switches to the corresponding activity based on which icon is selected in the bottom menu
      */
-    public void addBottomMenu() {
+    public BottomNavigationView createBottomNavigationView() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -86,6 +83,7 @@ public class GraphActivity extends AppCompatActivity {
                 return true;
             }
         });
+        return bottomNavigationView;
     }
 
     @Override
@@ -109,6 +107,9 @@ public class GraphActivity extends AppCompatActivity {
             int rollingAvgSize = rollingAvg.size();
             for (int i = 0; i < rollingAvgSize; i++) {
                 GraphActivityViewModel.ChartData chartData = rollingAvg.poll();
+                if (chartData == null)
+                    continue;
+
                 float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
                 if (i == (rollingAvgSize - 1)) {
                     highestValue = casesCounty + 10;

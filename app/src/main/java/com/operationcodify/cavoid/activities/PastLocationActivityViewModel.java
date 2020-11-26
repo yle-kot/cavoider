@@ -16,6 +16,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * The view model is responsible for generating the data for the PastLocationActivity.
+ * Since the data is retrieved from a database and from an API, the data is retrieved asynchronously
+ * and the counter is used to signal to the activity when new data arrives so that the view can
+ * update the view accordingly.
+ */
 public class PastLocationActivityViewModel extends AndroidViewModel {
     private LocationDatabase locDb;
     private LocationDao locDao;
@@ -44,7 +50,7 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         locDao = locDb.getLocationDao();
         pastLocations = (ArrayList<String>) locDao.getAllDistinctFips();
         reports = new ArrayList<>();
-        TAG = DashboardActivityViewModel.class.getName();
+        TAG = DashboardActivityViewModel.class.getSimpleName();
         repo = new Repository(application.getApplicationContext());
         updatePastLocationMessages();
     }
@@ -61,6 +67,9 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         return counter;
     }
 
+    /**
+     * Creates the list of past locations with all report data.
+     */
     public void updatePastLocationMessages(){
         for(i = 0; i < pastLocations.size();i++) {
             repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {

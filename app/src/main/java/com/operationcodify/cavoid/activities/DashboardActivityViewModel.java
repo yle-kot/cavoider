@@ -56,7 +56,7 @@ public class DashboardActivityViewModel extends AndroidViewModel {
             Log.w(TAG, "No saved locations returned from db!");
         }
         repository = new Repository(getApplication().getApplicationContext());
-        TAG = DashboardActivityViewModel.class.getName();
+        TAG = DashboardActivityViewModel.class.getSimpleName();
         updateDailyValues();
     }
 
