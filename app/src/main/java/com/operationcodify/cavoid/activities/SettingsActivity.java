@@ -36,6 +36,16 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(notificationIntent);
             }
         });
+        Button CommunitySpreadButton = (Button) findViewById(R.id.currentLocationNotificationButton);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent notificationIntent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Current Location");
+                startActivity(notificationIntent);
+            }
+        });
     }
 
     /**
