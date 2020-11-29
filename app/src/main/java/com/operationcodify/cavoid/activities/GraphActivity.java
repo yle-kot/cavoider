@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -213,26 +214,5 @@ public class GraphActivity extends AppCompatActivity {
         pastLocationChart.invalidate();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(GraphActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(GraphActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 }
