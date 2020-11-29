@@ -3,7 +3,6 @@ package com.operationcodify.cavoid.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,6 +64,10 @@ public class PastLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_location);
+
+        getSupportActionBar().setTitle("Past Location Dashboard");
+
+
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -77,15 +79,17 @@ public class PastLocationActivity extends AppCompatActivity {
                         startActivity(dashboardIntent);
                         break;
                     case R.id.graphBottomMenu:
-                        Intent graphIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
-                        startActivity(graphIntent);
+                        Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(PastLocationActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
                         break;
                 }
-
                 return true;
             }
         });
-
 
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -41,7 +40,11 @@ public class DashboardActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+
+        getSupportActionBar().setTitle("Main Dashboard");
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -51,14 +54,17 @@ public class DashboardActivity extends AppCompatActivity {
                         startActivity(pastLocationIntent);
                         break;
                     case R.id.graphBottomMenu:
-                        Intent graphIntent = new Intent(DashboardActivity.this, GraphActivity.class);
-                        startActivity(graphIntent);
+                        Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(DashboardActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
                         break;
                 }
                 return true;
             }
         });
-
         viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override

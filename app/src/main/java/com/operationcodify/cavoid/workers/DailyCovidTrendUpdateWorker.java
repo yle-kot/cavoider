@@ -50,7 +50,6 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     NotifiedLocation notifiedLocation;
     private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
-    private Boolean isDone;
     private static final String TAG = DailyCovidTrendUpdateWorker.class.getSimpleName();
 
     private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
@@ -88,6 +87,11 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         return fipsVisitedLastTwoWeeks;
     }
 
+    /**
+     *
+     * @param date which is used to form a date range (today to date)
+     * @return all the dates in this date range
+     */
     private LocalDate[] getDatesSince(LocalDate date) {
         LocalDate startDate = DateTime.now().toLocalDate().minusDays(1);
         int interval = Days.daysBetween(date, startDate).getDays();
@@ -99,6 +103,10 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         return dateList;
     }
 
+    /**
+     * @param dateList which contains the dates to search through for saved fips codes
+     * @return a list of all the fips codes which were saved on the dates in the dateList
+     */
     private ArrayList<String> getsFipsVisitedOn(LocalDate[] dateList) {
         List<PastLocation> pastLocations = locDao.loadAllByDates(dateList);
         ArrayList<String> pastFips = new ArrayList<String>();
@@ -108,6 +116,14 @@ public class DailyCovidTrendUpdateWorker extends Worker {
         return pastFips;
     }
 
+    /**
+     * The method gets the covid data from the api to determine if there is a
+     *                            positive covid trend by comparing the weekly average for the past two
+     *                            weeks. If there is a positive trend, then the fips code is saved to
+     *                            notify the user of a rising trend
+     * @param repo the repository which holds the api
+     * @param pastFips all the fips codes for the past 14 days
+     */
     public void createFipsToNotifyList(Repository repo, ArrayList<String> pastFips) {
         for (String fips : pastFips) {
             repo.getPosTests(fips, new Response.Listener<JSONObject>() {

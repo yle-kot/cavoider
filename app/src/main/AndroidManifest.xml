@@ -26,8 +26,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.AppInfoActivity"/>
-        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.GeneralInformationActivity"></activity>
+        <activity
+            android:name=".activities.CovidDataActivity"
+            android:parentActivityName=".activities.GeneralInformationActivity" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.GeneralInformationActivity" />
         <activity android:name=".activities.PastLocationActivity" />
         <activity android:name=".activities.DashboardActivity" />
         <activity android:name=".activities.LoadingActivity">
@@ -41,8 +46,7 @@
             android:name=".activities.OnboardingActivity"
             android:enabled="true"
             android:exported="true"
-            android:theme="@style/Theme.Leanback.Onboarding">
-        </activity>
+            android:theme="@style/Theme.Leanback.Onboarding"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -55,8 +59,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/ApiKey" />
 
-        <activity
-            android:name=".activities.GraphActivity" />
+        <activity android:name=".activities.GraphActivity" />
     </application>
 
 </manifest>
