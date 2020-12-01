@@ -1,8 +1,5 @@
 package com.operationcodify.cavoid.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +27,6 @@ import java.util.Date;
 
 public class PastLocationActivity extends AppCompatActivity {
 
-    //TODO:Finish implementing recycleview with hunter
 
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;

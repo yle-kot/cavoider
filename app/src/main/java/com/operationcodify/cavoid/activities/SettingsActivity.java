@@ -16,11 +16,6 @@ import com.operationcodify.cavoid.R;
 public class SettingsActivity extends AppCompatActivity {
 
 
-    /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +43,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -60,11 +50,6 @@ public class SettingsActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
-     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:

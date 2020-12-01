@@ -30,9 +30,8 @@ public class DashboardActivity extends AppCompatActivity {
 
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Gives functionality to views and view models in the dashboard
+     * @return void
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +72,9 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Sets the text of textvies
+     * updates values of COVID stats
+     * @return void
      */
     public void updateDashBoard() {
         String yesterday = getYesterdayString();
@@ -131,7 +130,7 @@ public class DashboardActivity extends AppCompatActivity {
         TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
         deathPer100KNum.setText(viewModel.deathsPer100K2);
     }
-    // Todo: Return a string of correct date. Ex: "Nov. 8th"
+
 
     public String getYesterdayString() {
         String suffix = "";

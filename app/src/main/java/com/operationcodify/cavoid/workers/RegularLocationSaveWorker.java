@@ -58,8 +58,9 @@ public class RegularLocationSaveWorker extends Worker {
 
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
+     * Creates an array of past locations to check through later
+     * Creates instance of locDoa
+     * Creates instancce of
      * @return The square root of the given number.
      */
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -118,9 +119,8 @@ public class RegularLocationSaveWorker extends Worker {
     }
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Checks if permissions are given
+     * @return boolean of if permissions are true or false
      */
     private boolean isMissingPermissions() {
         if (
@@ -169,9 +169,8 @@ public class RegularLocationSaveWorker extends Worker {
     }
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Creates the details of the notification for if your current location
+     * @return void
      */
     private void createWarningNotificationForCurrent(String county) {
         String title = "COVID-19 spread in your area";
@@ -182,9 +181,8 @@ public class RegularLocationSaveWorker extends Worker {
     }
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Makes the notification manager and the pending intent for when the
+     * @return void
      */
     private void createNotificationForCurrentActivity(String title, String message){
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -203,9 +201,10 @@ public class RegularLocationSaveWorker extends Worker {
     }
 
     /**
-     * Takes a number and returns its square root.
-     * param x The value to square.
-     * @return The square root of the given number.
+     * Creates an indent and pending intent object of the notification
+     * The pending intent is a token that holds a refrence to the intent
+     * If the application is closed, the intent can still be triggeted
+     * @return intentforactivity
      */
     private PendingIntent getPendingIntentTo(Class<? extends Activity> activity){
         Intent gotToCurrentLocationIntent = new Intent(context, activity);
