@@ -25,10 +25,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+//The past location activity shows the user past locations they have visited in the order of most recently notified locations
 
 public class PastLocationActivity extends AppCompatActivity {
-
-    //TODO:Finish implementing recycleview with hunter
 
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
@@ -46,6 +48,7 @@ public class PastLocationActivity extends AppCompatActivity {
     public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
     private static final String TAG = PastLocationActivity.class.getSimpleName();
+    public BottomNavigationView bottomNavigationView;
 
 
     public Date yesterday() {
@@ -64,7 +67,8 @@ public class PastLocationActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Past Location Dashboard");
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -116,5 +120,13 @@ public class PastLocationActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
+        super.onResume();
+    }
+
+
 
 }

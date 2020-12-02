@@ -13,6 +13,7 @@ import com.operationcodify.cavoid.R;
 
 import java.util.List;
 
+
 public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHolder>{
     PastLocationViewHolder vh;
     SortedList<ParsedPastLocationReport> pastLocationReports;

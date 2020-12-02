@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -35,6 +36,8 @@ public class GraphActivity extends AppCompatActivity {
     private ArrayList<String> pastLocationsList;
     private Repository repo;
     private GraphActivityViewModel viewModel;
+    public BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class GraphActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Graph");
         addBottomMenu();
 
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
@@ -83,6 +87,13 @@ public class GraphActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
+        super.onResume();
+    }
+
 
     /**
      * processes data from the view model to update the graph
@@ -202,5 +213,6 @@ public class GraphActivity extends AppCompatActivity {
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
     }
+
 
 }

@@ -27,6 +27,8 @@ public class DashboardActivity extends AppCompatActivity {
     private DashboardActivityViewModel viewModel;
     public SimpleDateFormat dateFormat;
     public String date;
+    public BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Main Dashboard");
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -70,6 +72,12 @@ public class DashboardActivity extends AppCompatActivity {
                 updateDashBoard();
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
+        super.onResume();
     }
 
     public void updateDashBoard() {
