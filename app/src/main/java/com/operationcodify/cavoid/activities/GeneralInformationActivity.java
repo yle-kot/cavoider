@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 
 public class GeneralInformationActivity extends AppCompatActivity {
+    public BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,15 @@ public class GeneralInformationActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("General Information");
 
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        addBottomMenu();
+
+    }
+
+    /**
+     * switches to the corresponding activity based on which icon is selected in the bottom menu
+     */
+    public void addBottomMenu() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.generalInfoBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -43,7 +53,12 @@ public class GeneralInformationActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
+    @Override
+    public void onResume(){
+        bottomNavigationView.setSelectedItemId(R.id.generalInfoBottomMenu);
+        super.onResume();
     }
 
     /**

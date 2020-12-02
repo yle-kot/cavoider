@@ -3,8 +3,6 @@ package com.operationcodify.cavoid.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -124,9 +121,6 @@ public class GraphActivity extends AppCompatActivity {
                 }
             }
         }
-        else {
-            rollingAvgEntries.add(new BarEntry(0, 0));
-        }
         BarChart pastLocationChart = (BarChart) findViewById(R.id.pastLocationChart);
         formatRightYAxis(pastLocationChart);
         formatLeftYAxis(pastLocationChart, states, rollingAvgState, highestValue);
@@ -198,6 +192,7 @@ public class GraphActivity extends AppCompatActivity {
      */
     public void addDataToBarChart(BarChart pastLocationChart, ArrayList<BarEntry> rollingAvgEntries) {
         BarDataSet set = new BarDataSet(rollingAvgEntries, "Average New Cases");
+        set.setColor(getColor(R.color.colorPrimary));
         BarData data = new BarData(set);
         data.setDrawValues(false);
         pastLocationChart.setData(data);
@@ -210,6 +205,8 @@ public class GraphActivity extends AppCompatActivity {
     public void formatBarChart(BarChart pastLocationChart) {
         Description description = pastLocationChart.getDescription();
         description.setEnabled(false);
+        pastLocationChart.setNoDataText("Currently there appear to be no locations recorded.");
+        pastLocationChart.setNoDataTextColor(getColor(R.color.lb_default_brand_color));
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
     }
