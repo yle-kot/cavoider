@@ -17,6 +17,12 @@ public class AppNotificationHandler {
     //Notification channel ID
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
 
+    /**
+     * Creates the application's default notification.
+     * @param context The calling context
+     * @param title The title for the notification
+     * @param message The message to display to the user
+     */
     public static void deliverNotification(Context context, String title, String message){
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 

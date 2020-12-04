@@ -44,6 +44,12 @@ import java.util.ArrayList;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+/**
+ * This worker is designed to be run on a regular basis (every 5-15 minutes) and is responsible for
+ * listening to see if the user is in a new location for the day. This involves getting the user's
+ * current location and saving that to the database. Each time a new location is found, the application
+ * is responsible for checking if the location is "bad" and creating a breaking notification if it is.
+ */
 public class RegularLocationSaveWorker extends Worker {
 
     private Context context;
@@ -164,6 +170,10 @@ public class RegularLocationSaveWorker extends Worker {
         };
     }
 
+    /**
+     * Given a fips code, creates a notification
+     * @param fips The county code in question
+     */
     private void createWarningNotificationForCurrent(String fips) {
         String title = "COVID-19 spread in your area";
         String message;
@@ -172,6 +182,11 @@ public class RegularLocationSaveWorker extends Worker {
         createNotificationForCurrentActivity(title, message);
     }
 
+    /**
+     * Creates a notification that, when clicked, will attempt to open the PastLocationActivity
+     * @param title
+     * @param message
+     */
     private void createNotificationForCurrentActivity(String title, String message){
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
@@ -187,6 +202,12 @@ public class RegularLocationSaveWorker extends Worker {
                 .setDefaults(NotificationCompat.DEFAULT_ALL);
         mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
+
+    /**
+     * Creates a pending activity from current to the given activity.
+     * @param activity The activity to go to
+     * @return A pending intent
+     */
     private PendingIntent getPendingIntentTo(Class<? extends Activity> activity){
         Intent gotToCurrentLocationIntent = new Intent(context, activity);
 

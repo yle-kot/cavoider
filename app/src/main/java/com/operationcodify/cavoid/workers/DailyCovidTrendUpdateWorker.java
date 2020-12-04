@@ -41,7 +41,14 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+/**
+ * DailyCovidTrendUpdateWorker is a worker that is intended to be run once a day. The worker's
+ * responsibilities include cleaning the database of records older than 2 weeks, updating the covid reports
+ * for the last two weeks' worth of counties, and finally, checking all counties that have been visited
+ * to determine if an exposure warning needs to be created for that county.
+ */
 public class DailyCovidTrendUpdateWorker extends Worker {
+
     private LocationDatabase locDb;
     private LocationDao locDao;
     private LocalDate twoWeeksAgoDate;

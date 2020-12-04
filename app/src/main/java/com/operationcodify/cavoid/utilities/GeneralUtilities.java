@@ -20,6 +20,8 @@ public class GeneralUtilities {
 
         return getSecondsUntilHour(hour, DateTime.now());
     }
+
+
     public static long getSecondsUntilHour(int hour, DateTime now){
         long delay;
         if (now.getHourOfDay() < (hour -  1)) {
