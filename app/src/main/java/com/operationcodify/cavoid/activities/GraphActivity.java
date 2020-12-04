@@ -25,6 +25,7 @@ import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class GraphActivity extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class GraphActivity extends AppCompatActivity {
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         repo = new Repository(getApplicationContext());
-        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        exposureCheck = new ExposureCheckViewModel(getApplication(), repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
         viewModel = new ViewModelProvider(this).get(GraphActivityViewModel.class);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
@@ -96,7 +97,7 @@ public class GraphActivity extends AppCompatActivity {
      * processes data from the view model to update the graph
      */
     public void updateGraph() {
-        PriorityQueue<GraphActivityViewModel.ChartData> rollingAvg = viewModel.rollingAvg;
+        ArrayList<GraphActivityViewModel.ChartData> rollingAvg = new ArrayList<GraphActivityViewModel.ChartData>(Arrays.asList(viewModel.rollingAvg.toArray(new GraphActivityViewModel.ChartData[0])));
         ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
         ArrayList<String> xAxisLabel = new ArrayList<>();
         ArrayList<Float> rollingAvgState = new ArrayList<>();
@@ -105,7 +106,7 @@ public class GraphActivity extends AppCompatActivity {
         if (!rollingAvg.isEmpty()) {
             int rollingAvgSize = rollingAvg.size();
             for (int i = 0; i < rollingAvgSize; i++) {
-                GraphActivityViewModel.ChartData chartData = rollingAvg.poll();
+                GraphActivityViewModel.ChartData chartData = rollingAvg.get(i);
                 float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
                 if (i == (rollingAvgSize - 1)) {
                     highestValue = casesCounty + 10;
