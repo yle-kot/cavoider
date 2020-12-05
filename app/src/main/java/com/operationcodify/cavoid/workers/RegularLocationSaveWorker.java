@@ -55,6 +55,7 @@ public class RegularLocationSaveWorker extends Worker {
     private final LocationDao locDao;
     private final Repository repo;
     private final FusedLocationProviderClient fusedLocationProviderClient;
+    private String fips;
 
 
     /**
@@ -153,6 +154,7 @@ public class RegularLocationSaveWorker extends Worker {
                     pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
                     pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                     pastLocation.date = date;
+                    fips = pastLocation.fips;
                     if(!pastLocations.contains(pastLocation.fips)){
                         createWarningNotificationForCurrent(pastLocation.countyName);
                     }
@@ -167,16 +169,53 @@ public class RegularLocationSaveWorker extends Worker {
             }
         };
     }
+    public void CountyCovidCheck(Repository repo, ArrayList<String> pastLocations) {
+
+        repo.getPosTests(fips, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                LocalDate date = LocalDate.now();
+                PastLocation pastLocation = new PastLocation();
+                double week1=0;
+                double week2=0;
+                String countyName = "";
+                try {
+                    pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
+                    pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
+                    pastLocation.date = date;
+                    week1 = response.getDouble("week_1_rolling_avg_per_100k_people");
+                    week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
+                    countyName = response.getString("county");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if ((int)Math.round(week2) > (int)Math.round(week1)) {
+                            finalizeWorker();
+                }
+            }
+        });
+    }
+
+
+    private void finalizeWorker() {
+        // Create a notification to notify the user that they were exposed to X locations
+        // X locations is defined in fipsToNotifyList
+        createWarningNotificationForCurrent(fips);
+
+    }
 
     /**
      * Creates the details of the notification for if your current location
      * @return void
      */
     private void createWarningNotificationForCurrent(String county) {
+
         String title = "COVID-19 spread in your area";
         String message;
 
         message= "It seems like you just went into " + county + ", which rising in COVID-19 cases. Be careful and wear your mask!";
+
         createNotificationForCurrentActivity(title, message);
     }
 
