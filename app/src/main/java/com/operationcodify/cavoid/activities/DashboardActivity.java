@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -24,11 +22,10 @@ import java.text.SimpleDateFormat;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private DashboardActivityViewModel viewModel;
     public SimpleDateFormat dateFormat;
     public String date;
     public BottomNavigationView bottomNavigationView;
-
+    private DashboardActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +40,8 @@ public class DashboardActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Main Dashboard");
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        addBottomMenu();
+        bottomNavigationView = addBottomMenu();
+
 
         viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
@@ -55,7 +52,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
     }
 
-    public void addBottomMenu() {
+    public BottomNavigationView addBottomMenu() {
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -78,10 +75,11 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             }
         });
+        return bottomNavigationView;
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         super.onResume();
     }
@@ -140,7 +138,6 @@ public class DashboardActivity extends AppCompatActivity {
         TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
         deathPer100KNum.setText(viewModel.deathsPer100K2);
     }
-    // Todo: Return a string of correct date. Ex: "Nov. 8th"
 
     public String getYesterdayString() {
         String suffix = "";

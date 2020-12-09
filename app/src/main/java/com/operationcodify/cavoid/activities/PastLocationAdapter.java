@@ -14,7 +14,7 @@ import com.operationcodify.cavoid.R;
 import java.util.List;
 
 
-public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHolder>{
+public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHolder> {
     PastLocationViewHolder vh;
     SortedList<ParsedPastLocationReport> pastLocationReports;
     Context c;
@@ -25,13 +25,13 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
         pastLocationReports = new SortedList<>(ParsedPastLocationReport.class, new SortedList.Callback<ParsedPastLocationReport>() {
             @Override
             public int compare(ParsedPastLocationReport o1, ParsedPastLocationReport o2) {
-                if (o1.reportGenerationDate == null){
+                if (o1.reportGenerationDate == null) {
                     return 1;
                 }
-                else if (o2.reportGenerationDate == null){
+                else if (o2.reportGenerationDate == null) {
                     return -1;
                 }
-                else{
+                else {
                     return o1.reportGenerationDate.compareTo(o2.reportGenerationDate);
                 }
             }
@@ -69,15 +69,15 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
         addAll(data);
     }
 
-    public void addAll(List<ParsedPastLocationReport> reports){
+    public void addAll(List<ParsedPastLocationReport> reports) {
         pastLocationReports.beginBatchedUpdates();
-        for (int i = 0; i < reports.size(); i++){
+        for (int i = 0; i < reports.size(); i++) {
             pastLocationReports.add(reports.get(i));
         }
         pastLocationReports.endBatchedUpdates();
     }
 
-    public void add(ParsedPastLocationReport report){
+    public void add(ParsedPastLocationReport report) {
         pastLocationReports.add(report);
         notifyDataSetChanged();
     }
@@ -86,10 +86,10 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
         return pastLocationReports.get(position);
     }
 
-    public void clear(){
+    public void clear() {
         pastLocationReports.beginBatchedUpdates();
-        while (pastLocationReports.size() > 0){
-            pastLocationReports.removeItemAt(pastLocationReports.size()-1);
+        while (pastLocationReports.size() > 0) {
+            pastLocationReports.removeItemAt(pastLocationReports.size() - 1);
         }
         pastLocationReports.endBatchedUpdates();
     }
@@ -99,7 +99,7 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
     @Override
     public PastLocationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // create a new view
-        CardView v = (CardView)LayoutInflater.from(parent.getContext())
+        CardView v = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.row, parent, false);
         vh = new PastLocationViewHolder(v);
         return vh;
@@ -116,6 +116,7 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
         String message = r.countyName + " New deaths: " + r.newDeathNumber + " Total Deaths: " + r.totalDeaths;
         vh.pastDeathsTextView.setText(message);
     }
+
     private String getPastDeathsMessage(ParsedPastLocationReport r) {
         String message = r.countyName + " New deaths: " + r.newDeathNumber + " Total Deaths: " + r.totalDeaths;
         return message;
@@ -129,7 +130,7 @@ public class PastLocationAdapter extends RecyclerView.Adapter<PastLocationViewHo
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if(pastLocationReports != null) {
+        if (pastLocationReports != null) {
             return pastLocationReports.size();
         }
         else {

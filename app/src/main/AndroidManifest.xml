@@ -36,17 +36,18 @@
         <activity android:name=".activities.PastLocationActivity" />
         <activity android:name=".activities.DashboardActivity" />
         <activity android:name=".activities.LoadingActivity">
+        </activity>
+        <activity
+            android:name=".activities.OnboardingActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:theme="@style/Theme.Leanback.Onboarding">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.OnboardingActivity"
-            android:enabled="true"
-            android:exported="true"
-            android:theme="@style/Theme.Leanback.Onboarding"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

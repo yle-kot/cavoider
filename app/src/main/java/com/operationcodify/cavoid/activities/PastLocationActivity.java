@@ -1,15 +1,12 @@
 package com.operationcodify.cavoid.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,13 +22,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 //The past location activity shows the user past locations they have visited in the order of most recently notified locations
 
 public class PastLocationActivity extends AppCompatActivity {
 
+    private static final String TAG = PastLocationActivity.class.getSimpleName();
+    public ArrayList<ParsedPastLocationReport> reports;
+    public BottomNavigationView bottomNavigationView;
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -45,21 +43,8 @@ public class PastLocationActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
-    private static final String TAG = PastLocationActivity.class.getSimpleName();
-    public BottomNavigationView bottomNavigationView;
 
-
-    public Date yesterday() {
-        final Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-        return cal.getTime();
-    }
-    public String getYesterdayDateString() {
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        return dateFormat.format(yesterday());
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,30 +52,21 @@ public class PastLocationActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Past Location Dashboard");
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        addBottomMenu();
-
         repo = new Repository(getApplicationContext());
-        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        exposureCheck = new ExposureCheckViewModel(getApplication(), repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
         viewModel = new ViewModelProvider(this).get(PastLocationActivityViewModel.class);
-        String yesterday = getYesterdayDateString();
-        recyclerView = (RecyclerView) findViewById(R.id.pastLocationsRecyclerView);
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
-        // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        bottomNavigationView = createBottomNavigationView();
 
-        reports = viewModel.getReports();
-        mAdapter = new PastLocationAdapter(this, reports);
-        recyclerView.setAdapter(mAdapter);
+        String yesterday = getYesterdayDateString();
+
+        setupRecyclerView();
+        createBottomNavigationView();
 
         viewModel.getCounter().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                if (integer == 0 ){
+                if (integer == 0) {
                     return;
                 }
                 ParsedPastLocationReport report = reports.get(integer - 1);
@@ -100,12 +76,20 @@ public class PastLocationActivity extends AppCompatActivity {
         });
     }
 
+    public Date yesterday() {
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
+    }
 
-    /**
-     * switches to the corresponding activity based on which icon is selected in the bottom menu
-     */
-    public void addBottomMenu() {
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+    public String getYesterdayDateString() {
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        return dateFormat.format(yesterday());
+    }
+
+
+    private BottomNavigationView createBottomNavigationView() {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -127,14 +111,29 @@ public class PastLocationActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        return bottomNavigationView;
+    }
+
+    private void setupRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.pastLocationsRecyclerView);
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        reports = viewModel.getReports();
+        mAdapter = new PastLocationAdapter(this, reports);
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         super.onResume();
     }
-
 
 
 }

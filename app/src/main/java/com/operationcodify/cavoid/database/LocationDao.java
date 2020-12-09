@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
 import java.util.List;
 
 /**
@@ -18,22 +18,22 @@ import java.util.List;
 
 @Dao
 public interface LocationDao {
-    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]  " +
+    @Query("SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]  " +
             "LEFT OUTER JOIN active_cases [ac] ON pl.fips = ac.fips")
     List<PastLocation> getAll();
 
-    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
+    @Query("SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
             "LEFT OUTER JOIN active_cases as ac ON pl.fips = ac.fips" +
             " WHERE date IN (:dates)")
     List<PastLocation> loadAllByDates(LocalDate[] dates);
 
-    @Query( "SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
+    @Query("SELECT pl.date, pl.fips, pl.county_name, pl.timestamp, ac.active_cases FROM past_location [pl]" +
             "LEFT OUTER JOIN active_cases as ac ON pl.fips = ac.fips " +
             "ORDER BY pl.timestamp DESC " +
             "LIMIT 1")
     PastLocation getLatestLocation();
 
-    @Query( "SELECT * FROM past_location [pl] " +
+    @Query("SELECT * FROM past_location [pl] " +
             "LEFT JOIN active_cases [ac] ON pl.fips == ac.fips " +
             "WHERE pl.fips LIKE :fips " +
             "ORDER BY pl.date DESC" +
@@ -41,22 +41,22 @@ public interface LocationDao {
     PastLocation findByLocation(String fips);
 
     @Query("SELECT  DISTINCT pl.fips FROM past_location [pl]")
-    List<String>getAllDistinctFips();
+    List<String> getAllDistinctFips();
 
-    @Query( "SELECT DISTINCT fips FROM notified_location ")
-    List<String>getAllNotifiedFips();
+    @Query("SELECT DISTINCT fips FROM notified_location ")
+    List<String> getAllNotifiedFips();
 
-    @Query( "SELECT pl.fips FROM past_location[pl] " +
+    @Query("SELECT pl.fips FROM past_location[pl] " +
             "LEFT JOIN notified_location[nl] ON pl.fips == nl.fips " +
             "WHERE nl.fips == null")
-    List<String>getAllFipsToNotify();
+    List<String> getAllFipsToNotify();
 
     //TODO Add query that joins active cases onto past locations into PastLocationWithActiveCases
-    @Query( "SELECT pl.fips, pl.date, pl.county_name, pl.timestamp,ac.active_cases, ac.report_date FROM past_location[pl]"+
+    @Query("SELECT pl.fips, pl.date, pl.county_name, pl.timestamp,ac.active_cases, ac.report_date FROM past_location[pl]" +
             "LEFT JOIN active_cases[ac] ON pl.fips == ac.fips")
     List<PastLocationWithActiveCases> getPastLocationWithActiveCases();
 
-    @Query( "Select nl.date FROM notified_location[nl] WHERE nl.fips == :fips")
+    @Query("Select nl.date FROM notified_location[nl] WHERE nl.fips == :fips")
     LocalDate getTimeOfLastNotificationFor(String fips);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -74,13 +74,13 @@ public interface LocationDao {
     @Update()
     void createNewNotificationEntry(NotifiedLocation... notifiedLocations);
 
-    @Query( "DELETE FROM past_location WHERE date < :date; "
+    @Query("DELETE FROM past_location WHERE date < :date; "
 //            "DELETE FROM active_cases as ac " +
 //            "OUTER JOIN past_locations as pl on ac.fips = pl.fips " +
 //            "WHERE ac.fips != pl.fips"
     )
     void cleanRecordsOlderThan(LocalDate date);
 
-    @Query( "SELECT EXISTS(SELECT 1 FROM notified_location[nl] WHERE nl.fips == :fips LIMIT 1)")
+    @Query("SELECT EXISTS(SELECT 1 FROM notified_location[nl] WHERE nl.fips == :fips LIMIT 1)")
     int hasFipsBeenNotified(String fips);
 }
