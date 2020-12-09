@@ -44,6 +44,19 @@ public class DashboardActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Main Dashboard");
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        addBottomMenu();
+
+        viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                updateDashBoard();
+            }
+        });
+    }
+
+    public void addBottomMenu() {
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -63,13 +76,6 @@ public class DashboardActivity extends AppCompatActivity {
                         break;
                 }
                 return true;
-            }
-        });
-        viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
-        viewModel.getCounter().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                updateDashBoard();
             }
         });
     }

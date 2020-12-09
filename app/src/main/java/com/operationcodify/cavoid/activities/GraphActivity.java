@@ -3,8 +3,6 @@ package com.operationcodify.cavoid.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -14,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -28,6 +25,7 @@ import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class GraphActivity extends AppCompatActivity {
@@ -49,7 +47,7 @@ public class GraphActivity extends AppCompatActivity {
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         repo = new Repository(getApplicationContext());
-        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
+        exposureCheck = new ExposureCheckViewModel(getApplication(), repo);
         pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
         viewModel = new ViewModelProvider(this).get(GraphActivityViewModel.class);
         viewModel.getCounter().observe(this, new Observer<Integer>() {
@@ -99,7 +97,7 @@ public class GraphActivity extends AppCompatActivity {
      * processes data from the view model to update the graph
      */
     public void updateGraph() {
-        PriorityQueue<GraphActivityViewModel.ChartData> rollingAvg = viewModel.rollingAvg;
+        ArrayList<GraphActivityViewModel.ChartData> rollingAvg = new ArrayList<GraphActivityViewModel.ChartData>(Arrays.asList(viewModel.rollingAvg.toArray(new GraphActivityViewModel.ChartData[0])));
         ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
         ArrayList<String> xAxisLabel = new ArrayList<>();
         ArrayList<Float> rollingAvgState = new ArrayList<>();
@@ -108,7 +106,7 @@ public class GraphActivity extends AppCompatActivity {
         if (!rollingAvg.isEmpty()) {
             int rollingAvgSize = rollingAvg.size();
             for (int i = 0; i < rollingAvgSize; i++) {
-                GraphActivityViewModel.ChartData chartData = rollingAvg.poll();
+                GraphActivityViewModel.ChartData chartData = rollingAvg.get(i);
                 float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
                 if (i == (rollingAvgSize - 1)) {
                     highestValue = casesCounty + 10;
@@ -123,9 +121,6 @@ public class GraphActivity extends AppCompatActivity {
                     states.add(state);
                 }
             }
-        }
-        else {
-            rollingAvgEntries.add(new BarEntry(0, 0));
         }
         BarChart pastLocationChart = (BarChart) findViewById(R.id.pastLocationChart);
         formatRightYAxis(pastLocationChart);
@@ -198,6 +193,7 @@ public class GraphActivity extends AppCompatActivity {
      */
     public void addDataToBarChart(BarChart pastLocationChart, ArrayList<BarEntry> rollingAvgEntries) {
         BarDataSet set = new BarDataSet(rollingAvgEntries, "Average New Cases");
+        set.setColor(getColor(R.color.colorPrimary));
         BarData data = new BarData(set);
         data.setDrawValues(false);
         pastLocationChart.setData(data);
@@ -210,6 +206,8 @@ public class GraphActivity extends AppCompatActivity {
     public void formatBarChart(BarChart pastLocationChart) {
         Description description = pastLocationChart.getDescription();
         description.setEnabled(false);
+        pastLocationChart.setNoDataText("Currently there appear to be no locations recorded.");
+        pastLocationChart.setNoDataTextColor(getColor(R.color.lb_default_brand_color));
         pastLocationChart.setFitBars(true);
         pastLocationChart.invalidate();
     }

@@ -67,29 +67,8 @@ public class PastLocationActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Past Location Dashboard");
 
-
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
-        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.dashboardBottomMenu:
-                        Intent dashboardIntent = new Intent(PastLocationActivity.this, DashboardActivity.class);
-                        startActivity(dashboardIntent);
-                        break;
-                    case R.id.graphBottomMenu:
-                        Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
-                        startActivity(mapIntent);
-                        break;
-                    case R.id.generalInfoBottomMenu:
-                        Intent generalInfoIntent = new Intent(PastLocationActivity.this, GeneralInformationActivity.class);
-                        startActivity(generalInfoIntent);
-                        break;
-                }
-                return true;
-            }
-        });
+        addBottomMenu();
 
         repo = new Repository(getApplicationContext());
         exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
@@ -117,6 +96,35 @@ public class PastLocationActivity extends AppCompatActivity {
                 ParsedPastLocationReport report = reports.get(integer - 1);
                 Log.d(TAG, "Adding report to view: " + report.countyName);
                 mAdapter.add(report);
+            }
+        });
+    }
+
+
+    /**
+     * switches to the corresponding activity based on which icon is selected in the bottom menu
+     */
+    public void addBottomMenu() {
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.dashboardBottomMenu:
+                        Intent dashboardIntent = new Intent(PastLocationActivity.this, DashboardActivity.class);
+                        startActivity(dashboardIntent);
+                        break;
+                    case R.id.graphBottomMenu:
+                        Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
+                        startActivity(mapIntent);
+                        break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(PastLocationActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
+                        break;
+                }
+                return true;
             }
         });
     }

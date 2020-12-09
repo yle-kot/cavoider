@@ -29,7 +29,7 @@
         </string>
     <string name="app_overview">App Overview</string>
     <string name="app_overview_info">This app is designed to provide users with an overview of
-        the Covid-19 information in their area. This apps uses a user\'s location in order to alert
+        the Covid-19 community spread information in their area. This app uses a user\'s location to alert
         them of the Covid-19 status in areas they have visited or are currently visiting. This app
         is not designed as a contact tracing app and should not be used as such. This app is
         provided purely for informational purposes.</string>
