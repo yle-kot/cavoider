@@ -7,9 +7,7 @@ import com.operationcodify.cavoid.database.LocationDao;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Timestamp;
-
-public class ParsedPastLocationReport implements Comparable<ParsedPastLocationReport>{
+public class ParsedPastLocationReport implements Comparable<ParsedPastLocationReport> {
     public String activeCasesEst;
     public String caseFatality;
     public String deathsPer100K;
@@ -26,7 +24,8 @@ public class ParsedPastLocationReport implements Comparable<ParsedPastLocationRe
     public String lastReportTimestamp;
 
     JSONObject response;
-    public ParsedPastLocationReport(JSONObject response, LocationDao locDao){
+
+    public ParsedPastLocationReport(JSONObject response, LocationDao locDao) {
         getInstanceVarsFromResponse(response);
         getLastReportTime(locDao);
 
@@ -47,26 +46,26 @@ public class ParsedPastLocationReport implements Comparable<ParsedPastLocationRe
         reportGenerationDate = getStringFromResponse(response, "report_date");
     }
 
-    private void getLastReportTime(LocationDao locDao){
+    private void getLastReportTime(LocationDao locDao) {
         boolean hasBeenNotified;
-        if (this.fips == null){
+        if (this.fips == null) {
             hasBeenNotified = false;
         }
-        else{
+        else {
             hasBeenNotified = locDao.hasFipsBeenNotified(this.fips) == 1;
         }
 
-        if (hasBeenNotified){
+        if (hasBeenNotified) {
             lastReportTimestamp = locDao.getTimeOfLastNotificationFor(this.fips).toString();
         }
-        else{
+        else {
             lastReportTimestamp = null;
         }
     }
 
-    private String getStringFromResponse(JSONObject response, String key){
+    private String getStringFromResponse(JSONObject response, String key) {
         String v = null;
-        try{
+        try {
             v = String.valueOf(response.get(key));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -88,7 +87,7 @@ public class ParsedPastLocationReport implements Comparable<ParsedPastLocationRe
     public int compareTo(ParsedPastLocationReport o) {
         if (o.reportGenerationDate == null)
             return 1;
-        else if (this.reportGenerationDate == null){
+        else if (this.reportGenerationDate == null) {
             return -1;
         }
         else return this.reportGenerationDate.compareTo(o.reportGenerationDate);

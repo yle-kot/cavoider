@@ -3,8 +3,6 @@ package com.operationcodify.cavoid.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -25,8 +23,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+//The past location activity shows the user past locations they have visited in the order of most recently notified locations
+
 public class PastLocationActivity extends AppCompatActivity {
 
+    private static final String TAG = PastLocationActivity.class.getSimpleName();
+    public ArrayList<ParsedPastLocationReport> reports;
+    public BottomNavigationView bottomNavigationView;
 
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
@@ -41,25 +44,52 @@ public class PastLocationActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
-    private static final String TAG = PastLocationActivity.class.getSimpleName();
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_past_location);
+
+        getSupportActionBar().setTitle("Past Location Dashboard");
+
+        repo = new Repository(getApplicationContext());
+        exposureCheck = new ExposureCheckViewModel(getApplication(), repo);
+        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
+        viewModel = new ViewModelProvider(this).get(PastLocationActivityViewModel.class);
+        bottomNavigationView = createBottomNavigationView();
+
+        String yesterday = getYesterdayDateString();
+
+        setupRecyclerView();
+        createBottomNavigationView();
+
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if (integer == 0) {
+                    return;
+                }
+                ParsedPastLocationReport report = reports.get(integer - 1);
+                Log.d(TAG, "Adding report to view: " + report.countyName);
+                mAdapter.add(report);
+            }
+        });
+    }
 
     public Date yesterday() {
         final Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
         return cal.getTime();
     }
+
     public String getYesterdayDateString() {
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         return dateFormat.format(yesterday());
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_past_location);
 
+
+    private BottomNavigationView createBottomNavigationView() {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -74,16 +104,19 @@ public class PastLocationActivity extends AppCompatActivity {
                         Intent mapIntent = new Intent(PastLocationActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
                         break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(PastLocationActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
+                        break;
                 }
                 return true;
             }
         });
 
-        repo = new Repository(getApplicationContext());
-        exposureCheck = new ExposureCheckViewModel(getApplication(),repo);
-        pastLocationsList = exposureCheck.getAllFipsFromLastTwoWeeks();
-        viewModel = new ViewModelProvider(this).get(PastLocationActivityViewModel.class);
-        String yesterday = getYesterdayDateString();
+        return bottomNavigationView;
+    }
+
+    private void setupRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.pastLocationsRecyclerView);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -95,39 +128,13 @@ public class PastLocationActivity extends AppCompatActivity {
         reports = viewModel.getReports();
         mAdapter = new PastLocationAdapter(this, reports);
         recyclerView.setAdapter(mAdapter);
-
-        viewModel.getCounter().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                if (integer == 0 ){
-                    return;
-                }
-                ParsedPastLocationReport report = reports.get(integer - 1);
-                Log.d(TAG, "Adding report to view: " + report.countyName);
-                mAdapter.add(report);
-            }
-        });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+    public void onResume() {
+        bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
+        super.onResume();
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(PastLocationActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), "Intent didn't start" + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(PastLocationActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 }

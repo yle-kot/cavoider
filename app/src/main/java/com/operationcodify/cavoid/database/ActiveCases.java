@@ -15,10 +15,10 @@ public class ActiveCases {
     @ColumnInfo(name = "fips")
     public String fips;
 
-    @ColumnInfo(name="active_cases")
+    @ColumnInfo(name = "active_cases")
     public int activeCases;
 
-    @ColumnInfo(name="report_date")
+    @ColumnInfo(name = "report_date")
     public LocalDate reportDate;
 
 }

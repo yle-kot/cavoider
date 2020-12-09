@@ -20,15 +20,16 @@
     <string name="total_casesTitle" />
     <string name="total_deathsTitle" />
     <string name="fips_code">FIPS Code</string>
-    <string name="data_sources">Covid-19 Data Information</string>
-    <string name="data_sources_info">All Covid-19 data reported in the is app is from The New York
-        Times Covid-19 data set which is based on reports from state and
-        local health agencies. Their data can be found here: https://github.com/nytimes/covid-19-data.
-        The data was used to calculate some of the statistics in this app. Data reported in this app
-        may differ from other sources due to differences in reporting standards and reporting lag times.</string>
-    <string name="app_overview">App Overview Information</string>
+    <string name="data_sources">Covid-19 Data Sources</string>
+    <string name="data_sources_info">All Covid-19 data reported in the app on the county level is from
+        The New York Times Covid-19 data set (https://github.com/nytimes/covid-19-data) which gathers data
+        from state and local health agencies. Any data reported on the state level is from The COVID
+        Tracking Project from The Atlantic (https://covidtracking.com) which gathers data from state
+        and local health agencies, as well as from official press conferences held by state authorities.
+        </string>
+    <string name="app_overview">App Overview</string>
     <string name="app_overview_info">This app is designed to provide users with an overview of
-        the Covid-19 information in their area. This apps uses a user\'s location in order to alert
+        the Covid-19 community spread information in their area. This app uses a user\'s location to alert
         them of the Covid-19 status in areas they have visited or are currently visiting. This app
         is not designed as a contact tracing app and should not be used as such. This app is
         provided purely for informational purposes.</string>
@@ -37,16 +38,24 @@
     <string name="current_location_notification_description">Notifies whenever entering an area with high community spread</string>
     <string name="community_spread_notification_description">Notifies whenever an area visited in the last 14 days has high community spread</string>
     <string name="location_settings">Location Settings</string>
-    <string name="current_location_setting_description">Current Location Settings must be enabled for full functionality of this app. This app does not work without current location enabled. Current location data is only saved as county.</string>
+    <string name="current_location_setting_description">Current Location Settings must be enabled for full functionality of this app. This app does not work without current location enabled. Current location data is only saved in the form of a FIPS code, which is a county identifier, locally on the device .</string>
     <string name="notifications">Notifications</string>
     <string name="map">Map</string>
     <string name="past_locations">Past Locations</string>
     <string name="casesTextView"></string>
     <string name="deathsTitle" />
     <string name="change_community_spread_notification_settings">Change Community Spread Notification Settings</string>
-    <string name="chartTitle">Estimated Active Cases for Previously Visited Counties</string>
+    <string name="chartTitle">Average New Cases per 100,000 People</string>
     <string name="onboardingTitle" />
     <string name="onboardingDescription" />
+    <string name="past_location_bottom_menu">Past Location</string>
+    <string name="dashboard_bottom_menu">Main Dashboard</string>
+    <string name="graph_bottom_menu">Graph</string>
+    <string name="settings_menu">Settings</string>
+    <string name="covid_data_information_menu">COVID-19 Data Information</string>
+    <string name="information_bottom_menu">Information</string>
+    <string name="covid_19_data_usage">Covid-19 Statistics</string>
+    <string name="covid_data_stats">The data from the New York Times and The Atlantic was used in the calculations which generated the statistics displayed throughout the app. Data reported in this app may differ from other sources due to differences in reporting standards and reporting lag times.</string>
     <string name="new_cases">new_cases</string>
     <string name="estimated_average_cases">estimated average cases</string>
     <string name="new_deaths">New Deaths:</string>

@@ -44,17 +44,23 @@ import java.util.ArrayList;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+/**
+ * This worker is designed to be run on a regular basis (every 5-15 minutes) and is responsible for
+ * listening to see if the user is in a new location for the day. This involves getting the user's
+ * current location and saving that to the database. Each time a new location is found, the application
+ * is responsible for checking if the location is "bad" and creating a breaking notification if it is.
+ */
 public class RegularLocationSaveWorker extends Worker {
 
+    private static final String TAG = RegularLocationSaveWorker.class.getSimpleName();
+    private final LocationDao locDao;
+    private final Repository repo;
+    private final FusedLocationProviderClient fusedLocationProviderClient;
     private Context context;
     private String CURRENT_LOCATION_CHANNEL_ID = "Current Location";
     private int NOTIFICATION_ID = 2938;
     private int GOTO_CURRENT_LOCATION_PENDING_INTENT_ID = 260;
     private ArrayList<String> pastLocations;
-    private static final String TAG = RegularLocationSaveWorker.class.getSimpleName();
-    private final LocationDao locDao;
-    private final Repository repo;
-    private final FusedLocationProviderClient fusedLocationProviderClient;
     private String fips;
 
 
@@ -93,30 +99,30 @@ public class RegularLocationSaveWorker extends Worker {
     @NotNull
     private LocationRequest getLocationRequest() {
         return LocationRequest.create()
-                    .setNumUpdates(1)
-                    .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-                    .setInterval(10);
+                .setNumUpdates(1)
+                .setPriority(LocationRequest.PRIORITY_LOW_POWER)
+                .setInterval(10);
     }
 
     @NotNull
     private LocationCallback getLocationCallback() {
         return new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
-                    if (location == null) {
-                        Log.w(TAG, "Could not find user's location!");
-                        return;
-                    }
-
-                    Log.i(TAG, "Saving location: " + location.toString());
-                    try {
-                        repo.getFipsCodeFromCurrentLocation(location, savePastLocationOnFipsCallback());
-                    } catch (IOException e) {
-                        Log.w(TAG, e.toString());
-                    }
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location == null) {
+                    Log.w(TAG, "Could not find user's location!");
+                    return;
                 }
-            };
+
+                Log.i(TAG, "Saving location: " + location.toString());
+                try {
+                    repo.getFipsCodeFromCurrentLocation(location, savePastLocationOnFipsCallback());
+                } catch (IOException e) {
+                    Log.w(TAG, e.toString());
+                }
+            }
+        };
     }
 
     /**
@@ -128,15 +134,15 @@ public class RegularLocationSaveWorker extends Worker {
                 (
                         ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                                 != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                                && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                                 != PackageManager.PERMISSION_GRANTED
                 )
                         || // OR
-                (
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED
-                )
+                        (
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                                        && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                                        != PackageManager.PERMISSION_GRANTED
+                        )
         ) {
             return true;
         }
@@ -151,18 +157,23 @@ public class RegularLocationSaveWorker extends Worker {
                 try {
                     LocalDate date = LocalDate.now();
                     PastLocation pastLocation = new PastLocation();
+
                     pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
                     pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                     pastLocation.date = date;
-                    fips = pastLocation.fips;
                     if(!pastLocations.contains(pastLocation.fips)){
                         createWarningNotificationForCurrent(pastLocation.countyName);
                     }
                     LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertLocations(pastLocation));
-                    // TODO Notify user if new location && trend > 0
                     Log.i(TAG, "Saved location: " + pastLocation.fips);
                 } catch (JSONException e) {
-                    Log.w(TAG, "Could not fetch current fips...\n" + e.toString());
+                    try {
+                        if (response.getString("status").equals("error")) {
+                            Log.w(TAG, "Invalid location! Outside of US?");
+                        }
+                    } catch (JSONException ex2) {
+                        Log.w(TAG, "Unknown FCC API Error" + response.toString());
+                    }
 
                 }
 
@@ -214,16 +225,17 @@ public class RegularLocationSaveWorker extends Worker {
         String title = "COVID-19 spread in your area";
         String message;
 
-        message= "It seems like you just went into " + county + ", which rising in COVID-19 cases. Be careful and wear your mask!";
-
+        message = "You've entered " + fips + " which notable spread of COVID-19";
         createNotificationForCurrentActivity(title, message);
     }
 
     /**
-     * Makes the notification manager and the pending intent for when the
-     * @return void
+     * Creates a notification that, when clicked, will attempt to open the PastLocationActivity
+     *
+     * @param title
+     * @param message
      */
-    private void createNotificationForCurrentActivity(String title, String message){
+    private void createNotificationForCurrentActivity(String title, String message) {
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         PendingIntent pendingIntent = getPendingIntentTo(PastLocationActivity.class);
@@ -240,12 +252,13 @@ public class RegularLocationSaveWorker extends Worker {
     }
 
     /**
-     * Creates an indent and pending intent object of the notification
-     * The pending intent is a token that holds a refrence to the intent
-     * If the application is closed, the intent can still be triggeted
-     * @return intentforactivity
+     * Creates a pending activity from current to the given activity.
+     *
+     * @param activity The activity to go to
+     *
+     * @return A pending intent
      */
-    private PendingIntent getPendingIntentTo(Class<? extends Activity> activity){
+    private PendingIntent getPendingIntentTo(Class<? extends Activity> activity) {
         Intent gotToCurrentLocationIntent = new Intent(context, activity);
 
         PendingIntent goToActivityIntent = PendingIntent.getActivity(
@@ -253,7 +266,7 @@ public class RegularLocationSaveWorker extends Worker {
                 GOTO_CURRENT_LOCATION_PENDING_INTENT_ID,
                 gotToCurrentLocationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
-        );
+                                                                    );
         return goToActivityIntent;
     }
 }

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -24,9 +22,10 @@ import java.text.SimpleDateFormat;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private DashboardActivityViewModel viewModel;
     public SimpleDateFormat dateFormat;
     public String date;
+    public BottomNavigationView bottomNavigationView;
+    private DashboardActivityViewModel viewModel;
 
 
     /**
@@ -44,7 +43,22 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
+        getSupportActionBar().setTitle("Main Dashboard");
+
+        bottomNavigationView = addBottomMenu();
+
+
+        viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
+        viewModel.getCounter().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                updateDashBoard();
+            }
+        });
+    }
+
+    public BottomNavigationView addBottomMenu() {
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation_menu);
         bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -58,17 +72,21 @@ public class DashboardActivity extends AppCompatActivity {
                         Intent mapIntent = new Intent(DashboardActivity.this, GraphActivity.class);
                         startActivity(mapIntent);
                         break;
+                    case R.id.generalInfoBottomMenu:
+                        Intent generalInfoIntent = new Intent(DashboardActivity.this, GeneralInformationActivity.class);
+                        startActivity(generalInfoIntent);
+                        break;
                 }
                 return true;
             }
         });
-        viewModel = new ViewModelProvider(this).get(DashboardActivityViewModel.class);
-        viewModel.getCounter().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                updateDashBoard();
-            }
-        });
+        return bottomNavigationView;
+    }
+
+    @Override
+    public void onResume() {
+        bottomNavigationView.setSelectedItemId(R.id.dashboardBottomMenu);
+        super.onResume();
     }
 
     /**
@@ -131,7 +149,6 @@ public class DashboardActivity extends AppCompatActivity {
         deathPer100KNum.setText(viewModel.deathsPer100K2);
     }
 
-
     public String getYesterdayString() {
         String suffix = "";
         DateTime now = new Instant().toDateTime();
@@ -153,25 +170,4 @@ public class DashboardActivity extends AppCompatActivity {
         return String.format("%s %d%s", month, day, suffix);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent settingsIntent = new Intent(DashboardActivity.this, SettingsActivity.class);
-                //Log.d(DashboardActivity.class.getName(), “Intent didnt start” + settingsIntent);
-                this.startActivity(settingsIntent);
-                break;
-            case R.id.action_appInfo:
-                Intent appInfoIntent = new Intent(DashboardActivity.this, AppInfoActivity.class);
-                this.startActivity(appInfoIntent);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
