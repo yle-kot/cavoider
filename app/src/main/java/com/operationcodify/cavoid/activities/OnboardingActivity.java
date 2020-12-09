@@ -1,4 +1,5 @@
 package com.operationcodify.cavoid.activities;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,9 +14,10 @@ import com.operationcodify.cavoid.R;
 
 import static com.operationcodify.cavoid.activities.MyOnboardingSupportFragment.preferences;
 
-public class OnboardingActivity extends FragmentActivity{
-    MyOnboardingSupportFragment fragment = new MyOnboardingSupportFragment();
+public class OnboardingActivity extends FragmentActivity {
     static int page = 1;
+    MyOnboardingSupportFragment fragment = new MyOnboardingSupportFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,14 +30,14 @@ public class OnboardingActivity extends FragmentActivity{
         onBoardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(page == fragment.getPageCount()) {
+                if (page == fragment.getPageCount()) {
                     SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                     sharedPreferencesEditor.putBoolean(preferences, true);
                     sharedPreferencesEditor.apply();
                     //fragment.onFinishFragment();
                     startActivity(new Intent(OnboardingActivity.this, LoadingActivity.class));
                 }
-                else{
+                else {
                     page++;
                     startActivity(new Intent(OnboardingActivity.this, OnboardingActivity.class));
                 }

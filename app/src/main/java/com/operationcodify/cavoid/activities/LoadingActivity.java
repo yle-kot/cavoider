@@ -37,15 +37,14 @@ import java.util.concurrent.TimeUnit;
 
 public class LoadingActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback {
 
+    public static final String NIGHT_MODE = "NIGHT_MODE";
     private static final String PRIMARY_CHANNEL_ID = "Priority";
     private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
     private static final int REQUEST_ACCESS_BACKGROUND_LOCATION_STATE = 227;
     private static final int REQUEST_ACCESS_COARSE_LOCATION_STATE = 228;
-    private Intent changeScreenIntent;
-
-    public static final String NIGHT_MODE = "NIGHT_MODE";
-    private boolean isNightModeEnabled = false;
     private static LoadingActivity singleton = null;
+    private Intent changeScreenIntent;
+    private boolean isNightModeEnabled = false;
 
     public static LoadingActivity getInstance() {
 
@@ -86,9 +85,10 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
     /**
      * This checks a permission, and if the permission is not granted, will request it while displaying
      * an explanation why that permission is needed, if applicable.
-     * @param permission The permission to check
-     * @param explanationTitle The title for the explanation windowbox
-     * @param explanationMessage The explanation to be given to the user as to why the permission is needed
+     *
+     * @param permission            The permission to check
+     * @param explanationTitle      The title for the explanation windowbox
+     * @param explanationMessage    The explanation to be given to the user as to why the permission is needed
      * @param permissionRequestCode The unique code for this permission request
      */
     private void showPermission(String permission, String explanationTitle, String explanationMessage, int permissionRequestCode) {
@@ -205,9 +205,9 @@ public class LoadingActivity extends AppCompatActivity implements OnRequestPermi
      * showExplanation is used to explain to a user why a given permission is required. Once the
      * explanation is show and the user acknowledges, a request will be made for a given permission.
      *
-     * @param title The title of the message window
-     * @param message Th\he explanation to give to the user
-     * @param permission The permission being requested
+     * @param title                 The title of the message window
+     * @param message               Th\he explanation to give to the user
+     * @param permission            The permission being requested
      * @param permissionRequestCode The unique code identifying our unique request for this permission
      */
     private void showExplanation(String title, String message, final String permission, final int permissionRequestCode) {

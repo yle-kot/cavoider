@@ -23,19 +23,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.operationcodify.cavoid.R;
 import com.operationcodify.cavoid.api.Repository;
 import com.operationcodify.cavoid.database.ExposureCheckViewModel;
+import com.operationcodify.cavoid.utilities.ChartData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.PriorityQueue;
 
 public class GraphActivity extends AppCompatActivity {
 
+    public BottomNavigationView bottomNavigationView;
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
     private GraphActivityViewModel viewModel;
-    public BottomNavigationView bottomNavigationView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,6 @@ public class GraphActivity extends AppCompatActivity {
         setContentView(R.layout.activity_graph);
 
         getSupportActionBar().setTitle("Graph");
-
 
 
         bottomNavigationView = addBottomMenu();
@@ -89,7 +87,7 @@ public class GraphActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         bottomNavigationView.setSelectedItemId(R.id.graphBottomMenu);
         super.onResume();
     }
@@ -99,7 +97,7 @@ public class GraphActivity extends AppCompatActivity {
      * processes data from the view model to update the graph
      */
     public void updateGraph() {
-        ArrayList<GraphActivityViewModel.ChartData> rollingAvg = new ArrayList<GraphActivityViewModel.ChartData>(Arrays.asList(viewModel.rollingAvg.toArray(new GraphActivityViewModel.ChartData[0])));
+        ArrayList<ChartData> rollingAvg = new ArrayList<ChartData>(Arrays.asList(viewModel.rollingAvg.toArray(new ChartData[0])));
         ArrayList<BarEntry> rollingAvgEntries = new ArrayList<>();
         ArrayList<String> xAxisLabel = new ArrayList<>();
         ArrayList<Float> rollingAvgState = new ArrayList<>();
@@ -108,8 +106,8 @@ public class GraphActivity extends AppCompatActivity {
         if (!rollingAvg.isEmpty()) {
             int rollingAvgSize = rollingAvg.size();
             for (int i = 0; i < rollingAvgSize; i++) {
-                GraphActivityViewModel.ChartData chartData = rollingAvg.get(i);
-                float casesCounty =  (float) chartData.getWeek2RollingAvgCounty();
+                ChartData chartData = rollingAvg.get(i);
+                float casesCounty = (float) chartData.getWeek2RollingAvgCounty();
                 if (i == (rollingAvgSize - 1)) {
                     highestValue = casesCounty + 10;
                 }
@@ -134,6 +132,7 @@ public class GraphActivity extends AppCompatActivity {
 
     /**
      * Disables the y axis on the right side so there aren't duplicate axes
+     *
      * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
      */
     public void formatRightYAxis(BarChart pastLocationChart) {
@@ -143,11 +142,12 @@ public class GraphActivity extends AppCompatActivity {
 
     /**
      * Formats the y axis to properly scale based on the data, and  to include a line for
-     *          each of the states across the bar graph
+     * each of the states across the bar graph
+     *
      * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
-     * @param states the states for each of the selected counties
-     * @param rollingAvgState the rolling average for each of the states
-     * @param highestValue the highest recorded value which is used to set the y axis
+     * @param states            the states for each of the selected counties
+     * @param rollingAvgState   the rolling average for each of the states
+     * @param highestValue      the highest recorded value which is used to set the y axis
      */
     public void formatLeftYAxis(BarChart pastLocationChart, ArrayList<String> states,
                                 ArrayList<Float> rollingAvgState, float highestValue) {
@@ -162,7 +162,7 @@ public class GraphActivity extends AppCompatActivity {
                 }
                 if (!addedStates.contains(stateName)) {
                     LimitLine stateLine = new LimitLine(rollingAvgStateValue,
-                            stateName + " Average New Cases");
+                                                        stateName + " Average New Cases");
                     stateLine.setLineColor(Color.BLACK);
                     stateLine.setLineWidth(2f);
                     stateLine.enableDashedLine(30, 25, 0);
@@ -177,8 +177,9 @@ public class GraphActivity extends AppCompatActivity {
 
     /**
      * formats the x axis lables and adds the county names as labels
+     *
      * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
-     * @param xAxisLabel the names of the counties for the x axis label
+     * @param xAxisLabel        the names of the counties for the x axis label
      */
     public void formatXAxis(BarChart pastLocationChart, ArrayList<String> xAxisLabel) {
         XAxis xAxis = pastLocationChart.getXAxis();
@@ -190,6 +191,7 @@ public class GraphActivity extends AppCompatActivity {
 
     /**
      * adds the data to the bar chart
+     *
      * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
      * @param rollingAvgEntries all the entries for the bar chart based on the county rolling average
      */
@@ -203,6 +205,7 @@ public class GraphActivity extends AppCompatActivity {
 
     /**
      * formats the bar chart to auto scale the bars in the chart based on the number of bars
+     *
      * @param pastLocationChart bar chart which displays the rolling average of new cases for counties
      */
     public void formatBarChart(BarChart pastLocationChart) {

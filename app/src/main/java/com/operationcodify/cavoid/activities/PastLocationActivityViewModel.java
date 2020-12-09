@@ -23,8 +23,6 @@ import java.util.ArrayList;
  * update the view accordingly.
  */
 public class PastLocationActivityViewModel extends AndroidViewModel {
-    private LocationDatabase locDb;
-    private LocationDao locDao;
     public String activeCasesEst;
     public String caseFatality;
     public String deathsPer100K;
@@ -39,12 +37,14 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     public String TAG;
     public String reportDate;
     public int i;
+    private LocationDatabase locDb;
+    private LocationDao locDao;
     private Repository repo;
     private MutableLiveData<Integer> counter;
     private ArrayList<String> pastLocations;
     private ArrayList<ParsedPastLocationReport> reports;
 
-    public PastLocationActivityViewModel(@NonNull Application application){
+    public PastLocationActivityViewModel(@NonNull Application application) {
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
         locDao = locDb.getLocationDao();
@@ -55,12 +55,12 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
         updatePastLocationMessages();
     }
 
-    public ArrayList<ParsedPastLocationReport> getReports(){
+    public ArrayList<ParsedPastLocationReport> getReports() {
         return this.reports;
     }
 
     public MutableLiveData<Integer> getCounter() {
-        if(counter == null){
+        if (counter == null) {
             counter = new MutableLiveData<Integer>();
             counter.setValue(0);
         }
@@ -70,8 +70,8 @@ public class PastLocationActivityViewModel extends AndroidViewModel {
     /**
      * Creates the list of past locations with all report data.
      */
-    public void updatePastLocationMessages(){
-        for(i = 0; i < pastLocations.size();i++) {
+    public void updatePastLocationMessages() {
+        for (i = 0; i < pastLocations.size(); i++) {
             repo.getPosTests(pastLocations.get(i), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

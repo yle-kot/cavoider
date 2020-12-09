@@ -1,13 +1,12 @@
 package com.operationcodify.cavoid.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +27,9 @@ import java.util.Date;
 
 public class PastLocationActivity extends AppCompatActivity {
 
+    private static final String TAG = PastLocationActivity.class.getSimpleName();
+    public ArrayList<ParsedPastLocationReport> reports;
+    public BottomNavigationView bottomNavigationView;
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -41,11 +43,7 @@ public class PastLocationActivity extends AppCompatActivity {
     private ExposureCheckViewModel exposureCheck;
     private ArrayList<String> pastLocationsList;
     private Repository repo;
-    public ArrayList<ParsedPastLocationReport> reports;
     private PastLocationActivityViewModel viewModel;
-    private static final String TAG = PastLocationActivity.class.getSimpleName();
-    public BottomNavigationView bottomNavigationView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +134,6 @@ public class PastLocationActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.pastLocationBottomMenu);
         super.onResume();
     }
-
 
 
 }

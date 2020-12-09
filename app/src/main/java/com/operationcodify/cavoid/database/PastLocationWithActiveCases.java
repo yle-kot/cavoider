@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 
 @Entity
@@ -18,13 +17,13 @@ public class PastLocationWithActiveCases {
     @ColumnInfo(name = "fips")
     public String fips;
 
-    @ColumnInfo(name="county_name")
+    @ColumnInfo(name = "county_name")
     public String countyName;
 
-    @ColumnInfo(name="active_cases")
+    @ColumnInfo(name = "active_cases")
     public int activeCases;
 
-    @ColumnInfo(name="report_date")
+    @ColumnInfo(name = "report_date")
     public LocalDate reportDate;
 
     public long timestamp;

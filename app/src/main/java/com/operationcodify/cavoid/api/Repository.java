@@ -10,7 +10,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.operationcodify.cavoid.workers.RegularLocationSaveWorker;
 
 import org.json.JSONObject;
 
@@ -18,19 +17,19 @@ import java.io.IOException;
 
 public class Repository {
 
+    private static final String TAG = Repository.class.getSimpleName();
     private String posTests = "";
     private Context context;
-    private static final String TAG = Repository.class.getSimpleName();
 
-    public Repository(Context context){
+    public Repository(Context context) {
         this.context = context;
     }
 
-    public void getPosTests(String fips, Response.Listener<JSONObject> callback){
+    public void getPosTests(String fips, Response.Listener<JSONObject> callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
 
         //Saves url as string to be searched on the web
-        String url = String.format("https://powerful-anchorage-13412.herokuapp.com/latest/%s",fips);
+        String url = String.format("https://powerful-anchorage-13412.herokuapp.com/latest/%s", fips);
 
         //Object request gets the JSON object from the internet
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -48,32 +47,26 @@ public class Repository {
 
     public void getFipsCodeFromCurrentLocation(Location location, Response.Listener<JSONObject> callback) throws IOException {
 
-        String locale = context.getResources().getConfiguration().locale.getCountry();
 
-        if(locale.equals("US")){
-            String baseUrl = "https://geo.fcc.gov/api/census/area?";
-            String latitude = "lat="+location.getLatitude()+"&";//37.549550,-77.451244
-            String longitude = "lon="+location.getLongitude();
-            baseUrl += latitude+longitude;
-            String fips = "";
-            //Might need countyName string for dashboard
-            String countyName = "";
-            RequestQueue queue = Volley.newRequestQueue(context);
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                    (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
+        String baseUrl = "https://geo.fcc.gov/api/census/area?";
+        String latitude = "lat=" + location.getLatitude() + "&";//37.549550,-77.451244
+        String longitude = "lon=" + location.getLongitude();
+        baseUrl += latitude + longitude;
+        String fips = "";
+        //Might need countyName string for dashboard
+        String countyName = "";
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, baseUrl, null, callback, new Response.ErrorListener() {
 
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
 
-                        }
-                    });
-            // Access the RequestQueue through your singleton class.
-            queue.add(jsonObjectRequest);
-        }
-        else{
-            System.out.println("Hello");
-        }
+                    }
+                });
+        // Access the RequestQueue through your singleton class.
+        queue.add(jsonObjectRequest);
     }
-
-
 }
+
+

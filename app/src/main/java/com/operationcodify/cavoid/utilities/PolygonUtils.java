@@ -18,37 +18,35 @@ public class PolygonUtils {
     /*
   Gets the county line coordinates then creates a polygon object to return them
  */
-    public static Polygon createCountyPolygon(Context context, GoogleMap mMap){
+    public static Polygon createCountyPolygon(Context context, GoogleMap mMap) {
         Polygon polygon = null;
         polygon = mMap.addPolygon(new PolygonOptions()
-                .addAll(getCountyLines(context, "51760")));
+                                          .addAll(getCountyLines(context, "51760")));
         return polygon;
     }
 
     //Returns an arraylist of county lines from a passed in fips code
-    private static ArrayList<LatLng> getCountyLines(Context context, String fips){
+    private static ArrayList<LatLng> getCountyLines(Context context, String fips) {
         ArrayList<LatLng> coordinates = new ArrayList<LatLng>();
         //create a json object and parse it
         try {
             JSONObject countyJson = new JSONObject(loadJSONFromAsset(context));
             String coordinatesString = countyJson.getString(fips);
             //Enhanced for Loop to split coordinate string by spaces then take that string and split it by commas
-            for (String coord: coordinatesString.split(" ")){
+            for (String coord : coordinatesString.split(" ")) {
                 //after spliting the string by commas put the first two indexes of the new array into lat and lng strings
                 //then parse them for doubles and add them to coordinates
-                String [] coordinateparts = coord.split(",");
+                String[] coordinateparts = coord.split(",");
                 //the latitude and longitude are reversed in the fips.json file
                 String Lng = coordinateparts[0];
                 String Lat = coordinateparts[1];
-                coordinates.add(new LatLng(Double.parseDouble(Lat),Double.parseDouble(Lng)));
+                coordinates.add(new LatLng(Double.parseDouble(Lat), Double.parseDouble(Lng)));
             }
             return coordinates;
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             return null;
-        }
-        catch(NullPointerException n){
+        } catch (NullPointerException n) {
             return null;
         }
     }
@@ -73,7 +71,6 @@ public class PolygonUtils {
         }
 
     }
-
 
 
 }
