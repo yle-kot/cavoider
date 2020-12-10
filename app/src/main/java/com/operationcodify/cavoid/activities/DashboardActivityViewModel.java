@@ -47,6 +47,11 @@ public class DashboardActivityViewModel extends AndroidViewModel {
     private Repository repository;
     private MutableLiveData<Integer> counter;
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     public DashboardActivityViewModel(@NonNull Application application) {
         super(application);
         locDb = LocationDatabase.getDatabase(getApplication().getApplicationContext());
@@ -60,6 +65,11 @@ public class DashboardActivityViewModel extends AndroidViewModel {
         updateDailyValues();
     }
 
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
     public MutableLiveData<Integer> getCounter() {
         if (counter == null) {
             counter = new MutableLiveData<Integer>();
@@ -68,8 +78,14 @@ public class DashboardActivityViewModel extends AndroidViewModel {
         return counter;
     }
 
-    public void updateDailyValues() {
-        if (mostRecentLocation == null) {
+
+    /**
+     * Takes a number and returns its square root.
+     * param x The value to square.
+     * @return The square root of the given number.
+     */
+    public void updateDailyValues(){
+        if (mostRecentLocation == null){
             return;
         }
         repository.getPosTests(mostRecentLocation.fips, new Response.Listener<JSONObject>() {

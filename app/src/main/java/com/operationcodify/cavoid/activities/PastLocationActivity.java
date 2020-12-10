@@ -30,6 +30,7 @@ public class PastLocationActivity extends AppCompatActivity {
     private static final String TAG = PastLocationActivity.class.getSimpleName();
     public ArrayList<ParsedPastLocationReport> reports;
     public BottomNavigationView bottomNavigationView;
+
     private RecyclerView recyclerView;
     private PastLocationAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;

@@ -61,7 +61,15 @@ public class RegularLocationSaveWorker extends Worker {
     private int NOTIFICATION_ID = 2938;
     private int GOTO_CURRENT_LOCATION_PENDING_INTENT_ID = 260;
     private ArrayList<String> pastLocations;
+    private String fips;
 
+
+    /**
+     * Creates an array of past locations to check through later
+     * Creates instance of locDoa
+     * Creates instancce of
+     * @return The square root of the given number.
+     */
     public RegularLocationSaveWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         pastLocations = new ArrayList<>();
@@ -117,6 +125,10 @@ public class RegularLocationSaveWorker extends Worker {
         };
     }
 
+    /**
+     * Checks if permissions are given
+     * @return boolean of if permissions are true or false
+     */
     private boolean isMissingPermissions() {
         if (
                 (
@@ -149,7 +161,7 @@ public class RegularLocationSaveWorker extends Worker {
                     pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
                     pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                     pastLocation.date = date;
-                    if (!pastLocations.contains(pastLocation.fips)) {
+                    if(!pastLocations.contains(pastLocation.fips)){
                         createWarningNotificationForCurrent(pastLocation.countyName);
                     }
                     LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertLocations(pastLocation));
@@ -168,13 +180,48 @@ public class RegularLocationSaveWorker extends Worker {
             }
         };
     }
+    public void CountyCovidCheck(Repository repo, ArrayList<String> pastLocations) {
+
+        repo.getPosTests(fips, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                LocalDate date = LocalDate.now();
+                PastLocation pastLocation = new PastLocation();
+                double week1=0;
+                double week2=0;
+                String countyName = "";
+                try {
+                    pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
+                    pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
+                    pastLocation.date = date;
+                    week1 = response.getDouble("week_1_rolling_avg_per_100k_people");
+                    week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
+                    countyName = response.getString("county");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if ((int)Math.round(week2) > (int)Math.round(week1)) {
+                            finalizeWorker();
+                }
+            }
+        });
+    }
+
+
+    private void finalizeWorker() {
+        // Create a notification to notify the user that they were exposed to X locations
+        // X locations is defined in fipsToNotifyList
+        createWarningNotificationForCurrent(fips);
+
+    }
 
     /**
-     * Given a fips code, creates a notification
-     *
-     * @param fips The county code in question
+     * Creates the details of the notification for if your current location
+     * @return void
      */
-    private void createWarningNotificationForCurrent(String fips) {
+    private void createWarningNotificationForCurrent(String county) {
+
         String title = "COVID-19 spread in your area";
         String message;
 

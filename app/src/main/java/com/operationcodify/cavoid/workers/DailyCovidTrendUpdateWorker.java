@@ -47,12 +47,6 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  * to determine if an exposure warning needs to be created for that county.
  */
 public class DailyCovidTrendUpdateWorker extends Worker {
-
-    private static final String TAG = DailyCovidTrendUpdateWorker.class.getSimpleName();
-    private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
-    private static final int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
-    private static final int NOTIFICATION_ID = 2937;
-    NotifiedLocation notifiedLocation;
     private LocationDatabase locDb;
     private LocationDao locDao;
     private LocalDate twoWeeksAgoDate;
@@ -60,6 +54,12 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     private Context context;
     private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
+    private Boolean isDone;
+    NotifiedLocation notifiedLocation;
+    private static final String TAG = DailyCovidTrendUpdateWorker.class.getSimpleName();
+    private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
+    private static final int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;
+    private static final int NOTIFICATION_ID = 2937;
 
     public DailyCovidTrendUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
