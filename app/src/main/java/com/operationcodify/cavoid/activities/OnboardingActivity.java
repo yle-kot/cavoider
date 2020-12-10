@@ -34,7 +34,6 @@ public class OnboardingActivity extends FragmentActivity {
                     SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
                     sharedPreferencesEditor.putBoolean(preferences, true);
                     sharedPreferencesEditor.apply();
-                    //fragment.onFinishFragment();
                     startActivity(new Intent(OnboardingActivity.this, LoadingActivity.class));
                 }
                 else {
