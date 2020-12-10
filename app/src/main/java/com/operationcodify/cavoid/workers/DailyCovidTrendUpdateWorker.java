@@ -25,7 +25,6 @@ import com.operationcodify.cavoid.database.LocationDatabase;
 import com.operationcodify.cavoid.database.NotifiedLocation;
 import com.operationcodify.cavoid.database.PastLocation;
 
-import org.joda.time.DateTime;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +55,7 @@ public class DailyCovidTrendUpdateWorker extends Worker {
     private volatile ArrayList<String> fipsToNotifyList;
     private volatile int counter;
     private Boolean isDone;
+    NotifiedLocation notifiedLocation;
     private static final String TAG = DailyCovidTrendUpdateWorker.class.getSimpleName();
     private static final String PAST_LOCATION_CHANNEL_ID = "Past Location";
     private static final int GOTO_PAST_LOCATION_PENDING_INTENT_ID = 259;

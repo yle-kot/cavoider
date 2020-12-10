@@ -119,7 +119,7 @@ public class DashboardActivity extends AppCompatActivity {
         newCasesNum.setText(viewModel.newCaseNumber2);
 
         TextView newDeaths = findViewById(R.id.deathsTextView);
-        newDeaths.setText("New Deaths");
+        newDeaths.setText("New Deaths:");
 
         TextView newDeathsNum = findViewById(R.id.deathsNum);
         newDeathsNum.setText(viewModel.newDeathNumber2);
@@ -143,7 +143,7 @@ public class DashboardActivity extends AppCompatActivity {
         caseFatalityNum.setText(viewModel.caseFatality2);
 
         TextView deathPer100K = findViewById(R.id.DeathPerTextView);
-        deathPer100K.setText("New Deaths");
+        deathPer100K.setText("New Deaths:");
 
         TextView deathPer100KNum = findViewById(R.id.DeathPerNum);
         deathPer100KNum.setText(viewModel.deathsPer100K2);
