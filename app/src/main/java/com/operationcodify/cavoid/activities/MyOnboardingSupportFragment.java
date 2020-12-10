@@ -59,11 +59,4 @@ public class MyOnboardingSupportFragment extends OnboardingSupportFragment {
         return null;
     }
 
-    @Override
-    protected void onFinishFragment() {
-        // User has seen OnboardingSupportFragment, so mark our SharedPreferences
-        // flag as completed so that we don't show our OnboardingSupportFragment
-        // the next time the user launches the app.
-        super.onFinishFragment();
-    }
 }
