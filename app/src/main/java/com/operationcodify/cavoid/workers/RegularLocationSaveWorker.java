@@ -162,7 +162,7 @@ public class RegularLocationSaveWorker extends Worker {
                     pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
                     pastLocation.date = date;
                     if(!pastLocations.contains(pastLocation.fips)){
-                        createWarningNotificationForCurrent(pastLocation.countyName);
+                       CountyCovidCheck(repo,pastLocations);
                     }
                     LocationDatabase.databaseWriteExecutor.execute(() -> locDao.insertLocations(pastLocation));
                     Log.i(TAG, "Saved location: " + pastLocation.fips);
@@ -189,14 +189,9 @@ public class RegularLocationSaveWorker extends Worker {
                 PastLocation pastLocation = new PastLocation();
                 double week1=0;
                 double week2=0;
-                String countyName = "";
                 try {
-                    pastLocation.fips = response.getJSONArray("results").getJSONObject(0).getString("county_fips");
-                    pastLocation.countyName = response.getJSONArray("results").getJSONObject(0).getString("county_name");
-                    pastLocation.date = date;
                     week1 = response.getDouble("week_1_rolling_avg_per_100k_people");
                     week2 = response.getDouble("week_2_rolling_avg_per_100k_people");
-                    countyName = response.getString("county");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -218,7 +213,7 @@ public class RegularLocationSaveWorker extends Worker {
 
     /**
      * Creates the details of the notification for if your current location
-     * @return void
+     * @param county
      */
     private void createWarningNotificationForCurrent(String county) {
 

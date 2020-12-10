@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
@@ -42,11 +43,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/TotalCaseCard"
-        app:layout_constraintEnd_toStartOf="@+id/NewDeathCard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.8">
+        app:layout_constraintVertical_bias="0.2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +63,6 @@
                 android:layout_weight="1"
                 android:background="#FFFFFF"
                 android:gravity="center"
-                android:lineSpacingExtra="8sp"
                 android:text="@string/new_cases"
                 android:textColor="#000000"
                 android:textSize="12sp"
@@ -92,11 +93,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/CasesPerCard"
-        app:layout_constraintEnd_toStartOf="@+id/CaseFatalityCard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.95">
+        app:layout_constraintVertical_bias="0.6">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -141,12 +143,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/TotalDeathCard"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.8">
+        app:layout_constraintVertical_bias="0.19999999">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -193,7 +195,8 @@
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/DeathPerCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
         app:layout_constraintVertical_bias="0.8">
@@ -291,11 +294,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/EstCaseCard"
-        app:layout_constraintEnd_toStartOf="@+id/TotalDeathCard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.9">
+        app:layout_constraintVertical_bias="0.40">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -340,12 +344,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/CaseFatalityCard"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.9">
+        app:layout_constraintVertical_bias="0.40">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -390,12 +394,12 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/DeathPerCard"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.95">
+        app:layout_constraintVertical_bias="0.6">
 
         <LinearLayout
             android:layout_width="match_parent"

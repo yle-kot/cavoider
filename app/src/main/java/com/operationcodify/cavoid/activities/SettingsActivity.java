@@ -30,17 +30,17 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent notificationIntent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Priority");
+                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Past Location");
                 startActivity(notificationIntent);
             }
         });
         Button CommunitySpreadButton = (Button) findViewById(R.id.currentLocationNotificationButton);
-        notificationButton.setOnClickListener(new View.OnClickListener() {
+        CommunitySpreadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent notificationIntent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Current Location");
+                notificationIntent.putExtra(Settings.EXTRA_CHANNEL_ID, "Priority");
                 startActivity(notificationIntent);
             }
         });
