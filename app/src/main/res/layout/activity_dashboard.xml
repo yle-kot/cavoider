@@ -42,11 +42,9 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/TotalCaseCard"
         app:layout_constraintEnd_toStartOf="@+id/NewDeathCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.100000024">
+        app:layout_constraintTop_toBottomOf="@+id/greetingTextView">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -141,12 +139,10 @@
         app:cardBackgroundColor="#9A757373"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/TotalDeathCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.00999999">
+        app:layout_constraintTop_toBottomOf="@+id/greetingTextView">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -292,8 +288,8 @@
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation_menu"
         app:layout_constraintEnd_toStartOf="@+id/TotalDeathCard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintTop_toBottomOf="@+id/NewCaseCard"
+        app:layout_constraintVertical_bias="0.050000012">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -342,8 +338,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greetingTextView"
-        app:layout_constraintVertical_bias="0.29000002">
+        app:layout_constraintTop_toBottomOf="@+id/NewDeathCard"
+        app:layout_constraintVertical_bias="0.060000002">
 
         <LinearLayout
             android:layout_width="match_parent"
